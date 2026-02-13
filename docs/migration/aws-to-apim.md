@@ -277,9 +277,9 @@ securitySchemes:
 ```xml
 <inbound>
     <base />
-    <!-- Rate limiting (similar to rate limit) - renewal-period in seconds -->
-    <rate-limit-by-key calls="500" 
-                       renewal-period="1" 
+    <!-- Rate limiting - 500 requests per second (renewal-period in seconds) -->
+    <rate-limit-by-key calls="30000" 
+                       renewal-period="60" 
                        counter-key="@(context.Subscription.Id)" />
     
     <!-- Burst limiting (additional short-term limit) -->
@@ -407,7 +407,7 @@ aws apigateway get-export \
   --stage-name prod \
   --export-type oas30 \
   --accepts application/yaml \
-  rest-api-export.yaml
+  > rest-api-export.yaml
 
 # Export HTTP API
 aws apigatewayv2 export-api \
@@ -415,7 +415,7 @@ aws apigatewayv2 export-api \
   --output-type YAML \
   --specification OAS30 \
   --stage-name prod \
-  http-api-export.yaml
+  > http-api-export.yaml
 
 # Export for all APIs in region
 aws apigateway get-rest-apis --query 'items[*].[id,name]' --output text | \
@@ -425,7 +425,7 @@ while read id name; do
     --stage-name prod \
     --export-type oas30 \
     --accepts application/yaml \
-    "${name}-export.yaml"
+    > "${name}-export.yaml"
 done
 ```
 
