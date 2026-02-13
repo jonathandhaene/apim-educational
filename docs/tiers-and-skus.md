@@ -337,9 +337,9 @@ Each APIM unit provides approximate capacity:
 - Regional expansion (Premium only)
 
 **Auto-scale:**
-- Not available in APIM (manual scale only)
-- Consider Consumption tier for auto-scaling scenarios
-- Monitor metrics and scale proactively
+- **Classic tiers**: Manual scaling only—monitor metrics and scale proactively
+- **v2 tiers**: Automatic scaling based on demand (0-10 units for Basic v2, 0-100 units for Standard v2)
+- **Consumption tier**: Serverless auto-scaling (scales to zero when idle)
 
 ## Pricing Comparison
 
