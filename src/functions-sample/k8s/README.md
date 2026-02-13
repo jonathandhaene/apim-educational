@@ -29,8 +29,8 @@ az acr create --resource-group <resource-group> --name <acr-name> --sku Basic
 # Login to ACR
 az acr login --name <acr-name>
 
-# Build and tag the image
-cd /home/runner/work/apim-educational/apim-educational/src/functions-sample
+# Build and tag the image from the functions-sample directory
+cd src/functions-sample
 docker build -t <acr-name>.azurecr.io/azure-function-sample:latest .
 
 # Push to ACR

@@ -331,10 +331,18 @@ export async function stripeWebhook(request: HttpRequest, context: InvocationCon
 
 ## Cost Considerations
 
-### Stripe Pricing (as of 2024)
+### Stripe Pricing
+
+**Note**: Pricing is subject to change. Always refer to the [official Stripe pricing page](https://stripe.com/pricing) for current rates.
+
+As of 2024:
 - **Standard**: 2.9% + $0.30 per successful card charge
 - **International**: +1.5% for cards outside US
 - **Currency conversion**: +1% for currency conversion
+
+For the most accurate and up-to-date pricing information, visit:
+- [Stripe Pricing](https://stripe.com/pricing)
+- [Stripe Pricing Calculator](https://stripe.com/pricing#pricing-calculator)
 
 ### Azure Costs
 - **Function App (Consumption)**: Pay per execution
