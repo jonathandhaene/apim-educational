@@ -2,6 +2,8 @@
 
 Welcome to the Azure API Management (APIM) Educational Repository! This comprehensive learning resource provides hands-on labs, infrastructure templates, policy examples, and best practices for working with Azure API Management.
 
+> **⚠️ Educational Disclaimer**: This repository is provided for educational and learning purposes only. All content, including pricing estimates, tier recommendations, and infrastructure templates, should be validated and adapted for your specific production requirements. Azure API Management features, pricing, and best practices evolve frequently—always consult the [official Azure documentation](https://learn.microsoft.com/azure/api-management/) and [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for the most current information before making production decisions.
+
 ## 📋 Repository Purpose
 
 This repository serves as:
@@ -176,16 +178,22 @@ Comprehensive guide covering:
 
 ## 💰 Cost Considerations
 
+> **Note**: Pricing is indicative and based on US regions as of 2026. Actual costs vary by region, usage patterns, and Azure subscription type. Always use the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for accurate estimates.
+
 **Development/Learning** (lowest cost):
-- **Consumption tier**: Pay-per-execution, no upfront cost
+- **Consumption tier**: Pay-per-execution, no upfront cost (~$3.50 per million calls)
 - **Developer tier**: ~$50/month, includes all features except SLA
 
-**Production** (higher cost):
-- **Basic**: ~$150/month, SLA-backed
-- **Standard**: ~$750/month, multi-region
-- **Premium**: ~$3000+/month, VNet injection, multi-region, high availability
+**Production - Classic Tiers**:
+- **Basic**: ~$150/month, SLA-backed (99.95%), limited scale
+- **Standard**: ~$750/month, VNet injection, SLA-backed (99.95%)
+- **Premium**: ~$3,000+/month, VNet injection, multi-region, high availability (99.99% SLA)
 
-💡 **Tip**: Use Consumption tier for learning, delete resources when not in use
+**Production - v2 Tiers** (2026+, consumption-based pricing):
+- **Basic v2**: Consumption-based, SLA-backed (99.95%), auto-scaling, cost-optimized for predictable workloads
+- **Standard v2**: Consumption-based, SLA-backed (99.95%), VNet injection, zone redundancy, optimized for enterprise workloads
+
+💡 **Tip**: Use Consumption or Developer tier for learning. Delete resources when not in use. v2 tiers offer consumption-based pricing that can be more cost-effective for variable workloads.
 
 ## 🔐 Security Best Practices
 
@@ -254,7 +262,11 @@ This project is licensed under the terms specified in [LICENSE](LICENSE).
 
 ## ⚠️ Disclaimer
 
-This repository is for educational purposes. The templates and examples demonstrate capabilities but should be reviewed and customized for production use according to your organization's requirements and security policies.
+**Educational Use Only**: This repository is provided for educational and demonstration purposes. While the templates and examples follow Azure best practices, they must be thoroughly reviewed, tested, and customized for production use according to your organization's specific requirements, security policies, and compliance needs.
+
+**Pricing and Features**: Azure API Management pricing, features, and tier availability are subject to change. The pricing estimates and tier comparisons in this repository are indicative and based on US East region as of early 2026. Always consult the official [Azure Pricing page](https://azure.microsoft.com/pricing/details/api-management/) and [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for current, region-specific pricing before making deployment decisions.
+
+**Validation Required**: All infrastructure templates, policies, and configurations should be validated in a non-production environment before deployment to production. Cloud services evolve rapidly—verify that features and approaches documented here are current and suitable for your use case.
 
 ---
 

@@ -2,6 +2,8 @@
 
 This guide helps you choose the right Azure API Management tier for your needs, comparing features, limits, and costs.
 
+> **⚠️ Important**: This document provides indicative pricing and tier comparisons based on 2026 information for US regions. Azure API Management pricing, features, and tier availability vary by region and are subject to change. Always consult the [official Azure Pricing page](https://azure.microsoft.com/pricing/details/api-management/) and use the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for current, region-specific pricing and feature availability before making deployment decisions.
+
 ## Table of Contents
 - [Tier Overview](#tier-overview)
 - [Feature Comparison](#feature-comparison)
@@ -12,17 +14,26 @@ This guide helps you choose the right Azure API Management tier for your needs, 
 
 ## Tier Overview
 
-Azure API Management offers five pricing tiers, each designed for different scenarios:
+Azure API Management offers multiple pricing tiers designed for different scenarios. Classic tiers (Consumption, Developer, Basic, Standard, Premium) provide fixed-capacity or serverless models, while v2 tiers (Basic v2, Standard v2) introduced in 2024-2025 offer consumption-based pricing with enhanced scalability.
 
-| Tier | Best For | Starting Price* |
-|------|----------|----------------|
-| **Consumption** | Serverless, event-driven workloads | Pay-per-execution |
-| **Developer** | Development and testing | ~$50/month |
-| **Basic** | Production workloads (small) | ~$150/month |
-| **Standard** | Production workloads (medium) | ~$750/month |
-| **Premium** | Enterprise production workloads | ~$3,000/month |
+### Classic Tiers
 
-*Prices are approximate and vary by region. Check [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for exact costs.
+| Tier | Best For | Pricing Model | Starting Price* |
+|------|----------|---------------|----------------|
+| **Consumption** | Serverless, event-driven workloads | Pay-per-execution | ~$3.50/million calls |
+| **Developer** | Development and testing | Fixed monthly | ~$50/month |
+| **Basic** | Production workloads (small) | Fixed monthly | ~$150/month |
+| **Standard** | Production workloads (medium) | Fixed monthly | ~$750/month |
+| **Premium** | Enterprise production workloads | Fixed monthly | ~$3,000/month |
+
+### v2 Tiers (2024+)
+
+| Tier | Best For | Pricing Model | Key Features |
+|------|----------|---------------|--------------|
+| **Basic v2** | Cost-optimized production | Consumption-based | Auto-scaling, 99.95% SLA, cost-effective |
+| **Standard v2** | Enterprise production | Consumption-based | VNet injection, zone redundancy, 99.95% SLA |
+
+*Prices are indicative and based on US East region (2026). Regional pricing varies significantly. Check the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for accurate cost estimates specific to your region and usage patterns.
 
 ### Consumption Tier
 
@@ -187,29 +198,110 @@ Azure API Management offers five pricing tiers, each designed for different scen
 **Cons:**
 - ❌ Highest cost
 
+### Basic v2 Tier
+
+**Cost-optimized consumption-based production tier** introduced in 2024-2025.
+
+**Key Characteristics:**
+- **Capacity**: Auto-scaling based on demand
+- **SLA**: 99.95%
+- **Pricing**: Consumption-based (pay for actual usage)
+- **Provisioning**: Fast deployment (5-15 minutes)
+- **Custom domains**: Supported
+
+**Use Cases:**
+- Production workloads with predictable traffic patterns
+- Cost-conscious production deployments
+- Workloads requiring SLA without VNet requirements
+- Applications needing auto-scaling without managing capacity units
+
+**Limitations:**
+- No VNet injection
+- No multi-region deployment
+- No availability zones
+
+**Pros:**
+- ✅ Consumption-based pricing (pay for what you use)
+- ✅ Auto-scaling without manual capacity management
+- ✅ SLA included (99.95%)
+- ✅ Fast provisioning compared to classic tiers
+- ✅ Lower cost than fixed-capacity Basic tier for variable workloads
+
+**Cons:**
+- ❌ No VNet injection
+- ❌ Single region only
+- ❌ No availability zones
+
+### Standard v2 Tier
+
+**Enterprise-grade consumption-based production tier** with advanced networking.
+
+**Key Characteristics:**
+- **Capacity**: Auto-scaling based on demand
+- **SLA**: 99.95%
+- **Pricing**: Consumption-based (pay for actual usage)
+- **VNet injection**: Supported
+- **Zone redundancy**: Supported
+- **Provisioning**: Fast deployment (5-15 minutes)
+
+**Use Cases:**
+- Enterprise production workloads requiring VNet integration
+- Applications with variable traffic needing cost optimization
+- Workloads requiring zone redundancy for high availability
+- Private APIs with backend connectivity requirements
+- Production workloads prioritizing consumption-based pricing over fixed costs
+
+**Limitations:**
+- No multi-region deployment (use Premium for multi-region)
+- Higher per-request costs compared to v2 Basic at high volumes
+
+**Pros:**
+- ✅ Consumption-based pricing with enterprise features
+- ✅ VNet injection for private connectivity
+- ✅ Zone redundancy for high availability
+- ✅ Auto-scaling without capacity unit management
+- ✅ SLA included (99.95%)
+- ✅ Fast provisioning
+- ✅ Cost-effective for variable enterprise workloads
+
+**Cons:**
+- ❌ No multi-region deployment
+- ❌ Higher base cost than Basic v2
+
 ## Feature Comparison
 
-| Feature | Consumption | Developer | Basic | Standard | Premium |
-|---------|-------------|-----------|-------|----------|---------|
-| **SLA** | None | None | 99.95% | 99.95% | 99.99%* |
-| **Max Scale** | Auto | 1 unit | 2 units | 4 units | 12+ units/region |
-| **Max Requests/sec** | 1,000 | 500 | 1,000 | 2,500 | 4,000+/unit |
-| **Custom Domains** | Limited | ✅ | ✅ | ✅ | ✅ |
-| **VNet Injection** | ❌ | ✅ | ❌ | ✅ | ✅ |
-| **Private Endpoints** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Multi-region** | ❌ | ❌ | ❌ | ❌ | ✅ |
-| **Availability Zones** | ❌ | ❌ | ❌ | ❌ | ✅ |
-| **Self-hosted Gateway** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Built-in Cache** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **External Cache (Redis)** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Developer Portal** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **OAuth 2.0 / JWT** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Client Certificates** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Managed Identity** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Backup/Restore** | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **Git Configuration** | ❌ | ✅ | ✅ | ✅ | ✅ |
+### Classic Tiers vs v2 Tiers
+
+| Feature | Consumption | Developer | Basic | Standard | Premium | Basic v2 | Standard v2 |
+|---------|-------------|-----------|-------|----------|---------|----------|-------------|
+| **SLA** | None | None | 99.95% | 99.95% | 99.99%* | 99.95% | 99.95% |
+| **Pricing Model** | Pay-per-call | Fixed | Fixed | Fixed | Fixed | Consumption | Consumption |
+| **Auto-scaling** | Yes | No | No | No | Manual | Yes | Yes |
+| **Max Scale** | Auto | 1 unit | 2 units | 4 units | 12+ units/region | Auto | Auto |
+| **Max Requests/sec** | 1,000 | 500 | 1,000 | 2,500 | 4,000+/unit | Auto | Auto |
+| **Custom Domains** | Limited | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **VNet Injection** | ❌ | ✅ | ❌ | ✅ | ✅ | ❌ | ✅ |
+| **Private Endpoints** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Multi-region** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| **Availability Zones** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
+| **Self-hosted Gateway** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Built-in Cache** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **External Cache (Redis)** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Developer Portal** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **OAuth 2.0 / JWT** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Client Certificates** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Managed Identity** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Backup/Restore** | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Git Configuration** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Provisioning Time** | 5 min | 30-45 min | 30-45 min | 30-45 min | 30-45 min | 5-15 min | 5-15 min |
 
 *99.99% SLA with multi-region deployment
+
+**Key Differences:**
+- **v2 tiers** use consumption-based pricing instead of fixed monthly costs
+- **v2 tiers** provision significantly faster (5-15 minutes vs 30-45 minutes)
+- **v2 tiers** auto-scale without manual capacity unit management
+- **Standard v2** includes zone redundancy; classic Standard does not
 
 ## Capacity and Scale
 
@@ -251,36 +343,64 @@ Each APIM unit provides approximate capacity:
 
 ## Pricing Comparison
 
-### Cost Breakdown (Approximate - USD, East US 2024)
+> **Important**: Pricing shown is indicative based on US East region as of 2026. Actual costs vary significantly by region, usage patterns, and Azure subscription type. v2 tier pricing is consumption-based and depends on request volume, compute usage, and feature utilization. Always use the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for accurate estimates.
+
+### Classic Tiers - Cost Breakdown (Approximate - USD, East US 2026)
 
 | Tier | Monthly Base | Per Unit/Month | Additional Costs |
 |------|--------------|----------------|------------------|
-| **Consumption** | $0 | Pay per use | $3.50 per million calls + $0.14/gateway hour |
-| **Developer** | $50 | N/A (fixed 1 unit) | None |
-| **Basic** | $150 | $150 | None |
-| **Standard** | $750 | $750 | None |
-| **Premium** | $3,000 | $3,000 | Multi-region: +$3,000 per additional region |
+| **Consumption** | $0 | Pay per use | ~$3.50 per million calls + ~$0.14/gateway hour |
+| **Developer** | ~$50 | N/A (fixed 1 unit) | None |
+| **Basic** | ~$150 | ~$150 | None |
+| **Standard** | ~$750 | ~$750 | None |
+| **Premium** | ~$3,000 | ~$3,000 | Multi-region: +~$3,000 per additional region |
+
+### v2 Tiers - Consumption-Based Pricing (2026)
+
+v2 tiers use consumption-based pricing that scales with actual usage:
+
+| Tier | Pricing Model | Indicative Cost Range* | SLA |
+|------|---------------|----------------------|-----|
+| **Basic v2** | Consumption-based | Varies by usage; typically lower than fixed Basic for variable workloads | 99.95% |
+| **Standard v2** | Consumption-based | Varies by usage; cost-effective for enterprise features with variable traffic | 99.95% |
+
+*v2 pricing is based on:
+- Number of API requests
+- Compute usage (processing time)
+- Data transfer
+- Feature utilization (VNet injection, zone redundancy, etc.)
+
+**Cost Optimization Considerations:**
+- v2 tiers are generally more cost-effective than classic fixed-price tiers for workloads with variable traffic
+- For predictable, high-volume workloads, compare v2 consumption costs with classic tier fixed pricing
+- v2 tiers eliminate the need to pre-provision capacity units
+- Faster provisioning (5-15 min) reduces deployment and testing costs
 
 ### Cost Examples
 
+> **Note**: These are illustrative examples. Actual costs depend on region, usage patterns, and specific features used. Always calculate costs for your specific scenario.
+
 **Scenario 1: Development/Testing**
 - **Best Tier**: Developer
-- **Monthly Cost**: ~$50
+- **Monthly Cost**: ~$50 (fixed)
 - **Rationale**: Full features, no SLA needed for dev
 
-**Scenario 2: Startup with 10M requests/month**
-- **Consumption**: $0 + (10 × $3.50) + gateway hours ≈ $35-50/month
-- **Basic**: $150/month (1 unit)
-- **Best Choice**: Consumption (if traffic is intermittent), Basic (if consistent traffic)
+**Scenario 2: Startup with 10M requests/month (variable traffic)**
+- **Consumption**: ~$35-50/month (10 × $3.50 + gateway hours)
+- **Basic**: ~$150/month (fixed)
+- **Basic v2**: ~$40-80/month (consumption-based, varies with traffic pattern)
+- **Best Choice**: Basic v2 or Consumption (for variable traffic), Basic classic (for consistent traffic with SLA)
 
-**Scenario 3: Enterprise with 500M requests/month**
-- **Standard (4 units)**: 4 × $750 = $3,000/month
-- **Premium (2 units)**: 2 × $3,000 = $6,000/month
-- **Best Choice**: Standard (if single region sufficient), Premium (if need multi-region or higher SLA)
+**Scenario 3: Medium Enterprise with 500M requests/month**
+- **Standard (4 units)**: 4 × ~$750 = ~$3,000/month (fixed)
+- **Premium (2 units)**: 2 × ~$3,000 = ~$6,000/month (fixed)
+- **Standard v2**: Consumption-based, potentially ~$2,000-4,000/month depending on usage patterns
+- **Best Choice**: Standard v2 (if single region with variable traffic), Standard classic (predictable high volume), Premium (if multi-region or highest SLA needed)
 
 **Scenario 4: Global enterprise with multi-region**
-- **Premium (2 regions, 2 units each)**: 2 regions × 2 units × $3,000 = $12,000/month
+- **Premium (2 regions, 2 units each)**: 2 regions × 2 units × ~$3,000 = ~$12,000/month
 - **Benefits**: 99.99% SLA, low latency globally, disaster recovery
+- **Note**: Multi-region currently requires Premium tier (not available in v2 tiers as of 2026)
 
 ### Hidden Costs to Consider
 
@@ -310,21 +430,26 @@ Each APIM unit provides approximate capacity:
 ```
 START
 ├─ Production workload?
-│  ├─ NO → Developer Tier ($50/mo)
+│  ├─ NO → Developer Tier (~$50/mo)
 │  └─ YES → Need SLA?
 │     ├─ NO → Developer Tier (use at own risk)
 │     └─ YES → Continue
-│        ├─ Need VNet injection?
-│        │  ├─ NO → Traffic level?
-│        │  │  ├─ Low/Intermittent → Consumption (pay-per-use)
-│        │  │  ├─ Low-Medium → Basic ($150/mo)
-│        │  │  └─ Medium-High → Standard ($750+/mo)
-│        │  └─ YES → Standard or Premium
-│        │     ├─ Single region, <4 units → Standard ($750+/mo)
-│        │     └─ Multi-region or >4 units → Premium ($3,000+/mo)
-│        └─ Need multi-region?
-│           ├─ YES → Premium ($3,000+/mo)
-│           └─ NO → See above
+│        ├─ Prefer consumption-based pricing?
+│        │  ├─ YES → Need VNet injection?
+│        │  │  ├─ NO → Basic v2 (consumption-based, 99.95% SLA)
+│        │  │  └─ YES → Standard v2 (consumption-based, VNet, zones)
+│        │  └─ NO (prefer fixed pricing) → Continue
+│        │     ├─ Need VNet injection?
+│        │     │  ├─ NO → Traffic level?
+│        │     │  │  ├─ Low/Intermittent → Consumption (pay-per-use, no SLA)
+│        │     │  │  ├─ Low-Medium → Basic (~$150/mo)
+│        │     │  │  └─ Medium-High → Standard (~$750+/mo)
+│        │     │  └─ YES → Standard or Premium
+│        │     │     ├─ Single region, <4 units → Standard (~$750+/mo)
+│        │     │     └─ Multi-region or >4 units → Premium (~$3,000+/mo)
+│        │     └─ Need multi-region?
+│        │        ├─ YES → Premium (~$3,000+/mo)
+│        │        └─ NO → See above
 ```
 
 ### Use Case Matrix
@@ -332,15 +457,17 @@ START
 | Use Case | Recommended Tier | Reasoning |
 |----------|------------------|-----------|
 | Development and Testing | Developer | Full features, low cost, no SLA needed |
-| Prototype/POC | Consumption | Lowest cost, fast provisioning |
-| Internal APIs (low traffic) | Basic | SLA, reasonable cost |
-| Public APIs (moderate traffic) | Standard | Scalability, SLA, VNet option |
-| Mission-critical APIs | Premium | Best SLA, multi-region, HA |
-| Global APIs | Premium | Multi-region for low latency |
-| Microservices Gateway | Standard/Premium | Scalability, VNet for private backends |
-| Partner APIs (B2B) | Standard/Premium | SLA, security, monitoring |
-| IoT/Event-driven | Consumption | Spiky traffic, auto-scale |
-| Legacy Modernization | Standard | VNet for on-prem connectivity |
+| Prototype/POC | Consumption | Lowest cost, fast provisioning, no SLA |
+| Internal APIs (low traffic) | Basic or Basic v2 | SLA, reasonable cost; v2 for auto-scaling |
+| Public APIs (moderate traffic) | Standard, Standard v2 | Scalability, SLA; v2 for consumption pricing + VNet |
+| Mission-critical APIs | Premium or Standard v2 | Premium for multi-region; Standard v2 for single region with zones |
+| Global APIs | Premium | Multi-region for low latency worldwide |
+| Microservices Gateway | Standard/Premium/Standard v2 | Scalability, VNet for private backends |
+| Partner APIs (B2B) | Standard/Premium/Standard v2 | SLA, security, monitoring; v2 for cost optimization |
+| IoT/Event-driven | Consumption or Basic v2 | Spiky traffic, auto-scale; v2 adds SLA |
+| Legacy Modernization | Standard or Standard v2 | VNet for on-prem connectivity; v2 for consumption pricing |
+| Variable Enterprise Workload | Basic v2 or Standard v2 | Consumption-based pricing, auto-scaling, SLA |
+| Cost-sensitive Production | Basic v2 | Production SLA with consumption-based cost optimization |
 
 ### Key Decision Factors
 
@@ -388,8 +515,14 @@ START
 | Standard | Premium | ✅ | Straightforward upgrade |
 | Standard | Basic | ✅ | Downgrade (check scale) |
 | Premium | Standard | ✅ | Downgrade (lose multi-region) |
-| Consumption | Any | ❌ | Requires re-creation |
-| Any | Consumption | ❌ | Requires re-creation |
+| Consumption | Any classic | ❌ | Requires re-creation |
+| Any classic | Consumption | ❌ | Requires re-creation |
+| Any classic | v2 tiers | ⚠️ | May require re-creation; check Azure docs |
+| v2 tiers | classic | ⚠️ | May require re-creation; check Azure docs |
+| Basic v2 | Standard v2 | ✅ | Typically supported |
+| Standard v2 | Basic v2 | ⚠️ | Check compatibility (may lose features) |
+
+**Note**: Migration paths between classic and v2 tiers may evolve. Always consult the [official Azure documentation](https://learn.microsoft.com/azure/api-management/) for current migration support and procedures.
 
 ### Migration Process
 
@@ -432,14 +565,24 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
 
 ## Best Practices
 
-1. **Start with Lower Tier**: Upgrade as needs grow
+1. **Start with Lower Tier**: Upgrade as needs grow; Developer for dev/test, Basic v2 or Consumption for initial production
 2. **Use Developer for Non-Prod**: Save costs on dev/test environments
-3. **Monitor Capacity**: Scale before hitting limits
-4. **Plan for Growth**: Consider future needs in initial tier selection
-5. **Test Migration**: Test tier changes in dev environment first
-6. **Budget for Premium**: If multi-region is future requirement
-7. **Use Consumption Wisely**: Great for variable traffic, but understand cold start
+3. **Consider v2 Tiers**: Evaluate consumption-based pricing for cost optimization and auto-scaling benefits
+4. **Monitor Capacity**: For classic tiers, scale before hitting limits; v2 tiers auto-scale
+5. **Plan for Growth**: Consider future needs in initial tier selection; v2 tiers provide flexibility
+6. **Budget for Premium**: If multi-region is a future requirement (not available in v2 as of 2026)
+7. **Use Consumption or v2 Wisely**: Great for variable traffic; v2 adds SLA and faster provisioning
 8. **Document Requirements**: Maintain clear justification for tier selection
+9. **Regional Pricing Matters**: Verify pricing in your target region—costs vary significantly
+10. **Validate Production Choices**: Test tier performance and costs in non-production before committing
+
+### v2 Tier Best Practices
+
+- **Leverage Auto-scaling**: v2 tiers eliminate manual capacity management
+- **Monitor Consumption**: Track actual usage to optimize costs
+- **Fast Provisioning**: Use for rapid deployment and testing scenarios
+- **Zone Redundancy**: Use Standard v2 for high availability without multi-region complexity
+- **Cost Comparison**: Compare v2 consumption costs with classic fixed pricing for your specific workload
 
 ## Additional Resources
 
@@ -456,4 +599,4 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
 
 ---
 
-**Choose wisely!** Tier selection impacts cost, features, and migration complexity.
+**Choose wisely!** Tier selection impacts cost, features, and migration complexity. For production deployments, always validate tier selection with current Azure documentation and pricing calculators, as cloud offerings evolve continuously.

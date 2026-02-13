@@ -2,6 +2,8 @@
 
 Welcome to the hands-on labs for Azure API Management! This learning path takes you from beginner to expert through five progressive labs, each building upon the previous one.
 
+> **⚠️ Educational Disclaimer**: These labs are designed for learning and skill development. Pricing estimates are indicative and based on 2026 rates in US regions. Always verify current pricing in your region using the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) and validate all configurations before production deployment. Cloud features and best practices evolve—consult [official Azure API Management documentation](https://learn.microsoft.com/azure/api-management/) for the latest guidance.
+
 ## 🎯 Learning Path Overview
 
 | Lab | Level | Duration | Focus Areas |
@@ -69,7 +71,12 @@ Each lab is designed to build on concepts from previous labs:
 - **Use Developer or Consumption tier** for learning (lowest cost)
 - **Delete resources** when not actively using them
 - **Set budget alerts** in Azure portal
-- **Estimated costs**: $0-50/month for Developer tier, $0 for Consumption tier (pay-per-use)
+- **Estimated costs**: 
+  - Developer tier: ~$50/month (fixed cost)
+  - Consumption tier: Pay-per-use (~$3.50 per million calls + gateway hours)
+  - Basic v2 tier: Consumption-based, cost-effective for predictable workloads
+  - Standard v2 tier: Consumption-based, optimized for enterprise workloads
+- **Regional pricing varies**: Verify costs in your target Azure region
 
 ### Best Practices
 - **Read before doing**: Review the entire lab before starting
@@ -155,10 +162,11 @@ Found an issue or have a suggestion? We welcome contributions!
 
 ## ⚠️ Important Notes
 
-- **Provisioning time**: APIM instances take 30-45 minutes to deploy
+- **Provisioning time**: APIM instances take 30-45 minutes to deploy (classic tiers) or 5-15 minutes (v2 tiers)
 - **Cleanup**: Remember to delete resources when done to avoid charges
 - **Security**: Never commit secrets or API keys to version control
 - **Testing**: Use test/dev subscriptions, not production accounts
+- **Pricing**: Estimates provided are indicative; validate actual costs for your region and usage patterns
 
 ## 🎯 Next Steps
 
