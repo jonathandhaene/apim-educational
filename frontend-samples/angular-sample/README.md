@@ -11,13 +11,23 @@ This sample Angular application demonstrates how to integrate with Azure Functio
 - **Unit Tests**: Comprehensive tests using Jasmine and Karma
 - **Reactive Programming**: Uses RxJS Observables for asynchronous operations
 - **Responsive UI**: Clean, modern interface with dark mode support
+- **Security**: Updated to Angular 19.2.18 with all security patches applied
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) 18.x or later
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- [Angular CLI](https://angular.io/cli) 17.x or later
+- [Angular CLI](https://angular.io/cli) 19.x or later
 - Azure Function running locally or deployed (see `../../src/functions-sample/`)
+
+## Security Notice
+
+This sample uses **Angular 19.2.18**, which includes critical security patches for:
+- ✅ **XSRF Token Leakage** via Protocol-Relative URLs (patched in 19.2.16)
+- ✅ **XSS Vulnerability** via Unsanitized SVG Script Attributes (patched in 19.2.18)
+- ✅ **Stored XSS** via SVG Animation, SVG URL and MathML Attributes (patched in 19.2.17)
+
+**Important**: Always keep Angular dependencies up to date and regularly check for security advisories.
 
 ## Quick Start
 
