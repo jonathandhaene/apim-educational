@@ -32,7 +32,7 @@ aws apigateway get-export \
   --stage-name prod \
   --export-type oas30 \
   --accepts application/yaml \
-  api-export.yaml
+  > api-export.yaml
 
 # Export HTTP API to OpenAPI
 aws apigatewayv2 export-api \
@@ -40,7 +40,7 @@ aws apigatewayv2 export-api \
   --output-type YAML \
   --specification OAS30 \
   --stage-name prod \
-  http-api-export.yaml
+  > http-api-export.yaml
 ```
 
 Create an inventory spreadsheet with:
@@ -277,7 +277,7 @@ securitySchemes:
 ```xml
 <inbound>
     <base />
-    <!-- Rate limiting (similar to rate limit) -->
+    <!-- Rate limiting (similar to rate limit) - renewal-period in seconds -->
     <rate-limit-by-key calls="500" 
                        renewal-period="1" 
                        counter-key="@(context.Subscription.Id)" />
@@ -455,6 +455,10 @@ API_ID="migrated-api"
 
 # Import OpenAPI spec using repository script
 cd ../../scripts
+export RESOURCE_GROUP="${RESOURCE_GROUP}"
+export APIM_NAME="${APIM_NAME}"
+export API_ID="${API_ID}"
+export OPENAPI_FILE="../tools/migration/cleaned-openapi.yaml"
 ./import-openapi.sh
 
 # Or use Azure CLI directly
