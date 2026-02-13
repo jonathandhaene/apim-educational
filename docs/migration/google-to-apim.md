@@ -2,6 +2,8 @@
 
 This guide provides a comprehensive roadmap for migrating from Google's API services (Apigee API Management and Google Cloud API Gateway) to Azure API Management (APIM).
 
+> **⚠️ Migration Guidance Disclaimer**: This migration guide is provided for educational purposes. Cloud platforms evolve rapidly—verify all feature mappings, pricing, and migration procedures with current official documentation before planning your migration. Consult with Azure support or migration specialists for production migrations. Pricing and tier information is indicative and based on 2026 estimates; actual costs vary by region and usage patterns.
+
 ## Table of Contents
 
 1. [Assessment Phase](#assessment-phase)
@@ -260,6 +262,10 @@ Create an inventory spreadsheet with:
 #### Activities:
 1. ✅ Complete assessment (inventory all APIs)
 2. ✅ Design APIM architecture (tier, networking, regions)
+   - Choose appropriate tier (Developer for testing; Basic v2, Standard v2, or classic tiers for production)
+   - Note: v2 tiers offer consumption-based pricing and auto-scaling
+   - Plan network architecture (public, VNet integration, private endpoints)
+   - Consider multi-region requirements (Premium tier only)
 3. ✅ Map policies and authentication patterns
 4. ✅ Plan DNS and domain migration strategy
 5. ✅ Define rollback procedures
@@ -274,8 +280,12 @@ Create an inventory spreadsheet with:
 ### Phase 2: Infrastructure Setup (Week 2-3)
 
 #### Activities:
-1. Deploy APIM instance (consider Developer tier for testing)
+1. Deploy APIM instance
+   - **Testing/POC**: Developer tier (~$50/month) or Consumption tier (pay-per-use)
+   - **Production**: Basic v2 or Standard v2 (consumption-based, auto-scaling) or classic tiers (fixed pricing)
+   - **See**: [Tier comparison guide](../tiers-and-skus.md) for detailed feature and pricing comparison
 2. Configure networking (VNet, private endpoints if needed)
+   - Note: VNet injection requires Developer, Standard, Premium (classic) or Standard v2 tiers
 3. Set up Application Insights and Log Analytics
 4. Configure Azure Key Vault for secrets
 5. Set up CI/CD pipeline for APIM deployments
@@ -780,6 +790,9 @@ Document any deviations and explain or remediate.
 - [ ] Collect feedback from API consumers
 - [ ] Optimize policies based on actual traffic patterns
 - [ ] Review costs and adjust tier if needed
+  - Compare actual usage with tier pricing (especially for v2 consumption-based tiers)
+  - Consider tier migration if usage patterns warrant it
+  - Use Azure Cost Management for detailed cost analysis
 - [ ] Update documentation and runbooks
 - [ ] Decommission Google API resources
 - [ ] Conduct post-mortem and document lessons learned
