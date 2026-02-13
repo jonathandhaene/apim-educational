@@ -6,17 +6,19 @@ This directory contains a curated collection of Azure API Management policy exam
 
 ```
 policies/
-├── jwt-validate.xml        # JWT token validation (Azure AD)
+├── jwt-validate.xml        # JWT token validation (Microsoft Entra ID)
 ├── rate-limit.xml          # Rate limiting and quotas
 ├── cache.xml               # Response caching
 ├── retry.xml               # Retry with exponential backoff
 ├── transform.xml           # Request/response transformation
 ├── ip-filter.xml           # IP address filtering
 ├── mtls.xml                # Mutual TLS (client certificates)
-├── ai-gateway.xml          # AI/LLM API gateway
+├── ai-gateway.xml          # AI/LLM API gateway patterns
 └── fragments/              # Reusable policy fragments
     └── common-headers.xml  # Standard headers fragment
 ```
+
+> **2026 Update**: Azure AD is now **Microsoft Entra ID**. All JWT validation examples use the updated terminology while maintaining backward-compatible endpoint URLs.
 
 ## 🎯 Policy Categories
 
@@ -261,16 +263,36 @@ Policies support C# expressions using `@()` or `@{}` syntax:
 
 ## 🔐 Security Best Practices
 
+### JWT Validation (Microsoft Entra ID)
+1. **Always validate JWT tokens** for sensitive APIs
+2. **Verify audience (aud) claim** to prevent token reuse across services
+3. **Check issuer (iss) claim** to ensure tokens are from trusted identity provider
+4. **Validate token expiration** - APIM does this automatically with `validate-jwt`
+5. **Use required-claims** to enforce role-based access control (RBAC)
+6. **Keep OpenID configuration cached** - APIM caches `openid-config` automatically
+7. **Example**: See `jwt-validate.xml` for Microsoft Entra ID integration patterns
+
+### Rate Limiting & Quotas Best Practices
+1. **Apply rate limits at Product level** for consistent experience across APIs
+2. **Use different limits per tier** - e.g., Free: 100/hour, Premium: 10,000/hour
+3. **Combine rate-limit with quota** for long-term usage control:
+   - `rate-limit`: Short-term (calls per second/minute)
+   - `quota`: Long-term (calls per day/month)
+4. **Key by subscription** for fair usage: `<rate-limit-by-key ... counter-key="@(context.Subscription.Id)" />`
+5. **Return informative headers**: APIM adds `X-Rate-Limit-*` headers automatically
+6. **Monitor violations**: Track rate limit hits in Application Insights
+7. **Example**: See `rate-limit.xml` for comprehensive patterns
+
+### General Security
 1. **Never hardcode secrets**: Use Named Values backed by Key Vault
 2. **Validate inputs**: Check headers, query params, body
-3. **Implement rate limiting**: Protect against abuse
-4. **Use HTTPS only**: Enforce TLS 1.2+
-5. **Log security events**: Authentication failures, rate limit violations
-6. **Principle of least privilege**: Apply policies at narrowest scope
-7. **Defense in depth**: Combine multiple security policies
-8. **Regular audits**: Review policies for security issues
-9. **Test policies**: Verify behavior matches expectations
-10. **Document exceptions**: If deviating from standards, document why
+3. **Use HTTPS only**: Enforce TLS 1.2+
+4. **Log security events**: Authentication failures, rate limit violations
+5. **Principle of least privilege**: Apply policies at narrowest scope
+6. **Defense in depth**: Combine multiple security policies
+7. **Regular audits**: Review policies for security issues
+8. **Test policies**: Verify behavior matches expectations
+9. **Document exceptions**: If deviating from standards, document why
 
 ## 🎓 Learning Resources
 

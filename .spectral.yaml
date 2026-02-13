@@ -6,11 +6,20 @@ rules:
   info-license: off
   operation-description: warn
   operation-operationId: error
-  operation-summary: error
   operation-tags: error
   path-params: error
+  operation-operationId-unique: error
   
   # Custom rules for APIM
+  apim-operation-summary:
+    description: Operations should have a summary
+    message: "{{property}} should have a summary"
+    severity: error
+    given: "$.paths.*[get,put,post,delete,options,head,patch,trace]"
+    then:
+      field: summary
+      function: truthy
+  
   apim-operation-id-naming:
     description: Operation IDs should be camelCase
     message: "{{property}} should be camelCase"

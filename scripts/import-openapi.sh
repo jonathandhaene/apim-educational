@@ -1,7 +1,8 @@
 #!/bin/bash
 # Import OpenAPI specification into Azure API Management
+# Updated for 2026 best practices with enhanced validation
 
-set -e
+set -euo pipefail
 
 # TODO: Replace with your values or pass as parameters
 RESOURCE_GROUP="${RESOURCE_GROUP:-rg-apim-dev}"
@@ -23,7 +24,14 @@ if ! az account show &> /dev/null; then
   exit 1
 fi
 
-# Import API
+# Validate OpenAPI file exists
+if [ ! -f "$OPENAPI_FILE" ]; then
+  echo "Error: OpenAPI file not found: $OPENAPI_FILE"
+  exit 1
+fi
+
+# Import API using current best practices
+# Uses --specification-format OpenApi (supports OpenAPI 3.x)
 az apim api import \
   --resource-group "$RESOURCE_GROUP" \
   --service-name "$APIM_NAME" \

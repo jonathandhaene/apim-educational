@@ -1,4 +1,8 @@
 # Import OpenAPI specification into Azure API Management
+# Updated for 2026 best practices with enhanced validation and error handling
+
+$ErrorActionPreference = "Stop"
+
 param(
     [string]$ResourceGroup = $env:RESOURCE_GROUP ?? "rg-apim-dev",
     [string]$ApimName = $env:APIM_NAME ?? "apim-dev",
@@ -12,6 +16,12 @@ Write-Host "APIM: $ApimName"
 Write-Host "API ID: $ApiId"
 Write-Host "Path: $ApiPath"
 Write-Host "OpenAPI: $OpenApiFile"
+
+# Validate OpenAPI file exists
+if (!(Test-Path $OpenApiFile)) {
+    Write-Host "Error: OpenAPI file not found: $OpenApiFile" -ForegroundColor Red
+    exit 1
+}
 
 try {
     Import-AzApiManagementApi `

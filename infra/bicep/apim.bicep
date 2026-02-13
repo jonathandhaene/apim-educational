@@ -8,7 +8,7 @@ param location string
 param apimName string
 
 @description('APIM SKU')
-@allowed(['Consumption', 'Developer', 'Basic', 'Standard', 'Premium'])
+@allowed(['Consumption', 'Developer', 'Basic', 'Standard', 'Premium', 'BasicV2', 'StandardV2'])
 param apimSku string
 
 @description('APIM capacity')
@@ -57,13 +57,16 @@ param logAnalyticsId string = ''
 param tags object
 
 // APIM instance
-resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
+// Using 2023-09-01-preview for v2 tier support (Basic v2, Standard v2)
+// Note: v2 tiers use auto-scaling; capacity parameter is ignored for BasicV2/StandardV2
+resource apim 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: apimName
   location: location
   tags: tags
   sku: {
     name: apimSku
-    capacity: apimSku == 'Consumption' ? 0 : apimCapacity
+    // Consumption tier always uses capacity 0; v2 tiers (BasicV2/StandardV2) use auto-scaling
+    capacity: (apimSku == 'Consumption' || apimSku == 'BasicV2' || apimSku == 'StandardV2') ? 0 : apimCapacity
   }
   identity: {
     type: 'SystemAssigned'
@@ -89,7 +92,7 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
 }
 
 // Application Insights logger
-resource logger 'Microsoft.ApiManagement/service/loggers@2023-05-01-preview' = if (!empty(appInsightsId)) {
+resource logger 'Microsoft.ApiManagement/service/loggers@2023-09-01-preview' = if (!empty(appInsightsId)) {
   parent: apim
   name: 'app-insights-logger'
   properties: {
@@ -104,7 +107,7 @@ resource logger 'Microsoft.ApiManagement/service/loggers@2023-05-01-preview' = i
 }
 
 // Global diagnostics settings
-resource diagnosticSettings 'Microsoft.ApiManagement/service/diagnostics@2023-05-01-preview' = if (!empty(appInsightsId)) {
+resource diagnosticSettings 'Microsoft.ApiManagement/service/diagnostics@2023-09-01-preview' = if (!empty(appInsightsId)) {
   parent: apim
   name: 'applicationinsights'
   properties: {
@@ -183,7 +186,7 @@ resource monitorDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
 }
 
 // Named values (example - add more as needed)
-resource namedValue 'Microsoft.ApiManagement/service/namedValues@2023-05-01-preview' = {
+resource namedValue 'Microsoft.ApiManagement/service/namedValues@2023-09-01-preview' = {
   parent: apim
   name: 'environment'
   properties: {

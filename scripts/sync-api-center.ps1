@@ -1,4 +1,7 @@
 # Sync APIM APIs to Azure API Center (placeholder for future implementation)
+# Updated for 2026 best practices
+
+$ErrorActionPreference = "Stop"
 
 Write-Host "=== Sync APIM to API Center ===" -ForegroundColor Cyan
 Write-Host ""

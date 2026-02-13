@@ -4,11 +4,12 @@
 #
 # Translates and cleans OpenAPI specifications from Google API Gateway/Apigee
 # for import into Azure API Management.
+# Updated for 2026 best practices
 #
 # Usage: ./translate-openapi.sh <input-file> <output-file>
 #
 
-set -e
+set -euo pipefail
 
 # Check arguments
 if [ $# -ne 2 ]; then

@@ -13,7 +13,12 @@ variable "apim_name" {
 }
 
 variable "apim_sku" {
-  type = string
+  type        = string
+  description = "APIM SKU tier. Supported values: Consumption, Developer, Basic, Standard, Premium, BasicV2, StandardV2"
+  validation {
+    condition     = contains(["Consumption", "Developer", "Basic", "Standard", "Premium", "BasicV2", "StandardV2"], var.apim_sku)
+    error_message = "APIM SKU must be one of: Consumption, Developer, Basic, Standard, Premium, BasicV2, StandardV2"
+  }
 }
 
 variable "apim_capacity" {
@@ -29,7 +34,7 @@ variable "publisher_name" {
 }
 
 variable "vnet_type" {
-  type = string
+  type    = string
   default = "None"
 }
 

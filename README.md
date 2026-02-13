@@ -13,6 +13,72 @@ This repository serves as:
 - **Testing Framework**: Sample test suites and CI/CD workflows
 - **Best Practices**: Security, networking, and operational guidance
 
+## 🌟 Why Azure API Management?
+
+Azure API Management is Microsoft's enterprise-grade API gateway solution, offering powerful capabilities for organizations of all sizes:
+
+### Key Advantages
+
+**🚀 Comprehensive API Lifecycle Management**
+- **Unified Gateway**: Single point of entry for all your APIs across cloud, on-premises, and hybrid environments
+- **Developer Portal**: Self-service portal for API discovery, documentation, and onboarding
+- **API Versioning**: Built-in support for multiple API versions and revisions with seamless deployment strategies
+- **Analytics & Insights**: Deep telemetry with Azure Monitor, Application Insights, and custom dashboards
+
+**🔒 Enterprise-Grade Security**
+- **Authentication & Authorization**: OAuth 2.0, OpenID Connect, JWT validation, and Azure AD integration
+- **Subscription Keys**: Built-in API key management with per-product/per-API granularity
+- **Rate Limiting & Quotas**: Protect backends with flexible throttling policies
+- **IP Filtering & WAF**: Network security with Azure Firewall and Front Door WAF integration
+- **Key Vault Integration**: Secure secrets management with Azure Key Vault
+
+**🌐 Global Distribution & High Availability**
+- **Multi-Region Deployment**: Deploy to multiple Azure regions for low latency and disaster recovery
+- **Zone Redundancy**: Availability zone support in v2 tiers for 99.99% SLA
+- **Self-Hosted Gateway**: Extend APIM to on-premises and edge locations
+- **CDN Integration**: Cache responses globally with Azure Front Door and CDN
+
+**📊 Advanced Policy Engine**
+- **Transformation**: Request/response manipulation, protocol mediation, XML/JSON conversion
+- **Caching**: Built-in response caching to reduce backend load and improve performance
+- **Mock Responses**: API prototyping without backend implementation
+- **Circuit Breaker**: Resilience patterns with retry, timeout, and circuit breaker policies
+- **AI Gateway**: Token management, semantic caching, and load balancing for Azure OpenAI
+
+**💰 Flexible Pricing & Deployment Options**
+- **Consumption Tier**: Serverless, pay-per-execution for variable workloads
+- **v2 Tiers (2024+)**: Auto-scaling with consumption-based pricing (Basic v2, Standard v2)
+- **Classic Tiers**: Fixed-capacity options (Developer, Basic, Standard, Premium)
+- **Cost Optimization**: Right-size deployments from development to enterprise scale
+
+**🔗 Seamless Azure Integration**
+- **Native Integration**: Works seamlessly with Azure Functions, Logic Apps, App Services, AKS
+- **API Center**: Centralized API inventory and governance across your organization
+- **DevOps**: Full support for CI/CD with ARM/Bicep/Terraform and Azure DevOps/GitHub Actions
+- **Managed Identity**: Simplified authentication to Azure services without credentials
+
+**📈 Production-Ready Features**
+- **99.99% SLA**: Available with Premium and v2 tiers for mission-critical workloads
+- **Auto-Scaling**: Automatic scale-out in v2 tiers based on demand
+- **Private Endpoints**: Secure, private connectivity with VNet integration
+- **Custom Domains**: Support for multiple custom domains with SSL/TLS certificates
+- **Backup & Restore**: Built-in backup capabilities for configuration and policies
+
+### When to Choose Azure APIM
+
+✅ **Ideal for:**
+- Organizations already using Azure or Microsoft cloud services
+- Enterprises requiring enterprise-grade security and compliance (SOC 2, ISO, HIPAA, PCI)
+- Teams needing comprehensive API lifecycle management
+- Multi-cloud and hybrid scenarios with self-hosted gateway
+- Azure OpenAI implementations requiring token management and semantic caching
+- Microservices architectures on Azure Kubernetes Service (AKS)
+
+⚠️ **Consider alternatives if:**
+- You need a pure open-source solution (consider Kong, Tyk, or API Gateway patterns)
+- Your infrastructure is entirely outside Azure (though self-hosted gateway helps)
+- You have simple API proxying needs without policy requirements
+
 ## 🗂️ Repository Structure
 
 ```
@@ -178,22 +244,41 @@ Comprehensive guide covering:
 
 ## 💰 Cost Considerations
 
-> **Note**: Pricing is indicative and based on US regions as of 2026. Actual costs vary by region, usage patterns, and Azure subscription type. Always use the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for accurate estimates.
+> **⚠️ Pricing Disclaimer**: Pricing information below is indicative and based on US East region as of early 2026. Actual costs vary significantly by region, usage patterns, Azure subscription type, and promotional offers. Prices and features are subject to change. **Always use the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for accurate, current estimates specific to your region and requirements.**
+
+### Tier Comparison (2026)
 
 **Development/Learning** (lowest cost):
-- **Consumption tier**: Pay-per-execution, no upfront cost (~$3.50 per million calls)
-- **Developer tier**: ~$50/month, includes all features except SLA
+- **Consumption tier**: Pay-per-execution, no upfront cost (~$3.50 per million calls + gateway hours). Best for: variable traffic, development, testing, POCs
+- **Developer tier**: ~$50/month fixed, includes all features except SLA and scaling. Best for: non-production environments, learning, internal tools
 
-**Production - Classic Tiers**:
-- **Basic**: ~$150/month, SLA-backed (99.95%), limited scale
-- **Standard**: ~$750/month, VNet injection, SLA-backed (99.95%)
-- **Premium**: ~$3,000+/month, VNet injection, multi-region, high availability (99.99% SLA)
+**Production - Classic Tiers** (fixed-capacity model):
+- **Basic**: ~$150/month, SLA-backed (99.95%), up to 2 units, API cache. Best for: small production workloads with predictable traffic
+- **Standard**: ~$750/month, VNet injection, SLA-backed (99.95%), up to 4 units. Best for: medium production workloads requiring VNet integration
+- **Premium**: ~$3,000+/month per unit, VNet injection, multi-region, availability zones, 99.99% SLA. Best for: enterprise production, global distribution, high availability
 
-**Production - v2 Tiers** (2026+, consumption-based pricing):
-- **Basic v2**: Consumption-based, SLA-backed (99.95%), auto-scaling, cost-optimized for predictable workloads
-- **Standard v2**: Consumption-based, SLA-backed (99.95%), VNet injection, zone redundancy, optimized for enterprise workloads
+**Production - v2 Tiers** (2024+, consumption-based auto-scaling):
+- **Basic v2**: Consumption-based pricing (~$0.125/hour + per-call charges), 99.95% SLA, auto-scaling (0-10 compute units), fast provisioning (5-15 min). Best for: cost-optimized production workloads with variable traffic, no VNet requirements
+- **Standard v2**: Consumption-based pricing (~$0.25/hour + per-call charges), 99.95% SLA, VNet injection, availability zone support, auto-scaling (0-100 units), fast provisioning (5-15 min). Best for: enterprise workloads requiring VNet, zone redundancy, and elastic scale
 
-💡 **Tip**: Use Consumption or Developer tier for learning. Delete resources when not in use. v2 tiers offer consumption-based pricing that can be more cost-effective for variable workloads.
+### v2 Tier Advantages (Introduced 2024-2025)
+
+The v2 tiers represent a significant modernization of Azure APIM:
+- **Fast Provisioning**: 5-15 minutes vs 30-45 minutes for classic tiers
+- **Auto-Scaling**: Automatically scale based on demand without manual intervention
+- **Cost Efficiency**: Pay only for what you use with consumption-based pricing
+- **Zone Redundancy**: Built-in availability zone support in Standard v2 for 99.99% uptime (when configured across zones)
+- **No Upgrade Path Needed**: Deploy fresh instances quickly when scaling requirements change
+
+💡 **Cost Optimization Tips**:
+- Use **Consumption** or **Developer** tier for learning and development—delete resources when not in use
+- Consider **v2 tiers** for production workloads with variable traffic patterns to benefit from auto-scaling and consumption pricing
+- Use **Basic v2** for production APIs that don't require VNet integration—significant cost savings vs classic tiers
+- Use **Standard v2** for enterprise production workloads requiring VNet and zone redundancy
+- Leverage **caching policies** to reduce backend calls and associated costs
+- Monitor usage with Azure Monitor to optimize tier selection
+
+📊 **Pricing Reference**: See [docs/tiers-and-skus.md](docs/tiers-and-skus.md) for detailed tier comparisons and [Azure APIM Pricing](https://azure.microsoft.com/pricing/details/api-management/) for official current pricing.
 
 ## 🔐 Security Best Practices
 

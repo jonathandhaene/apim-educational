@@ -14,7 +14,7 @@ param location string = resourceGroup().location
 param baseName string = 'apim'
 
 @description('APIM SKU name')
-@allowed(['Consumption', 'Developer', 'Basic', 'Standard', 'Premium'])
+@allowed(['Consumption', 'Developer', 'Basic', 'Standard', 'Premium', 'BasicV2', 'StandardV2'])
 param apimSku string = 'Developer'
 
 @description('APIM capacity (units)')

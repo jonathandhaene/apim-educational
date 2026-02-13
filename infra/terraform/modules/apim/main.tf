@@ -1,4 +1,5 @@
 # APIM Terraform Module
+# Updated for 2026 best practices with v2 tier support
 
 resource "azurerm_api_management" "main" {
   name                = var.apim_name
@@ -7,7 +8,10 @@ resource "azurerm_api_management" "main" {
   publisher_name      = var.publisher_name
   publisher_email     = var.publisher_email
 
-  sku_name = var.apim_sku == "Consumption" ? "${var.apim_sku}_0" : "${var.apim_sku}_${var.apim_capacity}"
+  # SKU configuration
+  # Note: v2 tiers (BasicV2, StandardV2) use auto-scaling; capacity is set to 0
+  # Consumption tier also requires capacity 0
+  sku_name = contains(["Consumption", "BasicV2", "StandardV2"], var.apim_sku) ? "${var.apim_sku}_0" : "${var.apim_sku}_${var.apim_capacity}"
 
   identity {
     type = "SystemAssigned"
@@ -110,9 +114,8 @@ resource "azurerm_monitor_diagnostic_setting" "apim" {
     category = "WebSocketConnectionLogs"
   }
 
-  metric {
+  enabled_metric {
     category = "AllMetrics"
-    enabled  = true
   }
 }
 

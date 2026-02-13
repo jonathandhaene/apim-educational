@@ -76,10 +76,12 @@ Simplest authentication method; each subscription has a primary and secondary ke
 Industry-standard authentication using JWT tokens from identity providers.
 
 **Identity Providers:**
-- Microsoft Entra ID (Azure AD)
+- **Microsoft Entra ID** (formerly Azure AD) - Recommended for Azure-integrated apps
 - Auth0
 - Okta
-- Custom identity servers
+- Custom identity servers (e.g., IdentityServer, Keycloak)
+
+> **2026 Update**: Azure AD is now **Microsoft Entra ID**. Documentation and policies should reference the new name, though `login.microsoftonline.com` endpoints remain unchanged for backward compatibility.
 
 **Flow Types:**
 - **Authorization Code**: User-facing web apps

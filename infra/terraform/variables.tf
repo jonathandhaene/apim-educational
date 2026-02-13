@@ -23,12 +23,12 @@ variable "base_name" {
 }
 
 variable "apim_sku" {
-  description = "APIM SKU name"
+  description = "APIM SKU name (includes v2 tiers: BasicV2, StandardV2 for consumption-based pricing)"
   type        = string
   default     = "Developer"
   validation {
-    condition     = contains(["Consumption", "Developer", "Basic", "Standard", "Premium"], var.apim_sku)
-    error_message = "APIM SKU must be one of: Consumption, Developer, Basic, Standard, Premium."
+    condition     = contains(["Consumption", "Developer", "Basic", "Standard", "Premium", "BasicV2", "StandardV2"], var.apim_sku)
+    error_message = "APIM SKU must be one of: Consumption, Developer, Basic, Standard, Premium, BasicV2, StandardV2."
   }
 }
 
