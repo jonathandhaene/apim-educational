@@ -80,7 +80,7 @@ echo "  3. Validate with Spectral: spectral lint $OUTPUT_FILE --ruleset .spectra
 echo "  4. Import to APIM: ./scripts/import-openapi.sh"
 echo ""
 echo "TODO: Customize this script to handle:"
-echo "  - Convert stage variables (e.g., \${stageVariables.backendUrl}) to Named Values"
+echo '  - Convert stage variables (e.g., ${stageVariables.backendUrl}) to Named Values'
 echo "  - Map AWS integration types to APIM backends"
 echo "  - Preserve any custom x-* extensions you need"
 echo "  - Add appropriate APIM security schemes"

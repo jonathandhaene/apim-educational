@@ -328,9 +328,14 @@ Be aware of these differences between API Gateway and APIM that may impact your 
 
 ### Payload Size Limits
 - **API Gateway**: 10 MB request payload for REST APIs, 6 MB for HTTP APIs
-- **APIM**: 4 MB for Consumption tier, varies by tier
-- **Impact**: Large file uploads may fail in lower APIM tiers
-- **Mitigation**: Use blob storage with SAS tokens for large files; upgrade APIM tier if needed
+- **APIM**: Request payload limits vary by tier:
+  - Consumption: 4 MB
+  - Developer: 4 MB
+  - Basic: 4 MB
+  - Standard: 4 MB
+  - Premium: 4 MB (configurable up to higher limits with custom policies)
+- **Impact**: Large file uploads may fail in APIM; 4 MB is lower than API Gateway's 10 MB limit
+- **Mitigation**: Use blob storage with SAS tokens for large files; consider streaming patterns; use Premium tier with custom policies for larger payloads if needed
 
 ### CORS Differences
 - **API Gateway**: CORS configured per method via OPTIONS mock integration
@@ -370,12 +375,11 @@ Be aware of these differences between API Gateway and APIM that may impact your 
 - **Mitigation**: Use `client-certificate` policy for validation
 
 ### Throttling Semantics
-- **API Gateway**: Token bucket algorithm; burst capacity allows temporary spikes
-- **API Gateway throttling**: Per-second rate with burst allowance
-- **APIM rate-limit**: Sliding window or fixed window; no burst concept
-- **APIM quota**: Absolute count over time period
-- **Impact**: Burst traffic patterns may be handled differently
-- **Mitigation**: Adjust rate limits based on testing; consider burst patterns
+- **API Gateway**: Token bucket algorithm with per-second rate limits and burst capacity that allows temporary traffic spikes
+- **APIM rate-limit**: Sliding window or fixed window algorithm; no built-in burst allowance concept
+- **APIM quota**: Absolute call count over a defined time period (minute, hour, day, week)
+- **Impact**: Burst traffic patterns may be handled differently; APIs relying on burst capacity may see throttling in APIM
+- **Mitigation**: Adjust rate limits based on actual traffic patterns; test with peak load scenarios; consider using quota policies for longer time windows; size limits appropriately to handle normal traffic plus reasonable spikes
 
 ### Caching Behavior
 - **API Gateway**: Cache key includes query strings, headers by configuration
