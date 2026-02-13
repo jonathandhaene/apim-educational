@@ -27,6 +27,7 @@
         "operationId": "getHello",
         "summary": "Get hello message",
         "description": "Returns a greeting message with timestamp",
+        "tags": ["Hello"],
         "parameters": [
           {
             "name": "name",
@@ -62,6 +63,7 @@
         "operationId": "postHello",
         "summary": "Post hello message",
         "description": "Returns a greeting message with the provided name in request body",
+        "tags": ["Hello"],
         "requestBody": {
           "required": false,
           "content": {
@@ -92,6 +94,12 @@
     "schemas": {
       "HelloResponse": {
         "type": "object",
+        "example": {
+          "message": "Hello, World!",
+          "timestamp": "2026-02-13T16:30:00Z",
+          "functionName": "sample-function",
+          "version": "1.0.0"
+        },
         "properties": {
           "message": {
             "type": "string",
