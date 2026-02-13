@@ -1,0 +1,111 @@
+<!-- Retry Policy with Exponential Backoff -->
+<!-- Handles transient backend failures gracefully -->
+
+<policies>
+  <inbound>
+    <base />
+  </inbound>
+  
+  <backend>
+    <!-- Example 1: Simple retry (3 attempts, 1 second interval) -->
+    <retry condition="@(context.Response.StatusCode >= 500)" count="3" interval="1">
+      <forward-request timeout="30" />
+    </retry>
+    
+    <!-- Example 2: Retry with exponential backoff -->
+    <!-- Retries: attempt 1 at 2s, attempt 2 at 4s, attempt 3 at 8s -->
+    <!-- <retry condition="@(context.Response.StatusCode >= 500 || context.Response.StatusCode == 429)" count="3" interval="2" delta="2">
+      <forward-request timeout="30" />
+    </retry> -->
+    
+    <!-- Example 3: Conditional retry based on error code -->
+    <!-- <retry condition="@(context.Response.StatusCode == 503 || context.Response.StatusCode == 504)" count="5" interval="1" delta="1" max-interval="30">
+      <forward-request timeout="60" />
+    </retry> -->
+    
+    <!-- Example 4: Retry with circuit breaker pattern (fail fast after failures) -->
+    <!-- <retry condition="@{
+      // Retry on specific errors
+      var statusCode = context.Response.StatusCode;
+      return statusCode >= 500 || statusCode == 408 || statusCode == 429;
+    }" count="3" interval="1" delta="1">
+      <forward-request timeout="30" />
+    </retry> -->
+  </backend>
+  
+  <outbound>
+    <base />
+    
+    <!-- Add retry attempt count to response header (for debugging) -->
+    <!-- <set-header name="X-Retry-Count" exists-action="override">
+      <value>@(context.Variables.ContainsKey("retryCount") ? context.Variables["retryCount"].ToString() : "0")</value>
+    </set-header> -->
+  </outbound>
+  
+  <on-error>
+    <base />
+    
+    <!-- Custom error handling after all retries exhausted -->
+    <choose>
+      <when condition="@(context.LastError.Reason == "BackendConnectionFailure" || context.LastError.Reason == "BackendTimeout")">
+        <return-response>
+          <set-status code="503" reason="Service Unavailable" />
+          <set-header name="Retry-After" exists-action="override">
+            <value>60</value>
+          </set-header>
+          <set-body>@{
+            return new JObject(
+              new JProperty("error", new JObject(
+                new JProperty("code", "service_unavailable"),
+                new JProperty("message", "The backend service is temporarily unavailable. Please try again later."),
+                new JProperty("retryAfter", 60)
+              ))
+            ).ToString();
+          }</set-body>
+        </return-response>
+      </when>
+    </choose>
+  </on-error>
+</policies>
+
+<!--
+Parameters:
+- condition: C# expression that determines if retry should occur
+- count: Maximum number of retry attempts
+- interval: Initial wait time between retries (seconds)
+- delta: Exponential backoff multiplier (optional)
+- max-interval: Maximum wait time between retries (optional)
+
+Common Retry Conditions:
+- 5xx errors: Server errors (500, 502, 503, 504)
+- 429: Rate limit exceeded (with exponential backoff)
+- 408: Request timeout
+- Connection failures
+
+Best Practices:
+1. Use exponential backoff to avoid overwhelming failing backends
+2. Set maximum retry count (3-5 typical)
+3. Set reasonable timeouts
+4. Don't retry non-idempotent operations (POST, PATCH) unless safe
+5. Retry on transient errors only, not client errors (4xx)
+6. Add jitter to prevent thundering herd
+7. Implement circuit breaker for sustained failures
+8. Log retry attempts for monitoring
+
+Exponential Backoff Formula:
+wait_time = min(interval * (delta ^ attempt), max_interval)
+
+Example:
+interval=2, delta=2, max-interval=30
+- Attempt 1: 2s
+- Attempt 2: 4s
+- Attempt 3: 8s
+- Attempt 4: 16s
+- Attempt 5: 30s (capped by max-interval)
+
+Testing:
+1. Simulate backend failure (503 response)
+2. Verify retries occur (check backend logs or Application Insights)
+3. Verify final error response after exhausting retries
+4. Test with transient errors (failure, then success)
+-->

@@ -1,0 +1,131 @@
+<!-- IP Filtering Policy -->
+<!-- Restricts API access based on client IP addresses -->
+
+<policies>
+  <inbound>
+    <base />
+    
+    <!-- Example 1: Allow specific IP addresses (whitelist) -->
+    <ip-filter action="allow">
+      <address>13.66.201.169</address>
+      <address>13.67.45.123</address>
+      <address-range from="192.168.1.1" to="192.168.1.254" />
+      <address-range from="10.0.0.0" to="10.0.255.255" />
+    </ip-filter>
+    
+    <!-- Example 2: Block specific IP addresses (blacklist) -->
+    <!-- <ip-filter action="forbid">
+      <address>192.0.2.1</address>
+      <address-range from="198.51.100.0" to="198.51.100.255" />
+    </ip-filter> -->
+    
+    <!-- Example 3: Allow Azure Front Door or Application Gateway IPs -->
+    <!-- Get X-Forwarded-For header for client IP behind proxy -->
+    <!-- <choose>
+      <when condition="@{
+        var forwardedFor = context.Request.Headers.GetValueOrDefault("X-Forwarded-For", "");
+        var clientIp = string.IsNullOrEmpty(forwardedFor) ? 
+                       context.Request.IpAddress : 
+                       forwardedFor.Split(',')[0].Trim();
+        
+        // Check if IP is in allowed list
+        var allowedIps = new[] { "13.66.201.169", "13.67.45.123" };
+        return !allowedIps.Contains(clientIp);
+      }">
+        <return-response>
+          <set-status code="403" reason="Forbidden" />
+          <set-body>Access denied from your IP address</set-body>
+        </return-response>
+      </when>
+    </choose> -->
+    
+    <!-- Example 4: Conditional IP filtering based on operation -->
+    <choose>
+      <when condition="@(context.Operation.Method == "DELETE" || context.Operation.Method == "PUT")">
+        <!-- Restrict write operations to internal IPs -->
+        <ip-filter action="allow">
+          <address-range from="10.0.0.0" to="10.255.255.255" />
+          <address-range from="172.16.0.0" to="172.31.255.255" />
+        </ip-filter>
+      </when>
+    </choose>
+  </inbound>
+  
+  <backend>
+    <base />
+  </backend>
+  
+  <outbound>
+    <base />
+  </outbound>
+  
+  <on-error>
+    <base />
+  </on-error>
+</policies>
+
+<!--
+IP Address Formats:
+- Single IP: <address>192.168.1.100</address>
+- IP range: <address-range from="10.0.0.1" to="10.0.0.254" />
+- IPv6: <address>2001:0db8:85a3:0000:0000:8a2e:0370:7334</address>
+
+Behind Proxies/Load Balancers:
+When APIM is behind Azure Front Door, Application Gateway, or other proxies:
+- context.Request.IpAddress returns proxy IP, not client IP
+- Use X-Forwarded-For header to get real client IP
+- Validate X-Forwarded-For to prevent spoofing
+
+Common IP Ranges:
+- Private (RFC 1918):
+  - 10.0.0.0/8 (10.0.0.0 - 10.255.255.255)
+  - 172.16.0.0/12 (172.16.0.0 - 172.31.255.255)
+  - 192.168.0.0/16 (192.168.0.0 - 192.168.255.255)
+- Azure Virtual Network: Configurable private IPs
+- Azure Front Door: Use X-Azure-FDID header instead of IP filtering
+
+Best Practices:
+1. Use whitelist (allow) for restrictive APIs
+2. Combine with other auth methods (defense in depth)
+3. Document allowed IPs and update process
+4. Log blocked requests for security monitoring
+5. Consider geo-blocking for regional restrictions
+6. Use Azure Front Door for DDoS protection
+7. Be cautious with proxy scenarios (X-Forwarded-For spoofing)
+8. Maintain IP allow list in named values for easier updates
+
+Security Considerations:
+- IP filtering alone is weak authentication (IPs can be spoofed or change)
+- Combine with API keys, JWT, or certificates
+- Behind NAT, many users share one IP (don't block broadly)
+- Dynamic IPs change (use CIDR ranges or other auth)
+- VPN/proxy can bypass IP restrictions
+
+Geo-Blocking:
+Azure Front Door Premium supports geo-filtering via WAF.
+In APIM, use custom policy with geo-location lookup (external service).
+
+Example Geo-Blocking (requires external service):
+<send-request mode="new" response-variable-name="geoResponse">
+  <set-url>https://geo-service.example.com/lookup?ip=@(context.Request.IpAddress)</set-url>
+</send-request>
+<choose>
+  <when condition="@{
+    var geo = ((IResponse)context.Variables["geoResponse"]).Body.As<JObject>();
+    var country = geo["country_code"]?.ToString();
+    return country == "CN" || country == "RU";  // Block specific countries
+  }">
+    <return-response>
+      <set-status code="403" reason="Forbidden" />
+      <set-body>Access denied from your location</set-body>
+    </return-response>
+  </when>
+</choose>
+
+Testing:
+1. Test from allowed IP (should succeed)
+2. Test from blocked IP (should get 403)
+3. Test X-Forwarded-For header spoofing
+4. Verify logs capture blocked attempts
+5. Test edge cases (IPv6, ranges)
+-->

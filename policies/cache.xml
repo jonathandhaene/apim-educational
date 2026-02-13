@@ -1,0 +1,120 @@
+<!-- Response Caching Policy -->
+<!-- Caches responses to improve performance and reduce backend load -->
+
+<policies>
+  <inbound>
+    <base />
+    
+    <!-- Example 1: Simple response caching (GET requests only) -->
+    <!-- Cache responses for 3600 seconds (1 hour) -->
+    <cache-lookup vary-by-developer="false" vary-by-developer-groups="false" must-revalidate="true" downstream-caching-type="none" />
+  </inbound>
+  
+  <backend>
+    <base />
+  </backend>
+  
+  <outbound>
+    <base />
+    
+    <!-- Store successful GET responses in cache -->
+    <cache-store duration="3600" />
+    
+    <!-- Example 2: Cache with custom duration based on response -->
+    <!-- <choose>
+      <when condition="@(context.Response.StatusCode == 200)">
+        <cache-store duration="3600" />
+      </when>
+      <when condition="@(context.Response.StatusCode == 404)">
+        <cache-store duration="60" />
+      </when>
+    </choose> -->
+    
+    <!-- Example 3: Set Cache-Control headers -->
+    <set-header name="Cache-Control" exists-action="override">
+      <value>public, max-age=3600</value>
+    </set-header>
+    
+    <!-- Add cache status header for debugging -->
+    <choose>
+      <when condition="@(context.Variables.ContainsKey("IsCacheHit") && (bool)context.Variables["IsCacheHit"])">
+        <set-header name="X-Cache" exists-action="override">
+          <value>HIT</value>
+        </set-header>
+      </when>
+      <otherwise>
+        <set-header name="X-Cache" exists-action="override">
+          <value>MISS</value>
+        </set-header>
+      </otherwise>
+    </choose>
+  </outbound>
+  
+  <on-error>
+    <base />
+  </on-error>
+</policies>
+
+<!--
+Advanced Caching Examples:
+
+1. Vary by query parameters:
+<cache-lookup vary-by-developer="false" vary-by-developer-groups="false">
+  <vary-by-query-parameter>category</vary-by-query-parameter>
+  <vary-by-query-parameter>page</vary-by-query-parameter>
+</cache-lookup>
+
+2. Vary by headers (e.g., Accept-Language for localized content):
+<cache-lookup vary-by-developer="false" vary-by-developer-groups="false">
+  <vary-by-header>Accept-Language</vary-by-header>
+  <vary-by-header>Accept</vary-by-header>
+</cache-lookup>
+
+3. Vary by subscription (different cache per customer):
+<cache-lookup vary-by-developer="false" vary-by-developer-groups="false" caching-type="internal">
+  <vary-by-query-parameter>subscription</vary-by-query-parameter>
+</cache-lookup>
+
+4. External cache (Redis) for high-volume scenarios:
+<cache-lookup-value key="@($"product-{context.Request.MatchedParameters["id"]}")" variable-name="cachedProduct" />
+<choose>
+  <when condition="@(context.Variables.ContainsKey("cachedProduct"))">
+    <return-response>
+      <set-status code="200" />
+      <set-header name="Content-Type" exists-action="override">
+        <value>application/json</value>
+      </set-header>
+      <set-body>@((string)context.Variables["cachedProduct"])</set-body>
+    </return-response>
+  </when>
+</choose>
+
+In outbound:
+<cache-store-value key="@($"product-{context.Request.MatchedParameters["id"]}")" value="@(context.Response.Body.As<string>(preserveContent: true))" duration="3600" />
+
+Configuration:
+- Internal cache: Limited to APIM gateway (256 MB per unit)
+- External cache: Azure Cache for Redis (configurable size)
+
+Best Practices:
+- Only cache GET and HEAD requests
+- Don't cache authenticated personalized responses (unless vary-by-developer)
+- Set appropriate cache duration (consider data staleness tolerance)
+- Use vary-by parameters for dynamic content
+- Monitor cache hit ratio
+- Invalidate cache when data changes (or use short TTL)
+- Don't cache responses with Set-Cookie headers
+- Respect Cache-Control headers from backend
+
+Cache Invalidation:
+Cannot be done via policy; use:
+- Short TTL for frequently changing data
+- API Management REST API to clear cache programmatically
+- External cache with explicit invalidation logic
+
+Testing:
+1. Call API twice, check X-Cache header (MISS, then HIT)
+2. Verify response time improvement on cache hit
+3. Wait for TTL expiry, verify cache refresh
+4. Change query parameter, verify separate cache entry
+-->

@@ -1,0 +1,195 @@
+<!-- Mutual TLS (mTLS) Client Certificate Authentication -->
+<!-- Validates client certificates for high-security scenarios -->
+
+<policies>
+  <inbound>
+    <base />
+    
+    <!-- Example 1: Simple certificate presence check -->
+    <choose>
+      <when condition="@(context.Request.Certificate == null)">
+        <return-response>
+          <set-status code="403" reason="Client certificate required" />
+          <set-body>Client certificate is required for authentication</set-body>
+        </return-response>
+      </when>
+    </choose>
+    
+    <!-- Example 2: Validate certificate thumbprint -->
+    <choose>
+      <when condition="@(context.Request.Certificate != null && context.Request.Certificate.Thumbprint != "{{allowed-cert-thumbprint}}")">
+        <return-response>
+          <set-status code="403" reason="Invalid client certificate" />
+          <set-body>Client certificate is not authorized</set-body>
+        </return-response>
+      </when>
+    </choose>
+    
+    <!-- Example 3: Comprehensive certificate validation -->
+    <choose>
+      <!-- Check if certificate exists -->
+      <when condition="@(context.Request.Certificate == null)">
+        <return-response>
+          <set-status code="401" reason="Certificate required" />
+          <set-body>Client certificate is required</set-body>
+        </return-response>
+      </when>
+      <!-- Check if certificate is verified (not self-signed, trusted CA) -->
+      <when condition="@(!context.Request.Certificate.Verify())">
+        <return-response>
+          <set-status code="403" reason="Invalid certificate" />
+          <set-body>Client certificate verification failed</set-body>
+        </return-response>
+      </when>
+      <!-- Check certificate expiration -->
+      <when condition="@(context.Request.Certificate.NotAfter < DateTime.Now)">
+        <return-response>
+          <set-status code="403" reason="Certificate expired" />
+          <set-body>Client certificate has expired</set-body>
+        </return-response>
+      </when>
+      <when condition="@(context.Request.Certificate.NotBefore > DateTime.Now)">
+        <return-response>
+          <set-status code="403" reason="Certificate not yet valid" />
+          <set-body>Client certificate is not yet valid</set-body>
+        </return-response>
+      </when>
+      <!-- Check certificate issuer -->
+      <when condition="@(context.Request.Certificate.Issuer != "CN=Contoso CA, O=Contoso, C=US")">
+        <return-response>
+          <set-status code="403" reason="Untrusted issuer" />
+          <set-body>Client certificate issuer is not trusted</set-body>
+        </return-response>
+      </when>
+      <!-- Check certificate subject (client identity) -->
+      <when condition="@{
+        var subject = context.Request.Certificate.Subject;
+        var allowedSubjects = new[] { 
+          "CN=client1.contoso.com", 
+          "CN=client2.contoso.com" 
+        };
+        return !allowedSubjects.Any(s => subject.Contains(s));
+      }">
+        <return-response>
+          <set-status code="403" reason="Unauthorized subject" />
+          <set-body>Client certificate subject is not authorized</set-body>
+        </return-response>
+      </when>
+    </choose>
+    
+    <!-- Example 4: Validate against multiple allowed thumbprints (stored in named values) -->
+    <!-- Store allowed thumbprints as comma-separated in named value: thumbprint1,thumbprint2,thumbprint3 -->
+    <!-- <choose>
+      <when condition="@{
+        var certThumbprint = context.Request.Certificate?.Thumbprint;
+        var allowedThumbprints = "{{allowed-cert-thumbprints}}".Split(',').Select(t => t.Trim());
+        return !allowedThumbprints.Contains(certThumbprint);
+      }">
+        <return-response>
+          <set-status code="403" reason="Unauthorized certificate" />
+          <set-body>Client certificate is not in the authorized list</set-body>
+        </return-response>
+      </when>
+    </choose> -->
+    
+    <!-- Example 5: Extract client info from certificate and pass to backend -->
+    <set-header name="X-Client-CN" exists-action="override">
+      <value>@(context.Request.Certificate?.Subject ?? "unknown")</value>
+    </set-header>
+    <set-header name="X-Client-Thumbprint" exists-action="override">
+      <value>@(context.Request.Certificate?.Thumbprint ?? "unknown")</value>
+    </set-header>
+  </inbound>
+  
+  <backend>
+    <base />
+  </backend>
+  
+  <outbound>
+    <base />
+  </outbound>
+  
+  <on-error>
+    <base />
+  </on-error>
+</policies>
+
+<!--
+Certificate Properties Available:
+- Thumbprint: SHA-1 hash of certificate (e.g., "1234567890ABCDEF...")
+- Subject: Certificate subject (e.g., "CN=client.example.com, O=Example, C=US")
+- Issuer: Certificate issuer (CA)
+- NotBefore: Valid from date
+- NotAfter: Valid until date
+- SerialNumber: Certificate serial number
+- SubjectName: Subject distinguished name
+- IssuerName: Issuer distinguished name
+- Verify(): Validates certificate chain and trust
+
+APIM Configuration:
+1. Enable client certificate negotiation:
+   - Portal: API Management → Custom domains → Proxy → Negotiate client certificate
+   - Bicep: negotiateClientCertificate: true
+2. Upload trusted CA certificates (if using private CA):
+   - Portal: API Management → Security → Certificates
+3. Enable client certificate in API settings
+
+Certificate Management:
+- Generate client certificates using OpenSSL or Azure Key Vault
+- Distribute to authorized clients securely
+- Store thumbprints in Azure Key Vault, reference via named values
+- Rotate certificates before expiry
+- Maintain certificate revocation list (CRL) if needed
+
+Example OpenSSL Commands:
+# Generate CA key and certificate
+openssl genrsa -out ca-key.pem 2048
+openssl req -new -x509 -key ca-key.pem -out ca-cert.pem -days 3650
+
+# Generate client key and CSR
+openssl genrsa -out client-key.pem 2048
+openssl req -new -key client-key.pem -out client-csr.pem
+
+# Sign client certificate with CA
+openssl x509 -req -in client-csr.pem -CA ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out client-cert.pem -days 365
+
+# Create PFX for client (includes private key)
+openssl pkcs12 -export -out client.pfx -inkey client-key.pem -in client-cert.pem
+
+Best Practices:
+1. Use mTLS for B2B integrations and service-to-service communication
+2. Combine with IP filtering for defense in depth
+3. Store allowed thumbprints in Key Vault
+4. Implement certificate rotation process
+5. Monitor certificate expiration dates
+6. Log authentication attempts
+7. Use short-lived certificates (1 year or less)
+8. Validate full certificate chain, not just thumbprint
+9. Handle certificate revocation (CRL or OCSP)
+10. Document certificate distribution and renewal process
+
+Security Considerations:
+- Protect private keys (use HSM for high-value keys)
+- Don't embed thumbprints in code (use named values)
+- Implement certificate revocation checking
+- Monitor for certificate misuse
+- Use strong key sizes (2048-bit minimum, 4096-bit recommended)
+- Consider hardware security modules (HSM) for CA keys
+
+Common Use Cases:
+1. Partner API access (B2B)
+2. IoT device authentication
+3. Service-to-service communication
+4. Regulatory compliance (PCI-DSS, HIPAA)
+5. Zero-trust architectures
+
+Testing:
+# Test with certificate
+curl --cert client-cert.pem --key client-key.pem https://apim-instance.azure-api.net/api/endpoint
+
+# Test without certificate (should fail)
+curl https://apim-instance.azure-api.net/api/endpoint
+
+# Test with invalid certificate (should fail)
+curl --cert invalid-cert.pem --key invalid-key.pem https://apim-instance.azure-api.net/api/endpoint
+-->
