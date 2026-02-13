@@ -266,10 +266,12 @@ Or keep for further learning but be aware of costs (~$50/month for Developer tie
 
 ## 📚 Next Steps
 
-- **Lab 2**: Implement JWT authentication with Azure AD
-- **Lab 3**: Configure VNet integration (Internal mode)
-- **Lab 4**: Deploy self-hosted gateway
-- **Lab 5**: Implement AI Gateway for Azure OpenAI
+Continue to [Lab 2: Intermediate](../lab-02-intermediate/README.md) to learn about:
+- Application Insights and Log Analytics integration
+- JWT authentication with Azure AD
+- Advanced rate limiting and quotas
+- Load testing with k6
+- KQL queries for observability
 
 ## 📖 Additional Resources
 
