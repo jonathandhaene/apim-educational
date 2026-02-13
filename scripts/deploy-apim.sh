@@ -1,7 +1,8 @@
 #!/bin/bash
 # Deploy Azure API Management using Bicep
+# Updated for 2026 best practices
 
-set -e
+set -euo pipefail
 
 # Default values
 RESOURCE_GROUP=""

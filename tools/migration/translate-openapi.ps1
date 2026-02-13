@@ -3,9 +3,12 @@
 #
 # Translates and cleans OpenAPI specifications from Google API Gateway/Apigee
 # for import into Azure API Management.
+# Updated for 2026 best practices with enhanced error handling
 #
 # Usage: .\translate-openapi.ps1 -InputFile <input> -OutputFile <output>
 #
+
+$ErrorActionPreference = "Stop"
 
 [CmdletBinding()]
 param(

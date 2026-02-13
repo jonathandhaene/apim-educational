@@ -1,5 +1,8 @@
 #!/bin/bash
 # Sync APIM APIs to Azure API Center (placeholder for future implementation)
+# Updated for 2026 best practices
+
+set -euo pipefail
 
 echo "=== Sync APIM to API Center ==="
 echo ""

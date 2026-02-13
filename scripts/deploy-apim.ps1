@@ -1,4 +1,8 @@
 # Deploy Azure API Management using Bicep
+# Updated for 2026 best practices with enhanced error handling
+
+$ErrorActionPreference = "Stop"
+
 param(
     [Parameter(Mandatory=$true)]
     [string]$ResourceGroup,
