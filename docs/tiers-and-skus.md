@@ -524,6 +524,13 @@ START
 
 **Note**: Migration paths between classic and v2 tiers may evolve. Always consult the [official Azure documentation](https://learn.microsoft.com/azure/api-management/) for current migration support and procedures.
 
+**Migration Feasibility Factors:**
+- **Architecture differences**: v2 tiers use a different underlying architecture than classic tiers
+- **Feature availability**: Some v2 features may not map directly to classic tier equivalents
+- **Networking changes**: VNet injection implementation differs between classic and v2 tiers
+- **Best practice**: Test migration paths in non-production environments before production migration
+- **Azure support**: Consult Azure support for guidance on complex migration scenarios
+
 ### Migration Process
 
 **Upgrading (e.g., Basic → Standard):**
