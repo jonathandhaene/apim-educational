@@ -174,6 +174,14 @@ Detailed documentation is available in the [docs/](docs/) directory:
 - [Observability](docs/observability.md)
 - [Troubleshooting](docs/troubleshooting.md)
 
+### 🔄 Migration Guides
+
+Migrating from another API gateway platform? We've got you covered:
+- [AWS API Gateway → Azure APIM](docs/migration/aws-to-apim.md) - Comprehensive guide for migrating from Amazon API Gateway (REST/HTTP APIs)
+- **Google Cloud API Gateway** - Coming soon!
+
+Migration tools available in [tools/migration/](tools/migration/).
+
 ## 🔗 Useful Links
 
 - [Official APIM Documentation](https://learn.microsoft.com/azure/api-management/)
