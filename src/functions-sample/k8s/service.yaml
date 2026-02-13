@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-function-sample
+  labels:
+    app: azure-function-sample
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: azure-function-sample
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-function-sample-internal
+  labels:
+    app: azure-function-sample
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: azure-function-sample

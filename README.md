@@ -94,6 +94,7 @@ apim-educational/
 │   ├── front-door.md         # Front Door + APIM patterns
 │   ├── ai-gateway.md         # AI Gateway capabilities
 │   ├── migration/            # Migration guides
+│   │   ├── aws-to-apim.md    # AWS API Gateway to APIM migration
 │   │   └── google-to-apim.md # Google API to APIM migration
 │   └── diagrams/             # Architecture diagrams
 ├── infra/                     # Infrastructure as Code
@@ -106,7 +107,11 @@ apim-educational/
 │   ├── lab-04-expert/        # Self-hosted gateway and Front Door
 │   └── lab-05-ops-architecture/ # Operations and best practices
 ├── src/                       # Sample applications
-│   └── functions-sample/     # Azure Function example
+│   ├── functions-sample/     # Azure Function example with Docker/K8s
+│   └── third-party-integrations/ # Twilio SMS and Stripe payments
+├── frontend-samples/          # Frontend integration examples
+│   ├── react-sample/         # React + APIM integration
+│   └── angular-sample/       # Angular + APIM integration
 ├── policies/                  # APIM policy examples
 │   └── fragments/            # Reusable policy fragments
 ├── gateway/                   # Self-hosted gateway samples
@@ -121,7 +126,7 @@ apim-educational/
 │   ├── import-openapi.ps1/.sh # API import automation
 │   └── sync-api-center.ps1/.sh # API Center sync
 └── tools/                     # Migration and utility tools
-    └── migration/            # Google API to APIM migration helpers
+    └── migration/            # API migration helpers
 ```
 
 ## 🚀 Quick Start
@@ -175,11 +180,12 @@ Start with our comprehensive hands-on labs that take you from beginner to expert
 4. **[Lab 4: Expert](labs/lab-04-expert/README.md)** - Self-hosted gateway, Front Door, blue/green
 5. **[Lab 5: Operations](labs/lab-05-ops-architecture/README.md)** - API Center, AI Gateway, best practices
 
-Or jump right in:
-1. **Navigate to labs**: `cd labs/lab-01-beginner/`
-2. **Follow the README**: Step-by-step instructions included
-3. **Import sample API**: Use provided OpenAPI definition
-4. **Test with Postman**: Collection ready in `tests/postman/`
+Or explore other resources:
+1. **Navigate to labs**: `cd labs/lab-01-beginner/` - Hands-on guided learning
+2. **Try frontend samples**: `cd frontend-samples/` - React and Angular examples
+3. **Explore integrations**: `cd src/third-party-integrations/` - Twilio SMS and Stripe payments
+4. **Containerize functions**: `cd src/functions-sample/k8s/` - Docker and Kubernetes examples
+5. **Test with Postman**: Collection ready in `tests/postman/`
 
 ## 📚 Learning Path
 
@@ -290,6 +296,68 @@ The v2 tiers represent a significant modernization of Azure APIM:
 - ✅ Apply **IP filtering** for backend protection
 - ✅ Consider **private endpoints** for internal APIs
 
+## 🎨 Frontend Integration Examples
+
+### [React Sample](frontend-samples/react-sample/)
+Modern React app with Vite, TypeScript, and Fetch API integration.
+
+```bash
+cd frontend-samples/react-sample
+npm install && npm run dev
+```
+
+### [Angular Sample](frontend-samples/angular-sample/)
+Angular 17 app with HttpClient service and RxJS Observables.
+
+```bash
+cd frontend-samples/angular-sample
+npm install && npm start
+```
+
+**Learn more**: See [frontend-samples/README.md](frontend-samples/README.md)
+
+## 🔌 Third-Party API Integrations
+
+### [Twilio SMS](src/third-party-integrations/twilio-sms/)
+Send SMS messages with Twilio API, includes Azure Key Vault integration.
+
+```bash
+cd src/third-party-integrations/twilio-sms
+npm install && npm start
+```
+
+### [Stripe Payments](src/third-party-integrations/stripe-payment/)
+Process secure payments with Stripe's Payment Intents API.
+
+```bash
+cd src/third-party-integrations/stripe-payment
+npm install && npm start
+```
+
+**Learn more**: See [src/third-party-integrations/README.md](src/third-party-integrations/README.md)
+
+## 🐳 Containerization
+
+### Docker Support
+Azure Functions can be containerized for consistent deployments:
+
+```bash
+cd src/functions-sample
+docker build -t azure-function-sample:latest .
+docker run -p 8080:80 azure-function-sample:latest
+```
+
+### Kubernetes Deployment
+Production-ready Kubernetes manifests with best practices:
+
+```bash
+cd src/functions-sample/k8s
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
+
+**Learn more**: See [src/functions-sample/k8s/README.md](src/functions-sample/k8s/README.md)
+
 ## 🧪 Testing
 
 ```bash
@@ -303,6 +371,14 @@ newman run collection.json -e environment.json
 # Run k6 load tests
 cd tests/k6
 k6 run load-test.js
+
+# Run frontend tests
+cd frontend-samples/react-sample
+npm test
+
+# Run integration tests
+cd src/third-party-integrations/twilio-sms
+npm test
 ```
 
 ## 🤝 Contributing
@@ -331,8 +407,14 @@ Detailed documentation is available in the [docs/](docs/) directory:
 - [AI Gateway](docs/ai-gateway.md) - Azure OpenAI integration
 
 ### Migration
-- [**Google API to APIM Migration**](docs/migration/google-to-apim.md) - Complete migration guide
+- [AWS API Gateway to APIM Migration](docs/migration/aws-to-apim.md) - AWS migration guide
+- [Google API to APIM Migration](docs/migration/google-to-apim.md) - Google migration guide
 - [Migration Tools](tools/migration/) - Scripts and utilities
+
+### Integration Examples
+- [Frontend Samples](frontend-samples/) - React and Angular integration examples
+- [Third-Party APIs](src/third-party-integrations/) - Twilio SMS and Stripe payments
+- [Container Deployment](src/functions-sample/k8s/) - Docker and Kubernetes guides
 
 ## 🔗 Useful Links
 

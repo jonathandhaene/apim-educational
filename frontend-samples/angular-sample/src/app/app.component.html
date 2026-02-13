@@ -1,0 +1,56 @@
+<div class="container">
+  <h1>{{ title }}</h1>
+  <p>Demonstrating integration with Azure Functions via APIM</p>
+
+  <div class="card">
+    <h2>Configuration</h2>
+    <div class="input-group">
+      <label for="apiUrl">API URL:</label>
+      <input
+        id="apiUrl"
+        type="text"
+        [(ngModel)]="apiUrl"
+        placeholder="http://localhost:7071 or https://your-apim.azure-api.net"
+      />
+    </div>
+    <div class="input-group">
+      <label for="subscriptionKey">Subscription Key (optional for APIM):</label>
+      <input
+        id="subscriptionKey"
+        type="password"
+        [(ngModel)]="subscriptionKey"
+        placeholder="Your APIM subscription key"
+      />
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>API Call</h2>
+    <div class="input-group">
+      <label for="name">Name:</label>
+      <input
+        id="name"
+        type="text"
+        [(ngModel)]="name"
+        placeholder="Enter a name"
+      />
+    </div>
+    <button (click)="callApiGet()" [disabled]="loading">
+      {{ loading ? 'Loading...' : 'Call API (GET)' }}
+    </button>
+    <button (click)="callApiPost()" [disabled]="loading">
+      {{ loading ? 'Loading...' : 'Call API (POST)' }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <strong>Error:</strong> {{ error }}
+  </div>
+
+  <div *ngIf="response" class="success">
+    <strong>Success!</strong>
+    <div class="response">
+      <pre>{{ formatResponse() }}</pre>
+    </div>
+  </div>
+</div>
