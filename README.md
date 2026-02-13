@@ -25,12 +25,18 @@ apim-educational/
 │   ├── api-center.md         # Azure API Center integration
 │   ├── front-door.md         # Front Door + APIM patterns
 │   ├── ai-gateway.md         # AI Gateway capabilities
+│   ├── migration/            # Migration guides
+│   │   └── google-to-apim.md # Google API to APIM migration
 │   └── diagrams/             # Architecture diagrams
 ├── infra/                     # Infrastructure as Code
 │   ├── bicep/                # Modular Bicep templates
 │   └── terraform/            # Terraform modules
 ├── labs/                      # Hands-on guided labs
-│   └── beginner/             # Starter labs
+│   ├── lab-01-beginner/      # Getting started
+│   ├── lab-02-intermediate/  # Diagnostics and security
+│   ├── lab-03-advanced/      # VNet and Key Vault
+│   ├── lab-04-expert/        # Self-hosted gateway and Front Door
+│   └── lab-05-ops-architecture/ # Operations and best practices
 ├── src/                       # Sample applications
 │   └── functions-sample/     # Azure Function example
 ├── policies/                  # APIM policy examples
@@ -42,10 +48,12 @@ apim-educational/
 │   ├── postman/              # Postman collections
 │   ├── rest-client/          # VS Code REST Client files
 │   └── k6/                   # Load testing scripts
-└── scripts/                   # Automation scripts
-    ├── deploy-apim.ps1/.sh   # Deployment scripts
-    ├── import-openapi.ps1/.sh # API import automation
-    └── sync-api-center.ps1/.sh # API Center sync
+├── scripts/                   # Automation scripts
+│   ├── deploy-apim.ps1/.sh   # Deployment scripts
+│   ├── import-openapi.ps1/.sh # API import automation
+│   └── sync-api-center.ps1/.sh # API Center sync
+└── tools/                     # Migration and utility tools
+    └── migration/            # Google API to APIM migration helpers
 ```
 
 ## 🚀 Quick Start
@@ -90,33 +98,81 @@ terraform apply -var-file="public-dev.tfvars"
 
 ### Run Your First Lab
 
-1. **Navigate to labs**: `cd labs/beginner/01-getting-started/`
+Start with our comprehensive hands-on labs that take you from beginner to expert:
+
+**[📚 View All Labs](labs/README.md)** - Five progressive labs covering:
+1. **[Lab 1: Beginner](labs/lab-01-beginner/README.md)** - Deploy APIM, import API, basic policies
+2. **[Lab 2: Intermediate](labs/lab-02-intermediate/README.md)** - Diagnostics, JWT, load testing
+3. **[Lab 3: Advanced](labs/lab-03-advanced/README.md)** - VNet, private endpoints, Key Vault
+4. **[Lab 4: Expert](labs/lab-04-expert/README.md)** - Self-hosted gateway, Front Door, blue/green
+5. **[Lab 5: Operations](labs/lab-05-ops-architecture/README.md)** - API Center, AI Gateway, best practices
+
+Or jump right in:
+1. **Navigate to labs**: `cd labs/lab-01-beginner/`
 2. **Follow the README**: Step-by-step instructions included
 3. **Import sample API**: Use provided OpenAPI definition
 4. **Test with Postman**: Collection ready in `tests/postman/`
 
 ## 📚 Learning Path
 
-### Beginner
-1. Deploy your first APIM instance (Consumption tier)
-2. Import the sample API using OpenAPI
-3. Apply basic policies (rate limiting, caching)
-4. Test with Postman or REST Client
-5. View logs in Application Insights
+Our structured learning path takes you from beginner to expert through five comprehensive labs. Each lab builds on concepts from previous ones:
 
-### Intermediate
-- Configure virtual network integration
-- Implement JWT validation and OAuth
-- Set up custom domains with certificates
-- Deploy self-hosted gateway
-- Implement API versioning and revisions
+### [Complete Lab Series →](labs/README.md)
 
-### Advanced
-- Multi-region deployment patterns
-- Front Door + APIM integration
-- Private endpoint configuration
-- AI Gateway for LLM APIs
-- Azure API Center synchronization
+**[Lab 1: Beginner](labs/lab-01-beginner/README.md)** (45-60 min)
+- Deploy your first APIM instance (Developer or Consumption tier)
+- Import a sample API using OpenAPI specification
+- Apply basic policies (rate limiting, caching)
+- Test with Postman or REST Client
+- View logs in Application Insights
+
+**[Lab 2: Intermediate](labs/lab-02-intermediate/README.md)** (60-90 min)
+- Configure Application Insights and Log Analytics
+- Implement JWT validation for OAuth/OIDC
+- Apply advanced rate limiting and quota policies
+- Run k6 load tests
+- Analyze logs with KQL queries
+
+**[Lab 3: Advanced](labs/lab-03-advanced/README.md)** (90-120 min)
+- Configure VNet integration for private/internal mode
+- Set up private endpoints with Private DNS
+- Integrate Azure Key Vault for secrets management
+- Implement API versioning and revision strategies
+- Configure custom domains (placeholder approach)
+
+**[Lab 4: Expert](labs/lab-04-expert/README.md)** (120-150 min)
+- Deploy self-hosted gateway with Docker and Kubernetes
+- Integrate Azure Front Door with WAF
+- Implement blue/green deployment with revisions
+- Optimize performance with caching strategies
+- Configure backend pools and load balancing
+
+**[Lab 5: Operations & Architecture](labs/lab-05-ops-architecture/README.md)** (90-120 min)
+- Synchronize APIs with Azure API Center
+- Implement AI Gateway policies for Azure OpenAI
+- Create advanced observability dashboards with KQL
+- Understand disaster recovery strategies
+- Apply cost optimization techniques
+- Review production readiness checklist
+
+## 🔄 Migrating to Azure APIM
+
+**Coming from Google's API services?** We've got you covered!
+
+### [Google API to Azure APIM Migration Guide →](docs/migration/google-to-apim.md)
+
+Comprehensive guide covering:
+- **Assessment**: Inventory APIs, products, quotas, auth patterns
+- **Mapping**: Apigee/API Gateway → APIM constructs and policies
+- **Migration Plan**: Step-by-step process with timelines
+- **Tooling**: Scripts for OpenAPI translation and import
+- **Risk Mitigation**: Compatibility notes and gotchas
+- **Testing**: Validation strategies and rollback plans
+
+**Migration Tools**: [tools/migration/](tools/migration/)
+- OpenAPI translation scripts (Bash & PowerShell)
+- Policy mapping templates
+- Bulk import utilities
 
 ## 💰 Cost Considerations
 
@@ -167,12 +223,23 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 ## 📖 Documentation
 
 Detailed documentation is available in the [docs/](docs/) directory:
-- [Core Concepts](docs/concepts.md)
-- [Networking Guide](docs/networking.md)
-- [Security Guide](docs/security.md)
-- [SKU Comparison](docs/tiers-and-skus.md)
-- [Observability](docs/observability.md)
-- [Troubleshooting](docs/troubleshooting.md)
+
+### Core Guides
+- [Core Concepts](docs/concepts.md) - APIM fundamentals and architecture
+- [Networking Guide](docs/networking.md) - VNet integration, private endpoints
+- [Security Guide](docs/security.md) - Authentication, authorization, Key Vault
+- [SKU Comparison](docs/tiers-and-skus.md) - Pricing tiers and cost guidance
+- [Observability](docs/observability.md) - Monitoring, logging, dashboards
+- [Troubleshooting](docs/troubleshooting.md) - Common issues and solutions
+
+### Advanced Topics
+- [API Center Integration](docs/api-center.md) - API governance and catalog
+- [Front Door + APIM](docs/front-door.md) - Global distribution patterns
+- [AI Gateway](docs/ai-gateway.md) - Azure OpenAI integration
+
+### Migration
+- [**Google API to APIM Migration**](docs/migration/google-to-apim.md) - Complete migration guide
+- [Migration Tools](tools/migration/) - Scripts and utilities
 
 ## 🔗 Useful Links
 
