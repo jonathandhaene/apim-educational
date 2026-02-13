@@ -1,0 +1,16 @@
+{
+  "name": "sample-api-function",
+  "version": "1.0.0",
+  "description": "Sample HTTP-triggered Azure Function for APIM integration",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests specified\""
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

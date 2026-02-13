@@ -1,0 +1,35 @@
+### Sample API - Health Check
+# @name healthCheck
+GET {{gatewayUrl}}/sample/httpTrigger?name=VSCode
+Ocp-Apim-Subscription-Key: {{subscriptionKey}}
+
+###
+
+### Sample API - POST with name
+# @name postHello
+POST {{gatewayUrl}}/sample/httpTrigger
+Ocp-Apim-Subscription-Key: {{subscriptionKey}}
+Content-Type: text/plain
+
+Bob
+
+###
+
+### Sample API - Test Rate Limiting (run multiple times)
+# @name rateLimitTest
+GET {{gatewayUrl}}/sample/httpTrigger?name=RateTest
+Ocp-Apim-Subscription-Key: {{subscriptionKey}}
+
+###
+
+### Sample API - Test Caching (should see X-Cache header)
+# @name cacheTest
+GET {{gatewayUrl}}/sample/httpTrigger?name=CacheTest
+Ocp-Apim-Subscription-Key: {{subscriptionKey}}
+
+###
+
+### Configuration
+# Create a .env file or set these variables:
+# gatewayUrl=https://apim-instance.azure-api.net
+# subscriptionKey=your-subscription-key-here

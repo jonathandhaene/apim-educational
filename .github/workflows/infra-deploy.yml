@@ -1,0 +1,98 @@
+name: Infrastructure Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      infra_tool:
+        description: 'Infrastructure tool'
+        required: true
+        type: choice
+        options:
+          - bicep
+          - terraform
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+
+jobs:
+  deploy-bicep:
+    name: Deploy with Bicep
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.infra_tool == 'bicep' || github.event_name == 'push' }}
+    environment: 
+      name: ${{ github.event.inputs.environment || 'dev' }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Deploy APIM
+        run: |
+          ENV=${{ github.event.inputs.environment || 'dev' }}
+          RG="rg-apim-${ENV}"
+          LOCATION="eastus"
+          
+          # Create resource group if needed
+          az group create --name $RG --location $LOCATION
+          
+          # Deploy
+          az deployment group create \
+            --resource-group $RG \
+            --template-file infra/bicep/main.bicep \
+            --parameters infra/bicep/params/public-dev.bicepparam \
+            --verbose
+
+  deploy-terraform:
+    name: Deploy with Terraform
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.infra_tool == 'terraform' }}
+    environment:
+      name: ${{ github.event.inputs.environment || 'dev' }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      
+      - name: Terraform Init
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        run: |
+          cd infra/terraform
+          terraform init
+      
+      - name: Terraform Plan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        run: |
+          cd infra/terraform
+          terraform plan -var-file="public-dev.tfvars" -out=tfplan
+      
+      - name: Terraform Apply
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        run: |
+          cd infra/terraform
+          terraform apply tfplan

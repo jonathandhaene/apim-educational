@@ -1,0 +1,92 @@
+name: Infrastructure Validation
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+      - 'src/functions-sample/openapi.json'
+      - '.github/workflows/infra-validate.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-bicep:
+    name: Validate Bicep Templates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        continue-on-error: true
+      
+      - name: Build Bicep
+        run: |
+          az bicep build --file infra/bicep/main.bicep
+          echo "Bicep build successful"
+      
+      - name: Validate Bicep (What-If)
+        if: ${{ env.AZURE_CREDENTIALS != '' }}
+        run: |
+          az deployment group what-if \
+            --resource-group ${{ secrets.RESOURCE_GROUP || 'rg-apim-dev' }} \
+            --template-file infra/bicep/main.bicep \
+            --parameters infra/bicep/params/public-dev.bicepparam
+        continue-on-error: true
+
+  validate-terraform:
+    name: Validate Terraform Configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.0
+      
+      - name: Terraform Format Check
+        run: |
+          cd infra/terraform
+          terraform fmt -check -recursive
+      
+      - name: Terraform Init
+        run: |
+          cd infra/terraform
+          terraform init -backend=false
+      
+      - name: Terraform Validate
+        run: |
+          cd infra/terraform
+          terraform validate
+      
+      - name: Terraform Plan
+        if: ${{ env.ARM_CLIENT_ID != '' }}
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        run: |
+          cd infra/terraform
+          terraform plan -var-file="public-dev.tfvars"
+        continue-on-error: true
+
+  lint-openapi:
+    name: Lint OpenAPI Specification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Spectral
+        run: npm install -g @stoplight/spectral-cli
+      
+      - name: Lint OpenAPI
+        run: |
+          spectral lint src/functions-sample/openapi.json --ruleset .spectral.yaml
