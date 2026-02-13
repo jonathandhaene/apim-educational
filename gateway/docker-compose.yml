@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  apim-gateway:
+    image: mcr.microsoft.com/azure-api-management/gateway:latest
+    container_name: apim-self-hosted-gateway
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - config.service.endpoint=${APIM_MANAGEMENT_URL}
+      - config.service.auth=${APIM_GATEWAY_TOKEN}
+    volumes:
+      - ./gateway-data:/var/log/gateway
+    restart: unless-stopped
+    networks:
+      - apim-network
+
+networks:
+  apim-network:
+    driver: bridge
+
+# Usage:
+# 1. Get gateway token from Azure Portal (API Management → Gateways → [Your Gateway] → Deployment)
+# 2. Set environment variables:
+#    export APIM_MANAGEMENT_URL="https://apim-instance.management.azure-api.net/subscriptions/.../gateways/..."
+#    export APIM_GATEWAY_TOKEN="GatewayKey ..."
+# 3. Run: docker-compose up -d
+# 4. Test: curl http://localhost:8080/api/endpoint

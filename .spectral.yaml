@@ -1,0 +1,31 @@
+extends: spectral:oas
+rules:
+  # OpenAPI rules
+  info-contact: error
+  info-description: error
+  info-license: off
+  operation-description: warn
+  operation-operationId: error
+  operation-summary: error
+  operation-tags: error
+  path-params: error
+  
+  # Custom rules for APIM
+  apim-operation-id-naming:
+    description: Operation IDs should be camelCase
+    message: "{{property}} should be camelCase"
+    severity: warn
+    given: "$.paths.*[get,put,post,delete,options,head,patch,trace].operationId"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+  
+  apim-response-examples:
+    description: All success responses should have examples
+    message: "{{property}} should have an example"
+    severity: warn
+    given: "$.paths.*.*.responses[?(@property.match(/^2/))].content.*.schema"
+    then:
+      field: example
+      function: truthy

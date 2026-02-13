@@ -1,0 +1,131 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Sample API",
+    "description": "Sample HTTP-triggered Azure Function API for APIM integration demos",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "support@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{functionAppName}.azurewebsites.net/api",
+      "description": "Azure Functions endpoint",
+      "variables": {
+        "functionAppName": {
+          "default": "sample-api-function",
+          "description": "Your Azure Function App name"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/httpTrigger": {
+      "get": {
+        "operationId": "getHello",
+        "summary": "Get hello message",
+        "description": "Returns a greeting message with timestamp",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name to greet",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "World"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelloResponse"
+                },
+                "example": {
+                  "message": "Hello, World!",
+                  "timestamp": "2024-01-01T12:00:00.000Z",
+                  "functionName": "sample-api-function",
+                  "version": "1.0.0"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postHello",
+        "summary": "Post hello message",
+        "description": "Returns a greeting message with the provided name in request body",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "John"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelloResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HelloResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Greeting message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Response timestamp"
+          },
+          "functionName": {
+            "type": "string",
+            "description": "Function app name"
+          },
+          "version": {
+            "type": "string",
+            "description": "API version"
+          }
+        },
+        "required": ["message", "timestamp"]
+      }
+    },
+    "securitySchemes": {
+      "functionKey": {
+        "type": "apiKey",
+        "name": "x-functions-key",
+        "in": "header",
+        "description": "Azure Functions API key"
+      }
+    }
+  },
+  "security": [
+    {
+      "functionKey": []
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+<!-- Policy Fragment: Common Headers -->
+<!-- Reusable fragment for adding standard headers to requests/responses -->
+<!-- Include in policies with: <include-fragment fragment-id="common-headers" /> -->
+
+<fragment>
+  <!-- Add correlation ID for request tracking -->
+  <set-header name="X-Correlation-Id" exists-action="skip">
+    <value>@(Guid.NewGuid().ToString())</value>
+  </set-header>
+  
+  <!-- Add request timestamp -->
+  <set-header name="X-Request-Time" exists-action="override">
+    <value>@(DateTime.UtcNow.ToString("o"))</value>
+  </set-header>
+  
+  <!-- Forward client IP (useful when behind proxy) -->
+  <set-header name="X-Forwarded-For" exists-action="append">
+    <value>@(context.Request.IpAddress)</value>
+  </set-header>
+  
+  <!-- Add API version header -->
+  <set-header name="X-Api-Version" exists-action="override">
+    <value>v1</value>
+  </set-header>
+</fragment>
+
+<!--
+To use this fragment in a policy:
+
+<policies>
+  <inbound>
+    <base />
+    <include-fragment fragment-id="common-headers" />
+  </inbound>
+</policies>
+
+Creating Fragments in APIM:
+1. Portal: API Management → Policy fragments → Add
+2. Azure CLI:
+   az apim api policy-fragment create \
+     --resource-group rg-apim \
+     --service-name apim-instance \
+     --fragment-id common-headers \
+     --value @common-headers.xml \
+     --description "Common headers for all APIs"
+
+Benefits of Fragments:
+- Reusability: Define once, use in multiple policies
+- Consistency: Ensure standard behavior across APIs
+- Maintainability: Update fragment to update all policies
+- Modularity: Break complex policies into manageable pieces
+
+Common Fragment Use Cases:
+1. Standard headers (correlation ID, timestamps)
+2. Error handling patterns
+3. Authentication logic
+4. Logging configuration
+5. Security headers (CORS, CSP)
+6. Named value references
+7. Common transformations
+
+Fragment Best Practices:
+- Keep fragments focused (single responsibility)
+- Document parameters and dependencies
+- Version fragments for breaking changes
+- Test fragments in isolation
+- Use descriptive fragment IDs
+-->

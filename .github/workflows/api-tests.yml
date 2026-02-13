@@ -1,0 +1,58 @@
+name: API Tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'  # Run every 6 hours
+  push:
+    paths:
+      - 'tests/**'
+      - '.github/workflows/api-tests.yml'
+
+jobs:
+  postman-tests:
+    name: Run Postman Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Newman
+        run: npm install -g newman
+      
+      - name: Run Postman Collection
+        env:
+          GATEWAY_URL: ${{ secrets.APIM_GATEWAY_URL || 'https://apim-dev.azure-api.net' }}
+          SUBSCRIPTION_KEY: ${{ secrets.APIM_SUBSCRIPTION_KEY }}
+        run: |
+          newman run tests/postman/collection.json \
+            --env-var "gatewayUrl=$GATEWAY_URL" \
+            --env-var "subscriptionKey=$SUBSCRIPTION_KEY" \
+            --reporters cli,json \
+            --reporter-json-export newman-results.json
+        continue-on-error: true
+      
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: postman-results
+          path: newman-results.json
+
+  k6-load-tests:
+    name: Run k6 Load Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run k6
+        uses: grafana/k6-action@v0.3.1
+        env:
+          GATEWAY_URL: ${{ secrets.APIM_GATEWAY_URL || 'https://apim-dev.azure-api.net' }}
+          SUBSCRIPTION_KEY: ${{ secrets.APIM_SUBSCRIPTION_KEY }}
+        with:
+          filename: tests/k6/load-test.js
+        continue-on-error: true

@@ -1,0 +1,136 @@
+<!-- Rate Limiting Policy -->
+<!-- Protects backend from overload and enforces usage quotas -->
+
+<policies>
+  <inbound>
+    <base />
+    
+    <!-- Example 1: Simple rate limiting (calls per time period) -->
+    <!-- Limits: 100 calls per 60 seconds per subscription -->
+    <rate-limit calls="100" renewal-period="60" />
+    
+    <!-- Example 2: Rate limiting by subscription key -->
+    <!-- Limits calls per subscription, useful for different tiers -->
+    <!-- <rate-limit-by-key 
+      calls="100" 
+      renewal-period="60" 
+      counter-key="@(context.Subscription.Id)" /> -->
+    
+    <!-- Example 3: Rate limiting by client IP -->
+    <!-- Prevents single IP from overwhelming the API -->
+    <!-- <rate-limit-by-key 
+      calls="10" 
+      renewal-period="60" 
+      counter-key="@(context.Request.IpAddress)" /> -->
+    
+    <!-- Example 4: Rate limiting by user (from JWT claim) -->
+    <!-- Requires JWT validation policy first -->
+    <!-- <rate-limit-by-key 
+      calls="100" 
+      renewal-period="60" 
+      counter-key="@(context.Request.Headers.GetValueOrDefault("Authorization","").AsJwt()?.Claims.GetValueOrDefault("oid", "anonymous"))" /> -->
+    
+    <!-- Example 5: Different rate limits for different operations -->
+    <choose>
+      <when condition="@(context.Operation.Name == "CreateResource")">
+        <!-- More restrictive for write operations -->
+        <rate-limit-by-key calls="10" renewal-period="60" counter-key="@(context.Subscription.Id)" />
+      </when>
+      <when condition="@(context.Operation.Name == "GetResource")">
+        <!-- Less restrictive for read operations -->
+        <rate-limit-by-key calls="100" renewal-period="60" counter-key="@(context.Subscription.Id)" />
+      </when>
+    </choose>
+    
+    <!-- Example 6: Quota (long-term limit) -->
+    <!-- Weekly quota: 10,000 calls per week (604800 seconds) -->
+    <quota calls="10000" renewal-period="604800" />
+    
+    <!-- Example 7: Quota by key (different limits per subscription/tier) -->
+    <!-- <quota-by-key 
+      calls="10000" 
+      renewal-period="604800" 
+      counter-key="@(context.Subscription.Id)" /> -->
+    
+    <!-- Example 8: Bandwidth quota (limits data transfer) -->
+    <!-- <quota-by-key 
+      calls="1000000" 
+      bandwidth="10000000" 
+      renewal-period="2592000" 
+      counter-key="@(context.Subscription.Id)" /> -->
+  </inbound>
+  
+  <backend>
+    <base />
+  </backend>
+  
+  <outbound>
+    <base />
+    
+    <!-- Optional: Add rate limit headers to response -->
+    <set-header name="X-Rate-Limit-Limit" exists-action="override">
+      <value>100</value>
+    </set-header>
+    <set-header name="X-Rate-Limit-Remaining" exists-action="override">
+      <value>@(context.Response.Headers.GetValueOrDefault("X-Rate-Limit-Remaining","0"))</value>
+    </set-header>
+  </outbound>
+  
+  <on-error>
+    <base />
+    
+    <!-- Custom response for rate limit exceeded (429) -->
+    <choose>
+      <when condition="@(context.LastError.Reason == "RateLimitExceeded")">
+        <return-response>
+          <set-status code="429" reason="Too Many Requests" />
+          <set-header name="Retry-After" exists-action="override">
+            <value>60</value>
+          </set-header>
+          <set-body>@{
+            return new JObject(
+              new JProperty("error", new JObject(
+                new JProperty("code", "rate_limit_exceeded"),
+                new JProperty("message", "API rate limit exceeded. Please retry after 60 seconds."),
+                new JProperty("details", context.LastError.Message)
+              ))
+            ).ToString();
+          }</set-body>
+        </return-response>
+      </when>
+      <when condition="@(context.LastError.Reason == "QuotaExceeded")">
+        <return-response>
+          <set-status code="429" reason="Quota Exceeded" />
+          <set-body>@{
+            return new JObject(
+              new JProperty("error", new JObject(
+                new JProperty("code", "quota_exceeded"),
+                new JProperty("message", "API quota exceeded for this period."),
+                new JProperty("details", context.LastError.Message)
+              ))
+            ).ToString();
+          }</set-body>
+        </return-response>
+      </when>
+    </choose>
+  </on-error>
+</policies>
+
+<!--
+Usage:
+1. Apply at product level for tiered pricing (Free, Basic, Premium)
+2. Apply at API level for uniform rate limits
+3. Apply at operation level for granular control
+
+Best Practices:
+- Start with generous limits, tighten based on monitoring
+- Use rate-limit-by-key for fairness across clients
+- Combine rate limits (short-term) with quotas (long-term)
+- Return informative error messages with Retry-After header
+- Monitor rate limit violations to detect abuse or sizing issues
+
+Testing:
+- Use a loop to exceed the limit: for i in {1..150}; do curl ...; done
+- Verify 429 response after exceeding limit
+- Wait for renewal period, verify limit resets
+-->

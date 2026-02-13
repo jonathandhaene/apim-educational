@@ -1,0 +1,277 @@
+<!-- AI Gateway Policy for Azure OpenAI and LLM APIs -->
+<!-- Manages AI API consumption with cost control, load balancing, and monitoring -->
+
+<policies>
+  <inbound>
+    <base />
+    
+    <!-- Authentication: Use APIM subscription key instead of exposing Azure OpenAI key -->
+    <check-header name="Ocp-Apim-Subscription-Key" failed-check-httpcode="401" />
+    
+    <!-- Use Managed Identity to authenticate to Azure OpenAI -->
+    <authentication-managed-identity resource="https://cognitiveservices.azure.com" output-token-variable-name="msi-token" />
+    <set-header name="Authorization" exists-action="override">
+      <value>@("Bearer " + (string)context.Variables["msi-token"])</value>
+    </set-header>
+    
+    <!-- Remove client's API key if accidentally sent -->
+    <set-header name="api-key" exists-action="delete" />
+    
+    <!-- Track user for cost allocation -->
+    <set-variable name="userId" value="@(context.User?.Id ?? context.Subscription?.Name ?? "anonymous")" />
+    <set-header name="X-User-Id" exists-action="override">
+      <value>@((string)context.Variables["userId"])</value>
+    </set-header>
+    
+    <!-- Estimate token count for rate limiting (rough: 1 token ≈ 4 chars) -->
+    <set-variable name="estimatedInputTokens" value="@{
+      var body = context.Request.Body?.As<JObject>(preserveContent: true);
+      var promptLength = body?["prompt"]?.ToString().Length ?? 0;
+      var messagesLength = body?["messages"]?.ToString().Length ?? 0;
+      return (int)((promptLength + messagesLength) / 4.0);
+    }" />
+    
+    <!-- Rate limiting by token count (100K tokens per minute per user) -->
+    <rate-limit-by-key 
+      calls="100000" 
+      renewal-period="60" 
+      counter-key="@((string)context.Variables["userId"])" 
+      increment-count="@((int)context.Variables["estimatedInputTokens"])" />
+    
+    <!-- Monthly quota (1M tokens per user) -->
+    <quota-by-key 
+      calls="1000000" 
+      renewal-period="2592000" 
+      counter-key="@((string)context.Variables["userId"])" 
+      increment-count="@((int)context.Variables["estimatedInputTokens"])" />
+    
+    <!-- Load balancing across multiple Azure OpenAI instances -->
+    <set-variable name="backendIndex" value="@(new Random().Next(0, 2))" />
+    <choose>
+      <when condition="@((int)context.Variables["backendIndex"] == 0)">
+        <set-backend-service backend-id="aoai-eastus" />
+      </when>
+      <otherwise>
+        <set-backend-service backend-id="aoai-westus" />
+      </otherwise>
+    </choose>
+    
+    <!-- Optional: Content filtering to block prohibited prompts -->
+    <set-variable name="promptContent" value="@{
+      var body = context.Request.Body?.As<JObject>(preserveContent: true);
+      return body?["prompt"]?.ToString() ?? 
+             string.Join(" ", (body?["messages"] as JArray)?.Select(m => m["content"]?.ToString()) ?? new string[0]);
+    }" />
+    
+    <choose>
+      <when condition="@{
+        var prompt = ((string)context.Variables["promptContent"]).ToLower();
+        var blockedTerms = new[] { "illegal", "harmful" };  // Add more as needed
+        return blockedTerms.Any(term => prompt.Contains(term));
+      }">
+        <return-response>
+          <set-status code="400" reason="Prohibited Content" />
+          <set-body>Request contains prohibited content</set-body>
+        </return-response>
+      </when>
+    </choose>
+    
+    <!-- Cache key for semantic caching -->
+    <set-variable name="cacheKey" value="@{
+      var body = context.Request.Body?.As<JObject>(preserveContent: true);
+      var prompt = body?["prompt"]?.ToString() ?? body?["messages"]?.ToString() ?? "";
+      var model = context.Request.MatchedParameters.ContainsKey("deployment-id") ? 
+                 context.Request.MatchedParameters["deployment-id"] : "default";
+      return $"ai-cache-{model}-{prompt.GetHashCode()}";
+    }" />
+    
+    <!-- Try cache lookup -->
+    <cache-lookup-value key="@((string)context.Variables["cacheKey"])" variable-name="cachedResponse" />
+    <choose>
+      <when condition="@(context.Variables.ContainsKey("cachedResponse"))">
+        <return-response>
+          <set-status code="200" />
+          <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+          </set-header>
+          <set-header name="X-Cache" exists-action="override">
+            <value>HIT</value>
+          </set-header>
+          <set-body>@((string)context.Variables["cachedResponse"])</set-body>
+        </return-response>
+      </when>
+    </choose>
+  </inbound>
+  
+  <backend>
+    <!-- Retry on rate limit (429) or server errors -->
+    <retry condition="@(context.Response != null && (context.Response.StatusCode == 429 || context.Response.StatusCode >= 500))" count="2" interval="2" delta="2">
+      <!-- Switch to alternate backend on failure -->
+      <choose>
+        <when condition="@(context.Response.StatusCode == 429 || context.Response.StatusCode >= 500)">
+          <set-backend-service backend-id="@((int)context.Variables["backendIndex"] == 0 ? "aoai-westus" : "aoai-eastus")" />
+        </when>
+      </choose>
+      <forward-request timeout="120" />
+    </retry>
+  </backend>
+  
+  <outbound>
+    <base />
+    
+    <!-- Log token usage and cost for billing/analytics -->
+    <choose>
+      <when condition="@(context.Response.StatusCode == 200)">
+        <!-- Cache successful responses -->
+        <cache-store-value 
+          key="@((string)context.Variables["cacheKey"])" 
+          value="@(context.Response.Body.As<string>(preserveContent: true))" 
+          duration="3600" />
+        
+        <!-- Extract and log token usage -->
+        <log-to-eventhub logger-id="ai-usage-logger">
+          @{
+            var responseBody = context.Response.Body?.As<JObject>(preserveContent: true);
+            var usage = responseBody?["usage"];
+            var model = context.Request.MatchedParameters.ContainsKey("deployment-id") ? 
+                       context.Request.MatchedParameters["deployment-id"] : "unknown";
+            
+            var promptTokens = (int?)usage?["prompt_tokens"] ?? 0;
+            var completionTokens = (int?)usage?["completion_tokens"] ?? 0;
+            var totalTokens = (int?)usage?["total_tokens"] ?? 0;
+            
+            // Estimate cost (GPT-4 rates as example)
+            var inputCostPer1K = 0.03;
+            var outputCostPer1K = 0.06;
+            var estimatedCost = (promptTokens / 1000.0 * inputCostPer1K) + 
+                              (completionTokens / 1000.0 * outputCostPer1K);
+            
+            return new JObject(
+              new JProperty("timestamp", DateTime.UtcNow),
+              new JProperty("userId", context.Variables["userId"]),
+              new JProperty("subscriptionId", context.Subscription?.Id),
+              new JProperty("model", model),
+              new JProperty("promptTokens", promptTokens),
+              new JProperty("completionTokens", completionTokens),
+              new JProperty("totalTokens", totalTokens),
+              new JProperty("estimatedCost", estimatedCost),
+              new JProperty("cached", false)
+            ).ToString();
+          }
+        </log-to-eventhub>
+        
+        <!-- Add cost headers for client visibility -->
+        <set-header name="X-Token-Usage" exists-action="override">
+          <value>@{
+            var usage = context.Response.Body?.As<JObject>(preserveContent: true)?["usage"];
+            return usage?.ToString() ?? "unknown";
+          }</value>
+        </set-header>
+      </when>
+    </choose>
+  </outbound>
+  
+  <on-error>
+    <base />
+    
+    <!-- Handle rate limit errors gracefully -->
+    <choose>
+      <when condition="@(context.LastError.Reason == "RateLimitExceeded" || context.LastError.Reason == "QuotaExceeded")">
+        <return-response>
+          <set-status code="429" reason="Token Limit Exceeded" />
+          <set-header name="Retry-After" exists-action="override">
+            <value>60</value>
+          </set-header>
+          <set-body>@{
+            return new JObject(
+              new JProperty("error", new JObject(
+                new JProperty("code", "token_limit_exceeded"),
+                new JProperty("message", "AI API token limit exceeded. Please reduce request frequency or contact support for increased quota."),
+                new JProperty("userId", context.Variables["userId"])
+              ))
+            ).ToString();
+          }</set-body>
+        </return-response>
+      </when>
+    </choose>
+  </on-error>
+</policies>
+
+<!--
+Azure OpenAI Backend Configuration:
+In APIM, create backends for each Azure OpenAI instance:
+
+Name: aoai-eastus
+URL: https://aoai-eastus.openai.azure.com/openai
+Circuit Breaker: Enabled (3 failures, 1 minute)
+
+Name: aoai-westus
+URL: https://aoai-westus.openai.azure.com/openai
+Circuit Breaker: Enabled (3 failures, 1 minute)
+
+Required Named Values:
+- None (using Managed Identity)
+
+Event Hub Logger:
+Configure Event Hub logger for AI usage tracking:
+- Name: ai-usage-logger
+- Event Hub: ai-usage-events
+- Connection String: From Key Vault
+
+Cost Tracking Query (Log Analytics):
+AIUsageLogs
+| where TimeGenerated > ago(30d)
+| summarize TotalCost = sum(estimatedCost), TotalTokens = sum(totalTokens) by userId
+| order by TotalCost desc
+
+Features:
+1. Cost Control: Per-user quotas and rate limits
+2. Load Balancing: Distribute across multiple Azure OpenAI instances
+3. Failover: Automatic retry with alternate backend
+4. Caching: Response caching to reduce costs
+5. Monitoring: Detailed token usage and cost tracking
+6. Security: Hide Azure OpenAI keys, use Managed Identity
+7. Content Filtering: Block prohibited content
+8. Budget Alerts: Track spending per user/team
+
+Advanced Patterns:
+1. Semantic Caching: Cache based on semantic similarity (requires external service)
+2. A/B Testing: Route to different models based on user segment
+3. Cost Allocation: Chargeback to business units
+4. Prompt Engineering: Inject system prompts for guardrails
+5. Token Optimization: Truncate prompts to fit limits
+6. Multi-Model Routing: Route to GPT-3.5 or GPT-4 based on complexity
+
+Best Practices:
+1. Always use Managed Identity (never expose API keys)
+2. Implement token-based rate limiting (not just call count)
+3. Cache aggressively (AI responses are expensive)
+4. Log all usage for cost tracking and chargeback
+5. Set up budget alerts
+6. Monitor for abuse or anomalies
+7. Implement content filtering for compliance
+8. Document model selection criteria
+9. Test at scale before production
+10. Plan for model version updates
+
+Cost Optimization:
+- Cache identical prompts
+- Use GPT-3.5 for simple queries
+- Truncate long prompts
+- Batch requests where possible
+- Set token limits (max_tokens)
+- Monitor and optimize inefficient prompts
+
+Testing:
+# Test with subscription key
+curl -X POST https://apim-instance.azure-api.net/openai/deployments/gpt-4/chat/completions?api-version=2023-05-15 \
+  -H "Ocp-Apim-Subscription-Key: <key>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "max_tokens": 50
+  }'
+
+# Check headers for cost info
+-H "X-Token-Usage" will show token consumption
+-->

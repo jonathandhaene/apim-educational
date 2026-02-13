@@ -1,0 +1,99 @@
+{
+  "info": {
+    "name": "APIM Sample API Tests",
+    "_postman_id": "sample-api-tests",
+    "description": "Test collection for Sample API via Azure API Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has message\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Ocp-Apim-Subscription-Key",
+            "value": "{{subscriptionKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{gatewayUrl}}/sample/httpTrigger?name=Postman",
+          "host": ["{{gatewayUrl}}"],
+          "path": ["sample", "httpTrigger"],
+          "query": [
+            {
+              "key": "name",
+              "value": "Postman"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST with Body",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Message contains name\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include('Alice');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Ocp-Apim-Subscription-Key",
+            "value": "{{subscriptionKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "text/plain",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "Alice"
+        },
+        "url": {
+          "raw": "{{gatewayUrl}}/sample/httpTrigger",
+          "host": ["{{gatewayUrl}}"],
+          "path": ["sample", "httpTrigger"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

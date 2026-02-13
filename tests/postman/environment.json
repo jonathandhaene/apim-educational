@@ -1,0 +1,19 @@
+{
+  "id": "apim-dev-environment",
+  "name": "APIM Dev Environment",
+  "values": [
+    {
+      "key": "gatewayUrl",
+      "value": "https://apim-dev.azure-api.net",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "subscriptionKey",
+      "value": "YOUR_SUBSCRIPTION_KEY_HERE",
+      "type": "secret",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

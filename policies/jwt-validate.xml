@@ -1,0 +1,85 @@
+<!-- JWT Validation Policy for Microsoft Entra ID (Azure AD) -->
+<!-- This policy validates JWT tokens issued by Microsoft Entra ID -->
+
+<policies>
+  <inbound>
+    <base />
+    
+    <!-- Validate JWT token -->
+    <validate-jwt 
+      header-name="Authorization" 
+      failed-validation-httpcode="401" 
+      failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+      
+      <!-- OpenID configuration endpoint for token validation -->
+      <openid-config url="https://login.microsoftonline.com/{{tenant-id}}/v2.0/.well-known/openid-configuration" />
+      
+      <!-- Expected audience (client ID of API) -->
+      <audiences>
+        <audience>{{api-audience}}</audience>
+      </audiences>
+      
+      <!-- Trusted issuers -->
+      <issuers>
+        <issuer>https://sts.windows.net/{{tenant-id}}/</issuer>
+        <issuer>https://login.microsoftonline.com/{{tenant-id}}/v2.0</issuer>
+      </issuers>
+      
+      <!-- Required claims (roles or scopes) -->
+      <required-claims>
+        <!-- Option 1: Role-based access control -->
+        <claim name="roles" match="any">
+          <value>API.Read</value>
+          <value>API.Write</value>
+          <value>API.Admin</value>
+        </claim>
+        
+        <!-- Option 2: Scope-based access control (uncomment if needed) -->
+        <!-- <claim name="scp" match="any">
+          <value>api.read</value>
+          <value>api.write</value>
+        </claim> -->
+      </required-claims>
+    </validate-jwt>
+    
+    <!-- Optional: Extract user info from JWT -->
+    <set-variable name="userId" value="@(context.Request.Headers.GetValueOrDefault("Authorization","").AsJwt()?.Claims.GetValueOrDefault("oid", ""))" />
+    <set-variable name="userEmail" value="@(context.Request.Headers.GetValueOrDefault("Authorization","").AsJwt()?.Claims.GetValueOrDefault("email", ""))" />
+    
+    <!-- Optional: Add user context to backend headers -->
+    <set-header name="X-User-Id" exists-action="override">
+      <value>@((string)context.Variables["userId"])</value>
+    </set-header>
+    <set-header name="X-User-Email" exists-action="override">
+      <value>@((string)context.Variables["userEmail"])</value>
+    </set-header>
+  </inbound>
+  
+  <backend>
+    <base />
+  </backend>
+  
+  <outbound>
+    <base />
+  </outbound>
+  
+  <on-error>
+    <base />
+  </on-error>
+</policies>
+
+<!--
+Usage:
+1. Replace {{tenant-id}} with your Azure AD tenant ID
+2. Replace {{api-audience}} with your API's client ID (from Azure AD app registration)
+3. Ensure users/applications have the required roles assigned in Azure AD
+
+Named Values Required:
+- tenant-id: Your Azure AD tenant ID
+- api-audience: Your API application ID
+
+Testing:
+1. Obtain JWT token from Azure AD using OAuth 2.0
+2. Include token in Authorization header: "Bearer <token>"
+3. Token must have required audience and roles/scopes
+-->
