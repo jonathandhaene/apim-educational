@@ -331,7 +331,7 @@ securitySchemes:
     {
         "transformed": {
             "userId": "{{body.user.id}}",
-            "timestamp": "{{context.Request.OriginalUrl}}"
+            "timestamp": "{{context.Timestamp}}"
         }
     }
     </set-body>
