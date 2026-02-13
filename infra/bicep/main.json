@@ -1,0 +1,1052 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.40.2.10011",
+      "templateHash": "15317027463604910067"
+    }
+  },
+  "parameters": {
+    "environment": {
+      "type": "string",
+      "defaultValue": "dev",
+      "allowedValues": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "metadata": {
+        "description": "Environment name (dev, staging, prod)"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Azure region for resources"
+      }
+    },
+    "baseName": {
+      "type": "string",
+      "defaultValue": "apim",
+      "metadata": {
+        "description": "Base name for resources"
+      }
+    },
+    "apimSku": {
+      "type": "string",
+      "defaultValue": "Developer",
+      "allowedValues": [
+        "Consumption",
+        "Developer",
+        "Basic",
+        "Standard",
+        "Premium",
+        "BasicV2",
+        "StandardV2"
+      ],
+      "metadata": {
+        "description": "APIM SKU name"
+      }
+    },
+    "apimCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 12,
+      "metadata": {
+        "description": "APIM capacity (units)"
+      }
+    },
+    "publisherEmail": {
+      "type": "string",
+      "metadata": {
+        "description": "Publisher email for APIM"
+      }
+    },
+    "publisherName": {
+      "type": "string",
+      "metadata": {
+        "description": "Publisher organization name"
+      }
+    },
+    "enableVNet": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable VNet integration"
+      }
+    },
+    "vnetType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "External",
+        "Internal"
+      ],
+      "metadata": {
+        "description": "VNet integration type (None, External, Internal)"
+      }
+    },
+    "enableCustomDomain": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable custom domain"
+      }
+    },
+    "customDomainHostname": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Custom domain hostname (e.g., api.contoso.com)"
+      }
+    },
+    "keyVaultId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Key Vault resource ID for certificates (if using custom domain)"
+      }
+    },
+    "certificateSecretName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Certificate secret name in Key Vault"
+      }
+    },
+    "enableAppInsights": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable Application Insights"
+      }
+    },
+    "enableLogAnalytics": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable Log Analytics"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "Environment": "[parameters('environment')]",
+        "ManagedBy": "Bicep",
+        "Purpose": "Educational"
+      },
+      "metadata": {
+        "description": "Tags for all resources"
+      }
+    }
+  },
+  "variables": {
+    "resourceNames": {
+      "apim": "[format('{0}-{1}', parameters('baseName'), parameters('environment'))]",
+      "appInsights": "[format('appi-{0}-{1}', parameters('baseName'), parameters('environment'))]",
+      "logAnalytics": "[format('log-{0}-{1}', parameters('baseName'), parameters('environment'))]",
+      "vnet": "[format('vnet-{0}-{1}', parameters('baseName'), parameters('environment'))]",
+      "subnet": "[format('snet-{0}-{1}', parameters('baseName'), parameters('environment'))]",
+      "nsg": "[format('nsg-{0}-{1}', parameters('baseName'), parameters('environment'))]"
+    }
+  },
+  "resources": [
+    {
+      "condition": "[or(parameters('enableAppInsights'), parameters('enableLogAnalytics'))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "diagnostics-deployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "appInsightsName": {
+            "value": "[variables('resourceNames').appInsights]"
+          },
+          "logAnalyticsName": {
+            "value": "[variables('resourceNames').logAnalytics]"
+          },
+          "enableAppInsights": {
+            "value": "[parameters('enableAppInsights')]"
+          },
+          "enableLogAnalytics": {
+            "value": "[parameters('enableLogAnalytics')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.40.2.10011",
+              "templateHash": "5450233212121321828"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region"
+              }
+            },
+            "appInsightsName": {
+              "type": "string",
+              "metadata": {
+                "description": "Application Insights name"
+              }
+            },
+            "logAnalyticsName": {
+              "type": "string",
+              "metadata": {
+                "description": "Log Analytics workspace name"
+              }
+            },
+            "enableAppInsights": {
+              "type": "bool",
+              "metadata": {
+                "description": "Enable Application Insights"
+              }
+            },
+            "enableLogAnalytics": {
+              "type": "bool",
+              "metadata": {
+                "description": "Enable Log Analytics"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags"
+              }
+            },
+            "retentionInDays": {
+              "type": "int",
+              "defaultValue": 30,
+              "minValue": 30,
+              "maxValue": 730,
+              "metadata": {
+                "description": "Log Analytics retention in days"
+              }
+            }
+          },
+          "resources": [
+            {
+              "condition": "[parameters('enableLogAnalytics')]",
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2022-10-01",
+              "name": "[parameters('logAnalyticsName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "sku": {
+                  "name": "PerGB2018"
+                },
+                "retentionInDays": "[parameters('retentionInDays')]",
+                "features": {
+                  "enableLogAccessUsingOnlyResourcePermissions": true
+                },
+                "workspaceCapping": {
+                  "dailyQuotaGb": -1
+                },
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              }
+            },
+            {
+              "condition": "[parameters('enableAppInsights')]",
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[parameters('appInsightsName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "WorkspaceResourceId": "[if(parameters('enableLogAnalytics'), resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), null())]",
+                "RetentionInDays": 30,
+                "IngestionMode": "[if(parameters('enableLogAnalytics'), 'LogAnalytics', 'ApplicationInsights')]",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "appInsightsId": {
+              "type": "string",
+              "metadata": {
+                "description": "Application Insights resource ID"
+              },
+              "value": "[if(parameters('enableAppInsights'), resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '')]"
+            },
+            "appInsightsInstrumentationKey": {
+              "type": "string",
+              "metadata": {
+                "description": "Application Insights instrumentation key"
+              },
+              "value": "[if(parameters('enableAppInsights'), reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '2020-02-02').InstrumentationKey, '')]"
+            },
+            "appInsightsConnectionString": {
+              "type": "string",
+              "metadata": {
+                "description": "Application Insights connection string"
+              },
+              "value": "[if(parameters('enableAppInsights'), reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '2020-02-02').ConnectionString, '')]"
+            },
+            "logAnalyticsId": {
+              "type": "string",
+              "metadata": {
+                "description": "Log Analytics workspace ID"
+              },
+              "value": "[if(parameters('enableLogAnalytics'), resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '')]"
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Log Analytics workspace resource ID"
+              },
+              "value": "[if(parameters('enableLogAnalytics'), reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2022-10-01').customerId, '')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[and(parameters('enableVNet'), not(equals(parameters('vnetType'), 'None')))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "network-deployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vnetName": {
+            "value": "[variables('resourceNames').vnet]"
+          },
+          "subnetName": {
+            "value": "[variables('resourceNames').subnet]"
+          },
+          "nsgName": {
+            "value": "[variables('resourceNames').nsg]"
+          },
+          "vnetType": {
+            "value": "[parameters('vnetType')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.40.2.10011",
+              "templateHash": "5266284927038511040"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region"
+              }
+            },
+            "vnetName": {
+              "type": "string",
+              "metadata": {
+                "description": "VNet name"
+              }
+            },
+            "subnetName": {
+              "type": "string",
+              "metadata": {
+                "description": "Subnet name"
+              }
+            },
+            "nsgName": {
+              "type": "string",
+              "metadata": {
+                "description": "NSG name"
+              }
+            },
+            "vnetType": {
+              "type": "string",
+              "allowedValues": [
+                "None",
+                "External",
+                "Internal"
+              ],
+              "metadata": {
+                "description": "VNet integration type"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags"
+              }
+            },
+            "vnetAddressPrefix": {
+              "type": "string",
+              "defaultValue": "10.0.0.0/16",
+              "metadata": {
+                "description": "VNet address prefix"
+              }
+            },
+            "subnetAddressPrefix": {
+              "type": "string",
+              "defaultValue": "10.0.1.0/24",
+              "metadata": {
+                "description": "Subnet address prefix"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2023-04-01",
+              "name": "[parameters('nsgName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "AllowClientToGateway",
+                    "properties": {
+                      "description": "Allow client traffic to API gateway",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRanges": [
+                        "80",
+                        "443"
+                      ],
+                      "sourceAddressPrefix": "[if(equals(parameters('vnetType'), 'External'), 'Internet', 'VirtualNetwork')]",
+                      "destinationAddressPrefix": "VirtualNetwork",
+                      "access": "Allow",
+                      "priority": 100,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "AllowManagementEndpoint",
+                    "properties": {
+                      "description": "Management endpoint for Azure portal and PowerShell",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "3443",
+                      "sourceAddressPrefix": "ApiManagement",
+                      "destinationAddressPrefix": "VirtualNetwork",
+                      "access": "Allow",
+                      "priority": 110,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "AllowLoadBalancer",
+                    "properties": {
+                      "description": "Azure Infrastructure Load Balancer",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "6390",
+                      "sourceAddressPrefix": "AzureLoadBalancer",
+                      "destinationAddressPrefix": "VirtualNetwork",
+                      "access": "Allow",
+                      "priority": 120,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "AllowStorageOutbound",
+                    "properties": {
+                      "description": "Dependency on Azure Storage",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "Storage",
+                      "access": "Allow",
+                      "priority": 100,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AllowSqlOutbound",
+                    "properties": {
+                      "description": "Dependency on Azure SQL",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "1433",
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "Sql",
+                      "access": "Allow",
+                      "priority": 110,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AllowKeyVaultOutbound",
+                    "properties": {
+                      "description": "Dependency on Azure Key Vault",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "AzureKeyVault",
+                      "access": "Allow",
+                      "priority": 120,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AllowMonitorOutbound",
+                    "properties": {
+                      "description": "Monitoring and diagnostics",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRanges": [
+                        "443",
+                        "1886",
+                        "12000-12001"
+                      ],
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "AzureMonitor",
+                      "access": "Allow",
+                      "priority": 130,
+                      "direction": "Outbound"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2023-04-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('vnetAddressPrefix')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('subnetAddressPrefix')]",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                      },
+                      "serviceEndpoints": [
+                        {
+                          "service": "Microsoft.Storage"
+                        },
+                        {
+                          "service": "Microsoft.Sql"
+                        },
+                        {
+                          "service": "Microsoft.KeyVault"
+                        },
+                        {
+                          "service": "Microsoft.EventHub"
+                        }
+                      ],
+                      "delegations": []
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "vnetId": {
+              "type": "string",
+              "metadata": {
+                "description": "VNet resource ID"
+              },
+              "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+            },
+            "subnetId": {
+              "type": "string",
+              "metadata": {
+                "description": "Subnet resource ID"
+              },
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '2023-04-01').subnets[0].id]"
+            },
+            "nsgId": {
+              "type": "string",
+              "metadata": {
+                "description": "NSG resource ID"
+              },
+              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+            },
+            "subnetAddressPrefix": {
+              "type": "string",
+              "metadata": {
+                "description": "Subnet address prefix"
+              },
+              "value": "[parameters('subnetAddressPrefix')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "apim-deployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "apimName": {
+            "value": "[variables('resourceNames').apim]"
+          },
+          "apimSku": {
+            "value": "[parameters('apimSku')]"
+          },
+          "apimCapacity": {
+            "value": "[parameters('apimCapacity')]"
+          },
+          "publisherEmail": {
+            "value": "[parameters('publisherEmail')]"
+          },
+          "publisherName": {
+            "value": "[parameters('publisherName')]"
+          },
+          "vnetType": {
+            "value": "[parameters('vnetType')]"
+          },
+          "subnetId": "[if(and(parameters('enableVNet'), not(equals(parameters('vnetType'), 'None'))), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'network-deployment'), '2025-04-01').outputs.subnetId.value), createObject('value', ''))]",
+          "enableCustomDomain": {
+            "value": "[parameters('enableCustomDomain')]"
+          },
+          "customDomainHostname": {
+            "value": "[parameters('customDomainHostname')]"
+          },
+          "keyVaultId": {
+            "value": "[parameters('keyVaultId')]"
+          },
+          "certificateSecretName": {
+            "value": "[parameters('certificateSecretName')]"
+          },
+          "appInsightsId": "[if(parameters('enableAppInsights'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'diagnostics-deployment'), '2025-04-01').outputs.appInsightsId.value), createObject('value', ''))]",
+          "appInsightsInstrumentationKey": "[if(parameters('enableAppInsights'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'diagnostics-deployment'), '2025-04-01').outputs.appInsightsInstrumentationKey.value), createObject('value', ''))]",
+          "logAnalyticsId": "[if(parameters('enableLogAnalytics'), createObject('value', reference(resourceId('Microsoft.Resources/deployments', 'diagnostics-deployment'), '2025-04-01').outputs.logAnalyticsId.value), createObject('value', ''))]",
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.40.2.10011",
+              "templateHash": "10562072449021880923"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region for APIM"
+              }
+            },
+            "apimName": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM instance name"
+              }
+            },
+            "apimSku": {
+              "type": "string",
+              "allowedValues": [
+                "Consumption",
+                "Developer",
+                "Basic",
+                "Standard",
+                "Premium",
+                "BasicV2",
+                "StandardV2"
+              ],
+              "metadata": {
+                "description": "APIM SKU"
+              }
+            },
+            "apimCapacity": {
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 12,
+              "metadata": {
+                "description": "APIM capacity"
+              }
+            },
+            "publisherEmail": {
+              "type": "string",
+              "minLength": 1,
+              "metadata": {
+                "description": "Publisher email"
+              }
+            },
+            "publisherName": {
+              "type": "string",
+              "minLength": 1,
+              "metadata": {
+                "description": "Publisher organization name"
+              }
+            },
+            "vnetType": {
+              "type": "string",
+              "allowedValues": [
+                "None",
+                "External",
+                "Internal"
+              ],
+              "metadata": {
+                "description": "VNet type"
+              }
+            },
+            "subnetId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Subnet resource ID for VNet injection"
+              }
+            },
+            "enableCustomDomain": {
+              "type": "bool",
+              "metadata": {
+                "description": "Enable custom domain"
+              }
+            },
+            "customDomainHostname": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Custom domain hostname"
+              }
+            },
+            "keyVaultId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Key Vault resource ID"
+              }
+            },
+            "certificateSecretName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Certificate secret name"
+              }
+            },
+            "appInsightsId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Application Insights resource ID"
+              }
+            },
+            "appInsightsInstrumentationKey": {
+              "type": "securestring",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Application Insights instrumentation key"
+              }
+            },
+            "logAnalyticsId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Log Analytics workspace ID"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Resource tags"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ApiManagement/service",
+              "apiVersion": "2023-09-01-preview",
+              "name": "[parameters('apimName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "[parameters('apimSku')]",
+                "capacity": "[if(or(or(equals(parameters('apimSku'), 'Consumption'), equals(parameters('apimSku'), 'BasicV2')), equals(parameters('apimSku'), 'StandardV2')), 0, parameters('apimCapacity'))]"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "publisherEmail": "[parameters('publisherEmail')]",
+                "publisherName": "[parameters('publisherName')]",
+                "virtualNetworkType": "[parameters('vnetType')]",
+                "virtualNetworkConfiguration": "[if(and(not(equals(parameters('vnetType'), 'None')), not(empty(parameters('subnetId')))), createObject('subnetResourceId', parameters('subnetId')), null())]",
+                "hostnameConfigurations": "[if(and(parameters('enableCustomDomain'), not(empty(parameters('customDomainHostname')))), createArray(createObject('type', 'Proxy', 'hostName', parameters('customDomainHostname'), 'certificateSource', 'KeyVault', 'keyVaultId', format('{0}/secrets/{1}', parameters('keyVaultId'), parameters('certificateSecretName')), 'negotiateClientCertificate', false(), 'defaultSslBinding', true())), null())]"
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('appInsightsId')))]",
+              "type": "Microsoft.ApiManagement/service/loggers",
+              "apiVersion": "2023-09-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'app-insights-logger')]",
+              "properties": {
+                "loggerType": "applicationInsights",
+                "description": "Application Insights logger",
+                "credentials": {
+                  "instrumentationKey": "[parameters('appInsightsInstrumentationKey')]"
+                },
+                "isBuffered": true,
+                "resourceId": "[parameters('appInsightsId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('appInsightsId')))]",
+              "type": "Microsoft.ApiManagement/service/diagnostics",
+              "apiVersion": "2023-09-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'applicationinsights')]",
+              "properties": {
+                "loggerId": "[resourceId('Microsoft.ApiManagement/service/loggers', parameters('apimName'), 'app-insights-logger')]",
+                "alwaysLog": "allErrors",
+                "sampling": {
+                  "samplingType": "fixed",
+                  "percentage": 100
+                },
+                "frontend": {
+                  "request": {
+                    "headers": [
+                      "Content-Type",
+                      "User-Agent",
+                      "Ocp-Apim-Subscription-Key"
+                    ],
+                    "body": {
+                      "bytes": 1024
+                    }
+                  },
+                  "response": {
+                    "headers": [
+                      "Content-Type"
+                    ],
+                    "body": {
+                      "bytes": 1024
+                    }
+                  }
+                },
+                "backend": {
+                  "request": {
+                    "headers": [
+                      "Content-Type"
+                    ],
+                    "body": {
+                      "bytes": 1024
+                    }
+                  },
+                  "response": {
+                    "headers": [
+                      "Content-Type"
+                    ],
+                    "body": {
+                      "bytes": 1024
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/loggers', parameters('apimName'), 'app-insights-logger')]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('logAnalyticsId')))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]",
+              "name": "[format('{0}-diagnostics', parameters('apimName'))]",
+              "properties": {
+                "workspaceId": "[parameters('logAnalyticsId')]",
+                "logs": [
+                  {
+                    "category": "GatewayLogs",
+                    "enabled": true,
+                    "retentionPolicy": {
+                      "enabled": true,
+                      "days": 30
+                    }
+                  },
+                  {
+                    "category": "WebSocketConnectionLogs",
+                    "enabled": true,
+                    "retentionPolicy": {
+                      "enabled": true,
+                      "days": 30
+                    }
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true,
+                    "retentionPolicy": {
+                      "enabled": true,
+                      "days": 30
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/namedValues",
+              "apiVersion": "2023-09-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'environment')]",
+              "properties": {
+                "displayName": "environment",
+                "value": "[parameters('tags').Environment]",
+                "secret": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "apimId": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM resource ID"
+              },
+              "value": "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+            },
+            "gatewayUrl": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM gateway URL"
+              },
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apimName')), '2023-09-01-preview').gatewayUrl]"
+            },
+            "managementUrl": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM management URL"
+              },
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apimName')), '2023-09-01-preview').managementApiUrl]"
+            },
+            "portalUrl": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM developer portal URL"
+              },
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apimName')), '2023-09-01-preview').portalUrl]"
+            },
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM principal ID (Managed Identity)"
+              },
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apimName')), '2023-09-01-preview', 'full').identity.principalId]"
+            },
+            "privateIPAddresses": {
+              "type": "array",
+              "metadata": {
+                "description": "APIM private IP addresses (VNet mode)"
+              },
+              "value": "[if(not(equals(parameters('vnetType'), 'None')), reference(resourceId('Microsoft.ApiManagement/service', parameters('apimName')), '2023-09-01-preview').privateIPAddresses, createArray())]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'diagnostics-deployment')]",
+        "[resourceId('Microsoft.Resources/deployments', 'network-deployment')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "apimId": {
+      "type": "string",
+      "metadata": {
+        "description": "API Management service ID"
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'apim-deployment'), '2025-04-01').outputs.apimId.value]"
+    },
+    "apimGatewayUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "API Management gateway URL"
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'apim-deployment'), '2025-04-01').outputs.gatewayUrl.value]"
+    },
+    "apimManagementUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "API Management management URL"
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'apim-deployment'), '2025-04-01').outputs.managementUrl.value]"
+    },
+    "apimPortalUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "API Management developer portal URL"
+      },
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'apim-deployment'), '2025-04-01').outputs.portalUrl.value]"
+    },
+    "appInsightsInstrumentationKey": {
+      "type": "string",
+      "metadata": {
+        "description": "Application Insights instrumentation key"
+      },
+      "value": "[if(parameters('enableAppInsights'), reference(resourceId('Microsoft.Resources/deployments', 'diagnostics-deployment'), '2025-04-01').outputs.appInsightsInstrumentationKey.value, '')]"
+    },
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Log Analytics workspace ID"
+      },
+      "value": "[if(parameters('enableLogAnalytics'), reference(resourceId('Microsoft.Resources/deployments', 'diagnostics-deployment'), '2025-04-01').outputs.logAnalyticsWorkspaceId.value, '')]"
+    }
+  }
+}
