@@ -67,12 +67,14 @@ APIM is injected into a VNet with private endpoints only; no public access by de
 - Gateway: Private IP only
 - Management: Accessible via VNet or public (configurable)
 - Developer portal: Private IP
-- Available: Developer, Premium tiers only
+- Available: Developer, Standard, Premium, Standard v2 tiers
 
 **Use cases:**
 - Internal corporate APIs
 - Private APIs for VNet-connected clients
 - ExpressRoute or VPN-connected on-premises clients
+
+> **Note on v2 Tiers**: Standard v2 tier introduced in 2024-2025 supports VNet injection with faster provisioning (5-15 minutes vs 30-45 minutes for classic tiers) and consumption-based pricing. Basic v2 does not support VNet injection but can use Private Endpoints.
 
 **Diagram:**
 ```
@@ -103,21 +105,23 @@ Use Azure Private Link to connect to APIM without VNet injection (available for 
 
 ### Prerequisites
 
-- **Tier**: Developer or Premium only for VNet injection
+- **Tier**: Developer, Standard, Premium for classic VNet injection; Standard v2 for v2 VNet injection
 - **VNet**: Existing Azure VNet
 - **Subnet**: Dedicated subnet for APIM (minimum /29, recommended /27 or larger)
 - **NSG**: Network Security Group with required rules
 - **Service Endpoints**: Microsoft.Storage, Microsoft.Sql (if using)
 
+> **v2 Tier Note**: Standard v2 supports VNet injection with the same subnet requirements but provisions 5-10x faster than classic tiers.
+
 ### External VNet Deployment
 
 **Bicep Example:**
 ```bicep
-resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
+resource apim 'Microsoft.ApiManagement/service@2023-09-01-preview' = {
   name: 'apim-external-example'
   location: location
   sku: {
-    name: 'Developer'
+    name: 'Developer' // or Standard, Premium, StandardV2
     capacity: 1
   }
   properties: {
