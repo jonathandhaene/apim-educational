@@ -132,9 +132,8 @@ resource "azurerm_api_management_named_value" "environment" {
 resource "azurerm_api_management_workspace" "workspaces" {
   for_each = var.workspaces
 
-  name                = each.key
-  api_management_name = azurerm_api_management.main.name
-  resource_group_name = var.resource_group_name
-  display_name        = each.value.display_name
-  description         = each.value.description
+  name              = each.key
+  api_management_id = azurerm_api_management.main.id
+  display_name      = each.value.display_name
+  description       = each.value.description
 }
