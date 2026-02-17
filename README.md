@@ -175,12 +175,13 @@ terraform apply -var-file="public-dev.tfvars"
 
 Start with our comprehensive hands-on labs that take you from beginner to expert:
 
-**[📚 View All Labs](labs/README.md)** - Five progressive labs covering:
+**[📚 View All Labs](labs/README.md)** - Six progressive labs covering:
 1. **[Lab 1: Beginner](labs/lab-01-beginner/README.md)** - Deploy APIM, import API, basic policies
 2. **[Lab 2: Intermediate](labs/lab-02-intermediate/README.md)** - Diagnostics, JWT, load testing
 3. **[Lab 3: Advanced](labs/lab-03-advanced/README.md)** - VNet, private endpoints, Key Vault
 4. **[Lab 4: Expert](labs/lab-04-expert/README.md)** - Self-hosted gateway, Front Door, blue/green
 5. **[Lab 5: Operations](labs/lab-05-ops-architecture/README.md)** - API Center, AI Gateway, best practices
+6. **[Lab 6: Workspaces](labs/lab-06-workspaces/README.md)** - APIM Workspaces, multi-environment management, workspace-specific policies
 
 Or explore other resources:
 1. **Navigate to labs**: `cd labs/lab-01-beginner/` - Hands-on guided learning
@@ -191,7 +192,7 @@ Or explore other resources:
 
 ## 📚 Learning Path
 
-Our structured learning path takes you from beginner to expert through five comprehensive labs. Each lab builds on concepts from previous ones:
+Our structured learning path takes you from beginner to expert through six comprehensive labs. Each lab builds on concepts from previous ones:
 
 ### [Complete Lab Series →](labs/README.md)
 
@@ -230,6 +231,14 @@ Our structured learning path takes you from beginner to expert through five comp
 - Understand disaster recovery strategies
 - Apply cost optimization techniques
 - Review production readiness checklist
+
+**[Lab 6: Workspaces](labs/lab-06-workspaces/README.md)** (60-90 min)
+- Configure APIM Workspaces for multi-environment management
+- Set up dev, test, and production workspace segmentation
+- Implement workspace-specific policies (permissive, moderate, strict)
+- Establish API promotion workflows across environments
+- Configure workspace-based RBAC and subscriptions
+- Enable team collaboration with isolated workspace configurations
 
 ## 🔄 Migrating to Azure APIM
 
