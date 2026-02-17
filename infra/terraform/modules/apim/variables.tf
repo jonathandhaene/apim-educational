@@ -82,3 +82,12 @@ variable "log_analytics_workspace_id" {
 variable "tags" {
   type = map(string)
 }
+
+variable "workspaces" {
+  type = map(object({
+    display_name = string
+    description  = string
+  }))
+  description = "Map of workspace configurations. Key is workspace name, value contains display_name and description"
+  default     = {}
+}

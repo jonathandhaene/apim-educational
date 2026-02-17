@@ -60,6 +60,12 @@ param tags object = {
   Purpose: 'Educational'
 }
 
+@description('Enable APIM Workspaces')
+param enableWorkspaces bool = false
+
+@description('Workspace configurations')
+param workspaceConfigs array = []
+
 // Variables
 var resourceNames = {
   apim: '${baseName}-${environment}'
@@ -123,6 +129,18 @@ module apim 'apim.bicep' = {
   ]
 }
 
+// Module: Workspaces (for API segmentation and collaboration)
+module workspaces 'workspace.bicep' = if (enableWorkspaces && length(workspaceConfigs) > 0) {
+  name: 'workspace-deployment'
+  params: {
+    apimName: resourceNames.apim
+    workspaces: workspaceConfigs
+  }
+  dependsOn: [
+    apim
+  ]
+}
+
 // Outputs
 @description('API Management service ID')
 output apimId string = apim.outputs.apimId
@@ -141,3 +159,9 @@ output appInsightsInstrumentationKey string = enableAppInsights ? diagnostics.ou
 
 @description('Log Analytics workspace ID')
 output logAnalyticsWorkspaceId string = enableLogAnalytics ? diagnostics.outputs.logAnalyticsWorkspaceId : ''
+
+@description('Workspace resource IDs')
+output workspaceIds array = enableWorkspaces && length(workspaceConfigs) > 0 ? workspaces.outputs.workspaceIds : []
+
+@description('Workspace names')
+output workspaceNames array = enableWorkspaces && length(workspaceConfigs) > 0 ? workspaces.outputs.workspaceNames : []

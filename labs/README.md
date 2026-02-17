@@ -13,6 +13,7 @@ Welcome to the hands-on labs for Azure API Management! This learning path takes 
 | [Lab 3: Advanced](lab-03-advanced/README.md) | Advanced | 90-120 min | VNet integration, private endpoints, Key Vault, revisions |
 | [Lab 4: Expert](lab-04-expert/README.md) | Expert | 120-150 min | Self-hosted gateway, Front Door, blue/green deployment, caching |
 | [Lab 5: Operations & Architecture](lab-05-ops-architecture/README.md) | Architecture | 90-120 min | API Center, AI Gateway, observability, DR, best practices |
+| [Lab 6: Workspaces](lab-06-workspaces/README.md) | Intermediate | 60-90 min | Multi-environment management, workspace segmentation, collaboration |
 
 ## 📋 Prerequisites
 
@@ -59,6 +60,8 @@ Each lab is designed to build on concepts from previous labs:
 4. **Lab 4 (Expert)**: Deploy at scale - set up self-hosted gateway using Docker Compose and Kubernetes, integrate with Azure Front Door and WAF, implement blue/green deployments with revisions, and optimize performance with caching strategies.
 
 5. **Lab 5 (Operations & Architecture)**: Production readiness - synchronize with Azure API Center, implement AI Gateway policies for LLM APIs, use observability with KQL queries, and review DR/cost optimization/best practices checklists.
+
+6. **Lab 6 (Workspaces)**: Multi-environment management - configure APIM Workspaces for dev/test/prod environments, manage APIs within workspaces, implement workspace-specific policies, and establish promotion workflows for API deployment across environments.
 
 ## 💡 Learning Tips
 
@@ -116,6 +119,12 @@ By completing all labs, you'll have hands-on experience with:
 - ✅ KQL queries for observability
 - ✅ Performance monitoring and optimization
 
+### Environment Management
+- ✅ APIM Workspaces for dev/test/prod segmentation
+- ✅ Workspace-specific policies and configurations
+- ✅ API promotion workflows across environments
+- ✅ Multi-environment collaboration patterns
+
 ### Advanced Patterns
 - ✅ AI Gateway for Azure OpenAI integration
 - ✅ Azure API Center synchronization
@@ -130,6 +139,7 @@ By completing all labs, you'll have hands-on experience with:
 - [Security Guide](../docs/security.md)
 - [Networking Guide](../docs/networking.md)
 - [Observability](../docs/observability.md)
+- [Workspaces Guide](../docs/workspaces.md)
 - [Troubleshooting](../docs/troubleshooting.md)
 
 ### Infrastructure Templates

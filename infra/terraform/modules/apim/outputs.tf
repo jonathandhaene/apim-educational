@@ -23,3 +23,8 @@ output "principal_id" {
 output "private_ip_addresses" {
   value = azurerm_api_management.main.private_ip_addresses
 }
+
+output "workspace_ids" {
+  value       = { for k, v in azurerm_api_management_workspace.workspaces : k => v.id }
+  description = "Map of workspace names to workspace resource IDs"
+}
