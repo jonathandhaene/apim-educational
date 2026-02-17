@@ -50,6 +50,40 @@ terraform plan -var-file="internal.tfvars"
 terraform apply -var-file="internal.tfvars"
 ```
 
+### Deploy with APIM Workspaces
+
+Workspaces enable multi-environment management within a single APIM instance:
+
+```bash
+# Deploy APIM with dev/test/prod workspaces
+terraform init
+terraform plan -var-file="workspaces-demo.tfvars"
+terraform apply -var-file="workspaces-demo.tfvars"
+```
+
+**Custom Workspace Configuration:**
+
+```hcl
+# Add to your .tfvars file
+workspaces = {
+  dev = {
+    display_name = "Development Workspace"
+    description  = "Workspace for development and experimentation"
+  }
+  test = {
+    display_name = "Testing Workspace"
+    description  = "Workspace for QA and integration testing"
+  }
+  prod = {
+    display_name = "Production Workspace"
+    description  = "Workspace for production APIs"
+  }
+}
+```
+
+See [Lab 6: Workspaces](../../labs/lab-06-workspaces/README.md) for hands-on tutorial.
+```
+
 ### Custom Deployment
 
 ```bash
@@ -99,6 +133,7 @@ See `variables.tf` for full list. Key variables:
 | `apim_sku` | No | `Developer` | APIM SKU tier |
 | `enable_vnet` | No | `false` | Enable VNet integration |
 | `enable_diagnostics` | No | `true` | Enable monitoring |
+| `workspaces` | No | `{}` | Map of workspace configurations |
 
 ## Outputs
 
@@ -167,6 +202,7 @@ Deploys:
 - Application Insights logger
 - Diagnostic settings
 - Named values
+- **APIM Workspaces** (optional, for multi-environment segmentation)
 
 ### Network Module (`modules/network/`)
 

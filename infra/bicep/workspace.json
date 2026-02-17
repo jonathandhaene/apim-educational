@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.40.2.10011",
+      "templateHash": "1412147926039984287"
+    }
+  },
+  "parameters": {
+    "apimName": {
+      "type": "string",
+      "metadata": {
+        "description": "APIM instance name"
+      }
+    },
+    "workspaces": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Workspace configurations"
+      }
+    }
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "workspace",
+        "count": "[length(parameters('workspaces'))]"
+      },
+      "type": "Microsoft.ApiManagement/service/workspaces",
+      "apiVersion": "2023-09-01-preview",
+      "name": "[format('{0}/{1}', parameters('apimName'), parameters('workspaces')[copyIndex()].name)]",
+      "properties": {
+        "displayName": "[parameters('workspaces')[copyIndex()].displayName]",
+        "description": "[parameters('workspaces')[copyIndex()].description]"
+      }
+    }
+  ],
+  "outputs": {
+    "workspaceIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Workspace resource IDs"
+      },
+      "copy": {
+        "count": "[length(range(0, length(parameters('workspaces'))))]",
+        "input": "[resourceId('Microsoft.ApiManagement/service/workspaces', parameters('apimName'), parameters('workspaces')[range(0, length(parameters('workspaces')))[copyIndex()]].name)]"
+      }
+    },
+    "workspaceNames": {
+      "type": "array",
+      "metadata": {
+        "description": "Workspace names"
+      },
+      "copy": {
+        "count": "[length(parameters('workspaces'))]",
+        "input": "[parameters('workspaces')[copyIndex()].name]"
+      }
+    }
+  }
+}

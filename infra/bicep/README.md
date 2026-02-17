@@ -10,9 +10,11 @@ bicep/
 ├── apim.bicep          # APIM instance module
 ├── network.bicep       # VNet, Subnet, NSG module
 ├── diagnostics.bicep   # App Insights, Log Analytics module
+├── workspace.bicep     # APIM Workspaces module
 └── params/             # Parameter files
     ├── public-dev.bicepparam    # Public APIM (dev)
-    └── internal.bicepparam      # Internal VNet mode
+    ├── internal.bicepparam      # Internal VNet mode
+    └── workspaces-demo.bicepparam # APIM with workspaces
 ```
 
 ## Quick Start
@@ -70,6 +72,50 @@ az deployment group create \
     enableVNet=false
 ```
 
+### Deploy with APIM Workspaces
+
+Workspaces enable multi-environment management within a single APIM instance:
+
+```bash
+# Create resource group
+az group create --name rg-apim-workspaces --location eastus
+
+# Deploy APIM with dev/test/prod workspaces
+az deployment group create \
+  --resource-group rg-apim-workspaces \
+  --template-file main.bicep \
+  --parameters params/workspaces-demo.bicepparam
+```
+
+**Custom Workspace Configuration:**
+
+```bash
+az deployment group create \
+  --resource-group rg-apim-workspaces \
+  --template-file main.bicep \
+  --parameters \
+    environment=dev \
+    baseName=myapi \
+    apimSku=Developer \
+    publisherEmail=admin@example.com \
+    publisherName="My Organization" \
+    enableWorkspaces=true \
+    workspaceConfigs='[
+      {
+        "name": "dev",
+        "displayName": "Development",
+        "description": "Dev workspace"
+      },
+      {
+        "name": "prod",
+        "displayName": "Production",
+        "description": "Prod workspace"
+      }
+    ]'
+```
+
+See [Lab 6: Workspaces](../../labs/lab-06-workspaces/README.md) for hands-on tutorial.
+
 ## Parameters
 
 ### Required Parameters
@@ -92,6 +138,8 @@ az deployment group create \
 | `enableCustomDomain` | `false` | Enable custom domain |
 | `enableAppInsights` | `true` | Enable Application Insights |
 | `enableLogAnalytics` | `true` | Enable Log Analytics |
+| `enableWorkspaces` | `false` | Enable APIM Workspaces |
+| `workspaceConfigs` | `[]` | Array of workspace configurations |
 
 ## Features
 
