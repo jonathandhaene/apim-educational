@@ -90,6 +90,7 @@ apim-educational/
 │   ├── tiers-and-skus.md     # SKU comparison and cost guidance
 │   ├── observability.md      # Monitoring and diagnostics
 │   ├── troubleshooting.md    # Common issues and solutions
+│   ├── workspaces.md         # APIM Workspaces for multi-environment management
 │   ├── api-center.md         # Azure API Center integration
 │   ├── front-door.md         # Front Door + APIM patterns
 │   ├── ai-gateway.md         # AI Gateway capabilities
@@ -105,7 +106,8 @@ apim-educational/
 │   ├── lab-02-intermediate/  # Diagnostics and security
 │   ├── lab-03-advanced/      # VNet and Key Vault
 │   ├── lab-04-expert/        # Self-hosted gateway and Front Door
-│   └── lab-05-ops-architecture/ # Operations and best practices
+│   ├── lab-05-ops-architecture/ # Operations and best practices
+│   └── lab-06-workspaces/    # APIM Workspaces for environment segmentation
 ├── src/                       # Sample applications
 │   ├── functions-sample/     # Azure Function example with Docker/K8s
 │   └── third-party-integrations/ # Twilio SMS and Stripe payments

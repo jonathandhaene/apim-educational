@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.40.2.10011",
-      "templateHash": "15317027463604910067"
+      "templateHash": "13914069692884228921"
     }
   },
   "parameters": {
@@ -142,6 +142,20 @@
       },
       "metadata": {
         "description": "Tags for all resources"
+      }
+    },
+    "enableWorkspaces": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable APIM Workspaces"
+      }
+    },
+    "workspaceConfigs": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Workspace configurations"
       }
     }
   },
@@ -1003,6 +1017,92 @@
         "[resourceId('Microsoft.Resources/deployments', 'diagnostics-deployment')]",
         "[resourceId('Microsoft.Resources/deployments', 'network-deployment')]"
       ]
+    },
+    {
+      "condition": "[and(parameters('enableWorkspaces'), greater(length(parameters('workspaceConfigs')), 0))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workspace-deployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "apimName": {
+            "value": "[variables('resourceNames').apim]"
+          },
+          "workspaces": {
+            "value": "[parameters('workspaceConfigs')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.40.2.10011",
+              "templateHash": "1412147926039984287"
+            }
+          },
+          "parameters": {
+            "apimName": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM instance name"
+              }
+            },
+            "workspaces": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Workspace configurations"
+              }
+            }
+          },
+          "resources": [
+            {
+              "copy": {
+                "name": "workspace",
+                "count": "[length(parameters('workspaces'))]"
+              },
+              "type": "Microsoft.ApiManagement/service/workspaces",
+              "apiVersion": "2023-09-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), parameters('workspaces')[copyIndex()].name)]",
+              "properties": {
+                "displayName": "[parameters('workspaces')[copyIndex()].displayName]",
+                "description": "[parameters('workspaces')[copyIndex()].description]"
+              }
+            }
+          ],
+          "outputs": {
+            "workspaceIds": {
+              "type": "array",
+              "metadata": {
+                "description": "Workspace resource IDs"
+              },
+              "copy": {
+                "count": "[length(range(0, length(parameters('workspaces'))))]",
+                "input": "[resourceId('Microsoft.ApiManagement/service/workspaces', parameters('apimName'), parameters('workspaces')[range(0, length(parameters('workspaces')))[copyIndex()]].name)]"
+              }
+            },
+            "workspaceNames": {
+              "type": "array",
+              "metadata": {
+                "description": "Workspace names"
+              },
+              "copy": {
+                "count": "[length(parameters('workspaces'))]",
+                "input": "[parameters('workspaces')[copyIndex()].name]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'apim-deployment')]"
+      ]
     }
   ],
   "outputs": {
@@ -1047,6 +1147,20 @@
         "description": "Log Analytics workspace ID"
       },
       "value": "[if(parameters('enableLogAnalytics'), reference(resourceId('Microsoft.Resources/deployments', 'diagnostics-deployment'), '2025-04-01').outputs.logAnalyticsWorkspaceId.value, '')]"
+    },
+    "workspaceIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Workspace resource IDs"
+      },
+      "value": "[if(and(parameters('enableWorkspaces'), greater(length(parameters('workspaceConfigs')), 0)), reference(resourceId('Microsoft.Resources/deployments', 'workspace-deployment'), '2025-04-01').outputs.workspaceIds.value, createArray())]"
+    },
+    "workspaceNames": {
+      "type": "array",
+      "metadata": {
+        "description": "Workspace names"
+      },
+      "value": "[if(and(parameters('enableWorkspaces'), greater(length(parameters('workspaceConfigs')), 0)), reference(resourceId('Microsoft.Resources/deployments', 'workspace-deployment'), '2025-04-01').outputs.workspaceNames.value, createArray())]"
     }
   }
 }
