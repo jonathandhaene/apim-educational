@@ -1,6 +1,6 @@
 # Azure API Management Labs
 
-Welcome to the hands-on labs for Azure API Management! This learning path takes you from beginner to expert through five progressive labs, each building upon the previous one.
+Welcome to the hands-on labs for Azure API Management! This learning path takes you from beginner to expert through six progressive labs, each building upon the previous one.
 
 > **⚠️ Educational Disclaimer**: These labs are designed for learning and skill development. Pricing estimates are indicative and based on 2026 rates in US regions. Always verify current pricing in your region using the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) and validate all configurations before production deployment. Cloud features and best practices evolve—consult [official Azure API Management documentation](https://learn.microsoft.com/azure/api-management/) for the latest guidance.
 
