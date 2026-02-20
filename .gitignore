@@ -7,6 +7,12 @@ target/
 bin/
 obj/
 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
 # Azure Functions
 local.settings.json
 __blobstorage__/

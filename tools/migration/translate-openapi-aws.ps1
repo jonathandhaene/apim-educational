@@ -1,17 +1,24 @@
 #
-# translate-openapi.ps1
+# translate-openapi-aws.ps1
 #
-# Translates and cleans OpenAPI specifications from Google API Gateway/Apigee
+# Translates and cleans OpenAPI specifications exported from AWS API Gateway
 # for import into Azure API Management.
-# Updated for 2026 best practices with enhanced error handling
 #
 # Features:
-#   - Removes Google-specific extensions (x-google-*)
+#   - Removes AWS-specific extensions (x-amazon-*)
 #   - Converts OpenAPI 2.0 (Swagger) specifications to OpenAPI 3.0
 #   - Automatically generates operationId for operations that lack one
 #   - Validates APIM-specific requirements (title, version, server URLs, security)
 #
-# Usage: .\translate-openapi.ps1 -InputFile <input> -OutputFile <output>
+# Usage: .\translate-openapi-aws.ps1 -InputFile <input> -OutputFile <output>
+#
+# Prerequisites:
+#   - Python 3 with PyYAML (pip install pyyaml)
+#   - Spectral CLI (optional): npm install -g @stoplight/spectral-cli
+#
+# See also:
+#   - ..\..\docs\migration\aws-to-apim.md   (full migration guide)
+#   - openapi_utils.py                      (core processing library)
 #
 
 $ErrorActionPreference = "Stop"
@@ -20,10 +27,10 @@ $ErrorActionPreference = "Stop"
 param(
     [Parameter(Mandatory=$true)]
     [string]$InputFile,
-    
+
     [Parameter(Mandatory=$true)]
     [string]$OutputFile,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$SkipValidation
 )
@@ -38,7 +45,7 @@ if (-not (Test-Path $InputFile)) {
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 Write-Host "=========================================" -ForegroundColor Cyan
-Write-Host "OpenAPI Translation Tool for APIM (Google)" -ForegroundColor Cyan
+Write-Host "OpenAPI Translation Tool for APIM (AWS)" -ForegroundColor Cyan
 Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host "Input:  $InputFile"
 Write-Host "Output: $OutputFile"
@@ -63,17 +70,17 @@ if (-not $SkipValidation) {
     }
 }
 
-# Step 2: Run openapi_utils.py (removes extensions, converts Swagger→OAS3,
+# Step 2: Run openapi_utils.py (removes AWS extensions, converts Swagger→OAS3,
 #         generates missing operationIds, validates APIM requirements)
-Write-Host "[2/4] Processing spec with openapi_utils.py (source: google)..." -ForegroundColor Yellow
-$python3Exists = Get-Command python3 -ErrorAction SilentlyContinue
-if (-not $python3Exists) {
-    $python3Exists = Get-Command python -ErrorAction SilentlyContinue
+Write-Host "[2/4] Processing spec with openapi_utils.py (source: aws)..." -ForegroundColor Yellow
+$pythonCmd = Get-Command python3 -ErrorAction SilentlyContinue
+if (-not $pythonCmd) {
+    $pythonCmd = Get-Command python -ErrorAction SilentlyContinue
 }
 
-if ($python3Exists) {
+if ($pythonCmd) {
     $utilsScript = Join-Path $ScriptDir "openapi_utils.py"
-    & $python3Exists.Name $utilsScript $InputFile $OutputFile --source google
+    & $pythonCmd.Name $utilsScript $InputFile $OutputFile --source aws
     if ($LASTEXITCODE -ne 0) {
         Write-Error "openapi_utils.py processing failed."
         exit 1
@@ -108,21 +115,25 @@ Write-Host "[4/4] Translation complete!" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "  1. Review the output file: $OutputFile" -ForegroundColor Gray
-Write-Host "  2. Manually translate any Google-specific policies" -ForegroundColor Gray
+Write-Host "  2. Manually translate any AWS-specific policies:" -ForegroundColor Gray
+Write-Host "     - Lambda authorizers  -> validate-jwt or custom policies" -ForegroundColor Gray
+Write-Host "     - Cognito User Pools  -> validate-jwt (OpenID Connect)" -ForegroundColor Gray
+Write-Host "     - Usage plans/API keys -> APIM subscriptions" -ForegroundColor Gray
+Write-Host "     - Stage variables      -> APIM Named Values" -ForegroundColor Gray
 Write-Host "  3. Import to APIM using: ..\..\scripts\import-openapi.ps1" -ForegroundColor Gray
 Write-Host ""
 Write-Warning "This is a helper script. Manual review is required!"
-Write-Host "      Refer to: ..\..\docs\migration\google-to-apim.md" -ForegroundColor Gray
+Write-Host "      Refer to: ..\..\docs\migration\aws-to-apim.md" -ForegroundColor Gray
 Write-Host ""
 
 <#
 .SYNOPSIS
-    Translates OpenAPI specs from Google API services to Azure APIM format.
+    Translates OpenAPI specs exported from AWS API Gateway to Azure APIM format.
 
 .DESCRIPTION
-    This script helps migrate OpenAPI specifications from Google Cloud API Gateway
-    or Apigee to Azure API Management by:
-      - Removing Google-specific extensions (x-google-*)
+    This script helps migrate OpenAPI specifications from AWS API Gateway to Azure
+    API Management by:
+      - Removing AWS-specific extensions (x-amazon-*)
       - Converting Swagger 2.0 specifications to OpenAPI 3.0 (via openapi_utils.py)
       - Automatically generating operationId for operations that lack one
       - Validating APIM-specific requirements (title, version, server URLs, security)
@@ -130,20 +141,26 @@ Write-Host ""
     Requires Python 3 with PyYAML installed:
         pip install pyyaml
 
+    Export your REST API from AWS first:
+        aws apigateway get-export `
+          --rest-api-id <api-id> --stage-name prod `
+          --export-type oas30 --accepts application/yaml `
+          > aws-api-export.yaml
+
 .PARAMETER InputFile
-    Path to the input OpenAPI specification file (YAML or JSON)
+    Path to the input OpenAPI specification file exported from AWS (YAML or JSON)
 
 .PARAMETER OutputFile
-    Path to write the cleaned OpenAPI specification
+    Path to write the cleaned OpenAPI specification ready for APIM import
 
 .PARAMETER SkipValidation
-    Skip Spectral validation steps
+    Skip Spectral linting steps
 
 .EXAMPLE
-    .\translate-openapi.ps1 -InputFile google-api.yaml -OutputFile apim-api.yaml
+    .\translate-openapi-aws.ps1 -InputFile aws-api-export.yaml -OutputFile apim-api.yaml
 
 .EXAMPLE
-    .\translate-openapi.ps1 -InputFile api.json -OutputFile cleaned.json -SkipValidation
+    .\translate-openapi-aws.ps1 -InputFile api.json -OutputFile cleaned.json -SkipValidation
 
 .NOTES
     Author: Azure APIM Educational Repository
