@@ -1,40 +1,21 @@
-# API Management Educational Resources
+# Repository Purpose
+This repository serves as a dedicated space for educational materials focused on API development and management. It is designed to provide hands-on experience through various labs and exercises that cover a wide range of API-related topics.
 
-## Description
-This repository serves as a comprehensive educational resource for understanding API management concepts, best practices, and implementation strategies. It contains various materials, examples, and instructions for both beginners and experienced developers looking to enhance their knowledge of API management.
+# Repository Structure
+The repository is organized into several directories, each containing labs that focus on specific aspects of API development, such as authentication, rate limiting, and versioning.
 
-## Table of Contents
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+# Labs
+Each lab is designed to build on the last, providing practical exposure to real-world API challenges. Labs include:
+- **Lab 1:** Understanding RESTful APIs
+- **Lab 2:** Implementing Authentication
+- **Lab 3:** Working with Rate Limiting
 
-## Installation
-To set up this repository locally, clone the repository and install the necessary dependencies:
+# Tools
+This repository utilizes various tools and frameworks to aid in the development and testing of APIs, including:
+- Postman
+- Swagger
+- Node.js
+- Express
 
-```bash
-git clone https://github.com/jonathandhaene/apim-educational.git
-cd apim-educational
-# Add any installation instructions here, like installing dependencies
-```
-
-## Usage
-Provide instructions on how to use the contents of the repository. Include code snippets and examples if applicable.
-
-```bash
-# Example command to run some API management tool or example
-```
-
-## Contributing
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-For inquiries, please contact:
-- **Name:** Jonathan Dhaene
-- **Email:** [your_email@example.com](mailto:your_email@example.com)
-
-Feel free to reach out for any questions or collaborations!
+# Disclaimer
+The materials provided in this repository are for educational purposes only. Users should apply the knowledge gained responsibly and ensure compliance with relevant laws and regulations when working with APIs.
