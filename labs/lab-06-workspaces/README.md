@@ -4,7 +4,7 @@
 **Duration**: 60-90 minutes  
 **Prerequisites**: Azure subscription, Azure CLI, completed Lab 1 or existing APIM instance
 
-> **⚠️ Educational Disclaimer**: This lab is designed for learning and skill development. Pricing estimates are indicative and based on 2026 rates in US regions. Always verify current pricing in your region using the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) and validate all configurations before production deployment. Cloud features and best practices evolve—consult [official Azure API Management documentation](https://learn.microsoft.com/azure/api-management/) for the latest guidance.
+> **⚠️ Educational Disclaimer**: This repository is provided for educational and learning purposes only. All content, including pricing estimates, tier recommendations, and infrastructure templates, should be validated and adapted for your specific production requirements. Azure API Management features, pricing, and best practices evolve frequently—always consult the <a href="https://learn.microsoft.com/azure/api-management/">official Azure documentation</a> and <a href="https://azure.microsoft.com/pricing/calculator/">Azure Pricing Calculator</a> for the most current information before making production decisions.
 
 ## Learning Objectives
 

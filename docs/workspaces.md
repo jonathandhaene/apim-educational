@@ -2,7 +2,7 @@
 
 This guide provides comprehensive documentation on APIM Workspaces, including their purpose, benefits, architecture patterns, and best practices for implementation.
 
-> **⚠️ Educational Disclaimer**: This documentation is provided for educational purposes. Always verify current Azure APIM features, limitations, and pricing in the [official Azure documentation](https://learn.microsoft.com/azure/api-management/) before production implementation.
+> **⚠️ Educational Disclaimer**: This repository is provided for educational and learning purposes only. All content, including pricing estimates, tier recommendations, and infrastructure templates, should be validated and adapted for your specific production requirements. Azure API Management features, pricing, and best practices evolve frequently—always consult the <a href="https://learn.microsoft.com/azure/api-management/">official Azure documentation</a> and <a href="https://azure.microsoft.com/pricing/calculator/">Azure Pricing Calculator</a> for the most current information before making production decisions.
 
 ## Table of Contents
 - [What are APIM Workspaces?](#what-are-apim-workspaces)
