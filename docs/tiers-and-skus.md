@@ -2,7 +2,7 @@
 
 This guide helps you choose the right Azure API Management tier for your needs, comparing features, limits, and costs.
 
-> **⚠️ Important**: This document provides indicative pricing and tier comparisons based on 2026 information for US regions. Azure API Management pricing, features, and tier availability vary by region and are subject to change. Always consult the [official Azure Pricing page](https://azure.microsoft.com/pricing/details/api-management/) and use the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for current, region-specific pricing and feature availability before making deployment decisions.
+> **⚠️ Educational Disclaimer**: This repository is provided for educational and learning purposes only. All content, including pricing estimates, tier recommendations, and infrastructure templates, should be validated and adapted for your specific production requirements. Azure API Management features, pricing, and best practices evolve frequently—always consult the <a href="https://learn.microsoft.com/azure/api-management/">official Azure documentation</a> and <a href="https://azure.microsoft.com/pricing/calculator/">Azure Pricing Calculator</a> for the most current information before making production decisions.
 
 ## Table of Contents
 - [Tier Overview](#tier-overview)

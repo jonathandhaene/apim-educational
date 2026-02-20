@@ -2,7 +2,7 @@
 
 This guide provides a comprehensive roadmap for migrating from AWS API Gateway (REST API and HTTP API) to Azure API Management (APIM).
 
-> **⚠️ Migration Guidance Disclaimer**: This migration guide is provided for educational purposes. Cloud platforms evolve rapidly—verify all feature mappings, pricing, and migration procedures with current official documentation before planning your migration. Consult with Azure support or migration specialists for production migrations. Pricing and tier information is indicative and based on 2026 estimates; actual costs vary by region and usage patterns.
+> **⚠️ Educational Disclaimer**: This repository is provided for educational and learning purposes only. All content, including pricing estimates, tier recommendations, and infrastructure templates, should be validated and adapted for your specific production requirements. Azure API Management features, pricing, and best practices evolve frequently—always consult the <a href="https://learn.microsoft.com/azure/api-management/">official Azure documentation</a> and <a href="https://azure.microsoft.com/pricing/calculator/">Azure Pricing Calculator</a> for the most current information before making production decisions.
 
 ## Table of Contents
 

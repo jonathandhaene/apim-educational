@@ -1,5 +1,7 @@
 # Migration Tools for API Gateway to Azure APIM
 
+> **⚠️ Educational Disclaimer**: This repository is provided for educational and learning purposes only. All content, including pricing estimates, tier recommendations, and infrastructure templates, should be validated and adapted for your specific production requirements. Azure API Management features, pricing, and best practices evolve frequently—always consult the <a href="https://learn.microsoft.com/azure/api-management/">official Azure documentation</a> and <a href="https://azure.microsoft.com/pricing/calculator/">Azure Pricing Calculator</a> for the most current information before making production decisions.
+
 This directory contains scripts and utilities to assist with migrating from Google's API services (Apigee, Cloud API Gateway) or AWS API Gateway to Azure API Management.
 
 ## Overview

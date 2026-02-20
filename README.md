@@ -2,7 +2,7 @@
 
 Welcome to the APIM Educational Repository! This repository is designed to help developers and learners understand Azure API Management (APIM) through comprehensive documentation, practical examples, hands-on labs, and migration tooling.
 
-> **⚠️ Educational Disclaimer**: All resources are intended for learning and skill development. Pricing estimates are indicative and based on 2026 rates in US regions. Always verify current pricing in your region using the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) and validate all configurations before production deployment. Cloud features and best practices evolve—consult the [official Azure API Management documentation](https://learn.microsoft.com/azure/api-management/) for the latest guidance.
+> **⚠️ Educational Disclaimer**: This repository is provided for educational and learning purposes only. All content, including pricing estimates, tier recommendations, and infrastructure templates, should be validated and adapted for your specific production requirements. Azure API Management features, pricing, and best practices evolve frequently—always consult the <a href="https://learn.microsoft.com/azure/api-management/">official Azure documentation</a> and <a href="https://azure.microsoft.com/pricing/calculator/">Azure Pricing Calculator</a> for the most current information before making production decisions.
 
 ## 📖 Purpose
 
