@@ -106,8 +106,6 @@ What it does — same pipeline as the Google version, but targets `x-amazon-*` e
 2. Identify equivalent APIM policies (see mapping tables in guides)
 3. Rewrite using APIM policy syntax
 4. Test thoroughly in non-production
-3. Rewrite using APIM policy syntax
-4. Test thoroughly in non-production
 
 **Example Policy Mapping**:
 

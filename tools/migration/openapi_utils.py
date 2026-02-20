@@ -243,7 +243,7 @@ def convert_swagger_to_openapi3(spec: dict) -> dict:
     Returns:
         OpenAPI 3.0 specification dict.
     """
-    if spec.get("swagger", "").startswith("3") or spec.get("openapi", ""):
+    if spec.get("openapi", ""):
         # Already OpenAPI 3.x — return as-is (possibly after ref rewrite)
         return _convert_schema_refs(spec)
 
