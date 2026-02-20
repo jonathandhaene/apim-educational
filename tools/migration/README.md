@@ -1,10 +1,10 @@
-# Migration Tools for Google API to Azure APIM
+# Migration Tools for API Gateway to Azure APIM
 
-This directory contains scripts and utilities to assist with migrating from Google's API services (Apigee, Cloud API Gateway) to Azure API Management.
+This directory contains scripts and utilities to assist with migrating from Google's API services (Apigee, Cloud API Gateway) or AWS API Gateway to Azure API Management.
 
 ## Overview
 
-Migration from Google API services to Azure APIM involves:
+Migration from API gateway services to Azure APIM involves:
 1. **Assessment**: Inventory APIs, policies, configurations
 2. **Translation**: Convert OpenAPI specs and policies
 3. **Import**: Load APIs and configurations into APIM
@@ -13,41 +13,99 @@ Migration from Google API services to Azure APIM involves:
 
 ## Tools Provided
 
-### 1. OpenAPI Translation Scripts
+### 1. openapi_utils.py — Core Processing Library
 
-**Purpose**: Clean, lint, and prepare OpenAPI specifications for APIM import.
+**Purpose**: Python library that performs the heavy lifting for all translation scripts.
 
-#### translate-openapi.sh (Bash)
+**Features**:
+- **Swagger 2.0 → OpenAPI 3.0 conversion** — converts `swagger: "2.0"` specs to `openapi: "3.0.0"`, including `servers[]` from `host`/`basePath`/`schemes`, `components/securitySchemes` from `securityDefinitions`, `components/schemas` from `definitions`, `requestBody` from body/formData parameters, and `$ref` path rewriting.
+- **Automatic `operationId` generation** — generates descriptive camelCase IDs (`getUsers`, `postUsersByUserId`) for any operation that lacks one; disambiguates duplicates with a numeric suffix.
+- **APIM requirement validation** — checks for mandatory `info.title` and `info.version`, at least one server URL, supported security scheme types, and unique `operationId` values.
+- **Vendor extension removal** — strips `x-amazon-*` (AWS) or `x-google-*` (Google) extensions from all levels of the spec.
+
+**Usage**:
+```bash
+# AWS API Gateway spec
+python3 openapi_utils.py aws-export.yaml apim-api.yaml --source aws
+
+# Google API Gateway / Apigee spec
+python3 openapi_utils.py google-export.yaml apim-api.yaml --source google
+
+# Validate only (no output file written)
+python3 openapi_utils.py spec.yaml /dev/null --validate-only
+
+# Skip Swagger→OAS3 conversion or operationId generation
+python3 openapi_utils.py spec.yaml out.yaml --no-convert
+python3 openapi_utils.py spec.yaml out.yaml --no-operationid
+```
+
+**Prerequisites**:
+```bash
+pip install pyyaml
+```
+
+**Tests**:
+```bash
+# Run unit tests (45 tests covering all major features)
+python3 -m pytest tests/test_openapi_utils.py -v
+```
+
+---
+
+### 2. OpenAPI Translation Scripts
+
+**Purpose**: Shell and PowerShell wrappers that orchestrate Spectral linting and call `openapi_utils.py`.
+
+#### translate-openapi.sh / translate-openapi.ps1 (Google API Gateway / Apigee)
 
 ```bash
-# Usage
-./translate-openapi.sh input.yaml output.yaml
+# Bash (Linux/macOS)
+./translate-openapi.sh google-api.yaml apim-api.yaml
 
-# What it does:
-# - Validates OpenAPI spec with Spectral
-# - Removes Google-specific extensions
-# - Normalizes paths and operations
-# - Ensures APIM compatibility
+# PowerShell (Windows)
+.\translate-openapi.ps1 -InputFile google-api.yaml -OutputFile apim-api.yaml
 ```
 
-#### translate-openapi.ps1 (PowerShell)
+What it does:
+1. Validates input spec with Spectral (if installed)
+2. Removes `x-google-*` extensions
+3. Converts Swagger 2.0 → OpenAPI 3.0 (if applicable)
+4. Generates missing `operationId` values
+5. Validates APIM requirements
+6. Validates output spec with Spectral
 
-```powershell
-# Usage
-.\translate-openapi.ps1 -InputFile input.yaml -OutputFile output.yaml
+#### translate-openapi-aws.sh / translate-openapi-aws.ps1 (AWS API Gateway)
 
-# What it does:
-# - Same as Bash version, for Windows environments
-# - PowerShell-native implementation
+```bash
+# Export from AWS first
+aws apigateway get-export \
+  --rest-api-id <api-id> --stage-name prod \
+  --export-type oas30 --accepts application/yaml \
+  > aws-api-export.yaml
+
+# Bash (Linux/macOS)
+./translate-openapi-aws.sh aws-api-export.yaml apim-api.yaml
+
+# PowerShell (Windows)
+.\translate-openapi-aws.ps1 -InputFile aws-api-export.yaml -OutputFile apim-api.yaml
 ```
 
-### 2. Policy Translation Guidance
+What it does — same pipeline as the Google version, but targets `x-amazon-*` extensions.
 
-**Manual Translation Required**: Policy translation cannot be fully automated due to semantic differences between platforms. Use the [Google to APIM Migration Guide](../../docs/migration/google-to-apim.md) for policy mapping.
+---
+
+### 3. Policy Translation Guidance
+
+**Manual Translation Required**: Policy translation cannot be fully automated due to semantic differences between platforms.
+
+- **Google → APIM**: Use the [Google to APIM Migration Guide](../../docs/migration/google-to-apim.md)
+- **AWS → APIM**: Use the [AWS to APIM Migration Guide](../../docs/migration/aws-to-apim.md)
 
 **Process**:
-1. Export Apigee/API Gateway policies
-2. Identify equivalent APIM policies (see mapping table)
+1. Export policies from source platform
+2. Identify equivalent APIM policies (see mapping tables in guides)
+3. Rewrite using APIM policy syntax
+4. Test thoroughly in non-production
 3. Rewrite using APIM policy syntax
 4. Test thoroughly in non-production
 
@@ -160,40 +218,40 @@ k6 run --vus 50 --duration 60s load-test.js
 
 ## Script Details
 
-### translate-openapi.sh
+### openapi_utils.py
+
+**Features:**
+- Converts Swagger 2.0 → OpenAPI 3.0 (servers, securitySchemes, requestBody, $ref rewrites)
+- Generates camelCase `operationId` values for operations that lack them
+- Validates mandatory APIM fields (title, version, server URL, security schemes, unique operationIds)
+- Removes `x-amazon-*` or `x-google-*` vendor extensions
+
+**Limitations:**
+- Does not translate policy logic (Lambda authorizers, Apigee policies, etc.)
+- Swagger 2.0 conversion covers common patterns; highly custom specs may need manual review
+
+### translate-openapi.sh / translate-openapi.ps1
 
 **Features:**
 - Validates input OpenAPI spec with Spectral
-- Removes Google-specific extensions (`x-google-*`)
-- Ensures OpenAPI 3.0 or 3.1 compliance
-- Normalizes operation IDs for APIM compatibility
-- Adds APIM-specific metadata if needed
+- Removes Google-specific extensions (`x-google-*`) via `openapi_utils.py`
+- Converts Swagger 2.0 → OpenAPI 3.0 via `openapi_utils.py`
+- Generates missing `operationId` values
+- Validates APIM-specific requirements
 - Outputs cleaned spec ready for import
 
 **Limitations:**
 - Does not translate embedded policy logic
-- Cannot convert proprietary Google extensions automatically
 - Manual review recommended for complex specs
 
-**TODO for Implementation:**
-- Add support for OpenAPI 2.0 (Swagger) conversion to 3.0
-- Implement automatic operationId generation if missing
-- Add validation for APIM-specific requirements
-
-### translate-openapi.ps1
+### translate-openapi-aws.sh / translate-openapi-aws.ps1
 
 **Features:**
-- Same as Bash version, PowerShell-native
-- Better integration with Windows workflows
-- Supports piping and PowerShell objects
+- Same pipeline as the Google scripts, but targets `x-amazon-*` extensions
+- Supports AWS REST API and HTTP API exports
 
 **Limitations:**
-- Same as Bash version
-
-**TODO for Implementation:**
-- Add PowerShell-native JSON/YAML parsing
-- Implement progress bars for large specs
-- Add `-WhatIf` parameter for preview mode
+- Same as Google translation scripts
 
 ## Advanced Scenarios
 
@@ -273,7 +331,8 @@ done
 
 ## Additional Resources
 
-- [Migration Guide](../../docs/migration/google-to-apim.md) - Complete migration process
+- [Google to APIM Migration Guide](../../docs/migration/google-to-apim.md) - Complete Google migration process
+- [AWS to APIM Migration Guide](../../docs/migration/aws-to-apim.md) - Complete AWS migration process
 - [Policy Examples](../../policies/) - APIM policy reference
 - [Labs](../../labs/) - Hands-on tutorials
 - [Scripts](../../scripts/) - Deployment and import automation
