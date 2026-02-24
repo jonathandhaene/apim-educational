@@ -582,6 +582,7 @@ Cache based on semantic similarity (requires external service):
 - [APIM + Azure OpenAI Reference](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-openai-service)
 - [Token Pricing](https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/)
 - [Prompt Engineering Guide](https://learn.microsoft.com/azure/ai-services/openai/concepts/prompt-engineering)
+- [AI Hub Gateway Landing Zone Accelerator](https://github.com/Azure-Samples/ai-hub-gateway-solution-accelerator) — reference architecture providing guidance for building an AI hub gateway with APIM, including load balancing, chargeback, and multi-model patterns
 
 ## Next Steps
 

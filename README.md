@@ -128,6 +128,19 @@ Example parameter files for workspace deployments:
 
 We welcome contributions! Please read the [Contribution Guidelines](CONTRIBUTING.md) for details on how to get involved, open an [Issue](https://github.com/jonathandhaene/apim-educational/issues), or submit a [Pull Request](https://github.com/jonathandhaene/apim-educational/pulls).
 
+## 🌍 Related Resources and Ecosystem
+
+These official Microsoft resources complement this lab and are recommended for deeper exploration:
+
+| Resource | Description |
+|----------|-------------|
+| [Azure APIM Hands-on Lab](https://azure.github.io/apim-lab/) | Another comprehensive APIM hands-on lab from Microsoft |
+| [APIM Landing Zone Accelerator](https://github.com/Azure/apim-landing-zone-accelerator) | Bicep-based reference architecture with networking best practices (App Gateway, Hub-Spoke, etc.) |
+| [APIOps for APIM](https://azure.github.io/apiops/) | GitOps-based release management framework for APIM (API-level CI/CD pipelines) |
+| [AI Hub Gateway Solution Accelerator](https://github.com/Azure-Samples/ai-hub-gateway-solution-accelerator) | Reference architecture for AI hub gateway using APIM (load balancing, chargeback, multi-model) |
+| [APIM Policy Toolkit](https://github.com/Azure/azure-api-management-policy-toolkit) | Unit test your APIM policies locally before deployment |
+| [Official APIM Policies](https://github.com/jonathandhaene/apim-educational/tree/main/policies) | Policy snippets in this repository (see `policies/` directory) |
+
 ---
 
 **Happy Learning!** 🚀 If you find this repository helpful, please give it a ⭐

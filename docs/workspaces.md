@@ -17,7 +17,9 @@ This guide provides comprehensive documentation on APIM Workspaces, including th
 
 ## What are APIM Workspaces?
 
-APIM Workspaces are logical containers within a single API Management instance that enable segmentation, isolation, and collaborative management of APIs. Think of workspaces as separate environments or projects that share the same underlying APIM infrastructure but maintain independent configurations and policies.
+APIM Workspaces are logical containers within a single API Management instance that enable **federated API management** — allowing decentralized API development teams to manage and productize their own APIs while sharing the same underlying APIM infrastructure. Think of workspaces as independent "folders" that maintain separate API configurations, policies, and RBAC controls, backed by dedicated **workspace gateways** for runtime isolation.
+
+> **Available on**: Premium and Premium v2 tiers only. Workspaces require a dedicated workspace gateway resource (billed separately).
 
 ### Core Concepts
 
@@ -96,57 +98,11 @@ Streamline API promotion from development to production:
 
 ## Architecture Patterns
 
-### Pattern 1: Environment-Based Segmentation
+> **⚠️ Important Guidance from the Azure API Management Product Group**: The **primary and recommended use case** for workspaces is **team-based segmentation** — enabling independent API development teams to own and manage their APIs within a shared APIM instance. Using workspaces to segment **environments (dev/test/prod)** within a single APIM instance is **not recommended** by the Azure APIM Product Group. Because instance-level settings (networking, certificates, global policies, scaling) apply to the entire APIM instance, a misconfiguration or outage in one environment can affect all others — including production. **Production should always run in a dedicated, separate APIM instance.** Dev and QA workloads can optionally share an instance with workspaces, but keep production separate.
 
-Most common pattern for managing API lifecycle stages.
+### Pattern 1: Team-Based Segmentation (Recommended)
 
-```
-┌─────────────────────────────────────────────────────┐
-│         Azure API Management Instance               │
-│  ┌──────────────┐  ┌──────────────┐  ┌────────────┐│
-│  │     Dev      │  │     Test     │  │    Prod    ││
-│  │  Workspace   │  │  Workspace   │  │ Workspace  ││
-│  │              │  │              │  │            ││
-│  │ ┌──────────┐ │  │ ┌──────────┐ │  │ ┌────────┐││
-│  │ │ API v1   │ │  │ │ API v1   │ │  │ │API v1  │││
-│  │ │ API v2   │ │  │ │ API v2   │ │  │ │API v2  │││
-│  │ └──────────┘ │  │ └──────────┘ │  │ └────────┘││
-│  │              │  │              │  │            ││
-│  │ Policies:    │  │ Policies:    │  │ Policies:  ││
-│  │ - Permissive │  │ - Moderate   │  │ - Strict   ││
-│  │ - Debug logs │  │ - Validation │  │ - Caching  ││
-│  └──────────────┘  └──────────────┘  └────────────┘│
-└─────────────────────────────────────────────────────┘
-      ↓                   ↓                   ↓
-  Dev Backend       Test Backend         Prod Backend
-```
-
-**Configuration**:
-```hcl
-# Terraform example
-workspaces = {
-  dev = {
-    display_name = "Development"
-    description  = "APIs under active development"
-  }
-  test = {
-    display_name = "Testing"
-    description  = "QA and integration testing"
-  }
-  staging = {
-    display_name = "Staging"
-    description  = "Pre-production validation"
-  }
-  prod = {
-    display_name = "Production"
-    description  = "Production APIs"
-  }
-}
-```
-
-### Pattern 2: Team-Based Segmentation
-
-Organize workspaces by development teams or business units.
+Organize workspaces by development teams or business units. This is the primary recommended pattern for APIM workspaces, enabling **federated API management** where each team manages its own APIs independently while sharing the same gateway infrastructure.
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -161,7 +117,9 @@ Organize workspaces by development teams or business units.
 └─────────────────────────────────────────────────────┘
 ```
 
-### Pattern 3: Multi-Tenant Segmentation
+Each workspace is associated with one or more **workspace gateways** that provide isolated API runtime for that team's APIs. Teams manage their own APIs, policies, subscriptions, and named values through workspace-scoped RBAC.
+
+### Pattern 2: Multi-Tenant Segmentation
 
 Isolate APIs for different customers or organizations.
 
@@ -178,9 +136,25 @@ Isolate APIs for different customers or organizations.
 └─────────────────────────────────────────────────────┘
 ```
 
-### Pattern 4: Hybrid - Combined Segmentation
+### Pattern 3: Environment-Based Segmentation (⚠️ Not Recommended for Production)
 
-Combine multiple patterns for complex scenarios.
+While technically possible to use workspaces for dev/test environments within a single APIM instance, this is **not recommended by the Azure APIM Product Group** for the following reasons:
+
+- Instance-level settings (VNet configuration, global policies, scaling, certificates) affect **all workspaces** in the instance
+- A change or misconfiguration in the dev/test environment (e.g., network settings) can impact production
+- Production APIs should always run in a **dedicated APIM instance** for full isolation and independent lifecycle management
+
+**Recommended approach instead**:
+```
+Production:  → Dedicated APIM instance (Premium tier)
+Dev/QA:      → Separate APIM instance (Developer tier) or shared with workspaces
+```
+
+If you must use workspaces for environment staging, limit it to **non-production environments** (e.g., dev and QA workspaces within a non-production APIM instance) and always keep production in its own instance.
+
+### Pattern 4: Hybrid - Combined Team + Environment Segmentation
+
+Combine team-based segmentation with per-team dev/prod separation where each team has its own workspace(s).
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -194,22 +168,24 @@ Combine multiple patterns for complex scenarios.
 └─────────────────────────────────────────────────────────┘
 ```
 
+> ⚠️ In this pattern, remember that instance-level settings still apply to all workspaces. Production workloads sharing an instance with dev/test are still vulnerable to instance-level changes. The fully recommended approach keeps production in a separate APIM instance.
+
 ## Use Cases
 
-### Use Case 1: Multi-Stage Deployment Pipeline
+### Use Case 1: Team-Based API Management (Primary Use Case)
 
-**Scenario**: Organization needs to test APIs before production deployment.
+**Scenario**: Multiple development teams need to manage their own APIs independently within a shared APIM infrastructure.
 
 **Implementation**:
-1. **Dev Workspace**: Developers create and test new APIs
-2. **Test Workspace**: QA team runs automated tests
-3. **Staging Workspace**: Pre-production validation with production-like data
-4. **Prod Workspace**: Live customer-facing APIs
+1. **frontend-workspace**: Frontend team manages web and SPA APIs
+2. **backend-workspace**: Backend team manages service and microservice APIs
+3. **mobile-workspace**: Mobile team manages app-specific APIs
 
 **Benefits**:
-- Controlled promotion workflow
-- Environment-specific policies (dev: no rate limiting, prod: strict limits)
-- Isolated testing without affecting production
+- Teams work independently without interfering with each other
+- Workspace-scoped RBAC — each team only accesses their own workspace
+- Shared gateway infrastructure reduces cost vs. separate instances
+- Central platform team maintains governance and global policies
 
 ### Use Case 2: API Versioning and Migration
 
@@ -259,10 +235,11 @@ Combine multiple patterns for complex scenarios.
 ### Prerequisites
 
 **Supported SKUs**:
-- ✅ Developer (for dev/test)
-- ✅ Basic, Standard, Premium (production)
-- ✅ Basic v2, Standard v2 (modern consumption-based)
-- ❌ Consumption (not supported)
+- ✅ Premium (classic)
+- ✅ Premium v2
+- ❌ All other tiers (Developer, Basic, Standard, Basic v2, Standard v2, Consumption)
+
+> **Note**: Workspaces require a dedicated **workspace gateway** resource (charged separately). See [API Management pricing](https://azure.microsoft.com/pricing/details/api-management/) for workspace gateway costs.
 
 **Required Permissions**:
 - `Microsoft.ApiManagement/service/workspaces/write`
@@ -804,23 +781,21 @@ resource "azurerm_api_management_workspace" "workspaces" {
 ## Summary
 
 APIM Workspaces provide powerful capabilities for:
-- ✅ Multi-environment management within single instance
-- ✅ Team-based collaboration and isolation
-- ✅ Cost-effective infrastructure sharing
-- ✅ Streamlined promotion workflows
-- ✅ Flexible organizational patterns
+- ✅ **Team-based (federated) API management** — the primary recommended use case
+- ✅ Multi-tenant SaaS scenarios
+- ✅ Workspace-scoped RBAC and independent API lifecycle
+- ✅ Shared gateway infrastructure with runtime isolation via workspace gateways
 
 **When to Use Workspaces**:
-- Managing multiple environments (dev/test/prod)
-- Supporting multiple teams or projects
+- Supporting multiple API development teams in a shared APIM instance (federated model)
 - Multi-tenant SaaS scenarios
-- Cost optimization through shared infrastructure
+- Enabling team autonomy while maintaining centralized governance
 
-**When to Use Separate Instances**:
-- Regulatory requirements for complete isolation
+**When NOT to Use Workspaces (use separate APIM instances instead)**:
+- **Production isolation**: Always keep production in a dedicated APIM instance; instance-level settings (networking, global policies, scaling) affect all workspaces
+- **Environment segmentation (dev/test/prod)**: Using workspaces for environment staging is not recommended by the Azure APIM Product Group — a misconfiguration in dev can affect prod since they share instance-level infrastructure
 - Different network configurations per environment
-- Independent scaling requirements
-- Different geographic regions (though Premium tier supports multi-region)
+- Independent scaling requirements per environment
 
 ## Additional Resources
 

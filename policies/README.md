@@ -300,6 +300,7 @@ Policies support C# expressions using `@()` or `@{}` syntax:
 - [Policy Expressions](https://learn.microsoft.com/azure/api-management/api-management-policy-expressions)
 - [Error Handling](https://learn.microsoft.com/azure/api-management/api-management-error-handling-policies)
 - [Transformation Policies](https://learn.microsoft.com/azure/api-management/api-management-transformation-policies)
+- [Azure APIM Policy Toolkit](https://github.com/Azure/azure-api-management-policy-toolkit) — unit test your APIM policies locally before deployment using this official Microsoft tool
 
 ## 🤝 Contributing
 
