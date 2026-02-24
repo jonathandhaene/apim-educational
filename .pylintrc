@@ -1,0 +1,32 @@
+[MAIN]
+jobs = 0
+persistent = no
+
+[MESSAGES CONTROL]
+enable = all
+disable =
+    C0103,  # Invalid name
+    C0302,  # Too many lines in module
+    R0801,  # Duplicate code
+    R0902,  # Too many instance attributes
+    R0903,  # Too few public methods
+    R0911,  # Too many return statements
+    R0912,  # Too many branches
+    R0913,  # Too many arguments
+    R0914,  # Too many locals
+    R0915,  # Too many statements
+    R0917,  # Too many positional arguments
+    R1702,  # Too many nested blocks
+
+[REPORTS]
+output-format = colorized
+reports = no
+score = yes
+msg-template = {path}:{line}: {msg_id}: {msg}
+
+[FORMAT]
+max-line-length = 150
+expected-line-ending-format = LF
+
+[DESIGN]
+dummy-variables-rgx = ^_|^mock_|^fixture_|^suppress_|^monkeypatch|^temp_|^fake_

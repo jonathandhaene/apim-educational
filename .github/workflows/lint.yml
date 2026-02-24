@@ -49,4 +49,5 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: './scripts'
+          additional_files: 'start.sh'
         continue-on-error: true
