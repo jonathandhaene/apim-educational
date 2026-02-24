@@ -650,8 +650,12 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
 
 - [Official Pricing Page](https://azure.microsoft.com/pricing/details/api-management/)
 - [Pricing Calculator](https://azure.microsoft.com/pricing/calculator/)
-- [Capacity Metrics](https://learn.microsoft.com/azure/api-management/api-management-capacity)
-- [Feature Comparison](https://learn.microsoft.com/azure/api-management/api-management-features)
+- [Feature-based comparison of Azure API Management tiers](https://learn.microsoft.com/azure/api-management/api-management-features)
+- [Azure API Management v2 tiers overview](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview)
+- [Capacity metrics and scaling](https://learn.microsoft.com/azure/api-management/api-management-capacity)
+- [Upgrade and scale an Azure API Management instance](https://learn.microsoft.com/azure/api-management/upgrade-and-scale)
+- [Azure API Management service limits](https://learn.microsoft.com/azure/api-management/service-limits)
+- [Autoscale an Azure API Management instance](https://learn.microsoft.com/azure/api-management/api-management-howto-autoscale)
 
 ## Next Steps
 

@@ -34,6 +34,8 @@ Comprehensive monitoring, diagnostics, and analytics for Azure API Management.
 
 ## Application Insights Integration
 
+> 📖 [Integrate Azure API Management with Azure Application Insights](https://learn.microsoft.com/azure/api-management/api-management-howto-app-insights)
+
 ### Setup
 
 **Bicep Configuration:**
@@ -130,6 +132,8 @@ requests
 ```
 
 ## Log Analytics
+
+> 📖 [Monitor APIM with Azure Monitor (diagnostic logs)](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-monitor)
 
 ### Enable Diagnostic Settings
 
@@ -527,6 +531,19 @@ Key widgets to include:
 ### Grafana Integration
 
 Use Azure Monitor data source in Grafana for custom dashboards.
+
+## Additional Resources
+
+- [Integrate APIM with Application Insights](https://learn.microsoft.com/azure/api-management/api-management-howto-app-insights)
+- [Monitor APIM with Azure Monitor](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-monitor)
+- [Log to Azure Event Hubs from APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-log-event-hubs)
+- [log-to-eventhub policy reference](https://learn.microsoft.com/azure/api-management/log-to-eventhub-policy)
+- [trace policy reference](https://learn.microsoft.com/azure/api-management/trace-policy)
+- [emit-metric policy reference](https://learn.microsoft.com/azure/api-management/emit-metric-policy)
+- [Azure API Management diagnostic logs reference](https://learn.microsoft.com/azure/api-management/gateway-log-schema-reference)
+- [Visualize APIM data with Azure Managed Grafana](https://learn.microsoft.com/azure/api-management/visualize-using-managed-grafana-dashboard)
+- [Available metrics for APIM](https://learn.microsoft.com/azure/api-management/monitor-api-management-reference)
+- [KQL (Kusto Query Language) reference](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
 
 ## Next Steps
 

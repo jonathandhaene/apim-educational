@@ -800,9 +800,13 @@ APIM Workspaces provide powerful capabilities for:
 ## Additional Resources
 
 - [Lab 6: APIM Workspaces Hands-On](../labs/lab-06-workspaces/README.md)
-- [Azure APIM Workspaces Official Docs](https://learn.microsoft.com/azure/api-management/workspaces-overview)
+- [Federated API management with workspaces](https://learn.microsoft.com/azure/api-management/workspaces-overview)
+- [Create and manage workspaces (how-to)](https://learn.microsoft.com/azure/api-management/how-to-create-workspace)
+- [Workspace gateways overview](https://learn.microsoft.com/azure/api-management/api-management-gateways-overview#workspace-gateways)
+- [Network resource requirements for workspace gateways](https://learn.microsoft.com/azure/api-management/virtual-network-workspaces-resources)
+- [RBAC roles for APIM workspaces](https://learn.microsoft.com/azure/api-management/api-management-role-based-access-control)
 - [APIM REST API Reference](https://learn.microsoft.com/rest/api/apimanagement/)
-- [Terraform APIM Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_workspace)
+- [Terraform APIM Workspace resource](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/api_management_workspace)
 
 ---
 

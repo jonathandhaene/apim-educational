@@ -391,9 +391,13 @@ Azure API Center is evolving. Expected features:
 
 ## Additional Resources
 
-- [Azure API Center Documentation](https://learn.microsoft.com/azure/api-center/)
-- [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureapicenter)
+- [Azure API Center documentation](https://learn.microsoft.com/azure/api-center/)
+- [What is Azure API Center?](https://learn.microsoft.com/azure/api-center/overview)
+- [Synchronize APIs from APIM to API Center](https://learn.microsoft.com/azure/api-center/synchronize-api-management-apis)
+- [VS Code Extension for Azure API Center](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureapicenter)
 - [API Governance Best Practices](https://learn.microsoft.com/azure/architecture/best-practices/api-design)
+- [Spectral API linting (OpenAPI governance)](https://docs.stoplight.io/docs/spectral/)
+- [Event Grid events for Azure API Management](https://learn.microsoft.com/azure/event-grid/event-schema-api-management)
 
 ## Next Steps
 

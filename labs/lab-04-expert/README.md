@@ -533,11 +533,16 @@ Continue to [Lab 5: Operations & Architecture](../lab-05-ops-architecture/README
 
 ## 📖 Additional Resources
 
-- [Self-Hosted Gateway](https://learn.microsoft.com/azure/api-management/self-hosted-gateway-overview)
-- [Front Door + APIM](../../docs/front-door.md)
-- [Caching Policies](https://learn.microsoft.com/azure/api-management/api-management-caching-policies)
-- [API Revisions](https://learn.microsoft.com/azure/api-management/api-management-revisions)
-- [Kubernetes Deployment](../../gateway/k8s/README.md)
+- [Self-hosted gateway overview](https://learn.microsoft.com/azure/api-management/self-hosted-gateway-overview)
+- [Deploy self-hosted gateway on Docker](https://learn.microsoft.com/azure/api-management/how-to-deploy-self-hosted-gateway-docker)
+- [Deploy self-hosted gateway on Kubernetes](https://learn.microsoft.com/azure/api-management/how-to-deploy-self-hosted-gateway-kubernetes)
+- [Integrate Azure Front Door with APIM](https://learn.microsoft.com/azure/api-management/front-door-api-management)
+- [Azure Front Door documentation](https://learn.microsoft.com/azure/frontdoor/)
+- [API revisions](https://learn.microsoft.com/azure/api-management/api-management-revisions)
+- [Caching policies](https://learn.microsoft.com/azure/api-management/api-management-caching-policies)
+- [Use external Redis Cache in APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-cache-external)
+- [Backend entities and load balancing](https://learn.microsoft.com/azure/api-management/backends)
+- [Kubernetes Deployment Guide](../../gateway/k8s/README.md)
 
 ## ❓ Troubleshooting
 

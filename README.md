@@ -101,17 +101,17 @@ Both guides cover assessment, feature mapping, policy translation, tooling, test
 
 ## 📚 Documentation
 
-| Guide | Topics |
-|-------|--------|
-| [Core Concepts](docs/concepts.md) | Gateway architecture, products, subscriptions, policies |
-| [Tiers and SKUs](docs/tiers-and-skus.md) | Consumption, Developer, Basic/Standard v2, Premium tiers |
-| [Security](docs/security.md) | JWT, OAuth, mTLS, Key Vault, managed identity |
-| [Networking](docs/networking.md) | VNet integration, private endpoints, Front Door |
-| [Observability](docs/observability.md) | Application Insights, Log Analytics, KQL queries |
-| [Workspaces](docs/workspaces.md) | Multi-environment segmentation, workspace policies |
-| [API Center](docs/api-center.md) | API governance and catalog synchronization |
-| [AI Gateway](docs/ai-gateway.md) | Azure OpenAI load balancing, token limits, semantic caching |
-| [Troubleshooting](docs/troubleshooting.md) | Common issues and resolutions |
+| Guide | Topics | Official Docs |
+|-------|--------|--------------|
+| [Core Concepts](docs/concepts.md) | Gateway architecture, products, subscriptions, policies | [learn.microsoft.com/azure/api-management/api-management-key-concepts](https://learn.microsoft.com/azure/api-management/api-management-key-concepts) |
+| [Tiers and SKUs](docs/tiers-and-skus.md) | Consumption, Developer, Basic/Standard v2, Premium tiers | [Feature comparison](https://learn.microsoft.com/azure/api-management/api-management-features) · [v2 tiers](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview) |
+| [Security](docs/security.md) | JWT, OAuth, mTLS, Key Vault, managed identity | [Security overview](https://learn.microsoft.com/azure/api-management/security-controls-policy) |
+| [Networking](docs/networking.md) | VNet integration, private endpoints, Front Door | [Virtual networking options](https://learn.microsoft.com/azure/api-management/virtual-network-concepts) |
+| [Observability](docs/observability.md) | Application Insights, Log Analytics, KQL queries | [Monitor APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-monitor) |
+| [Workspaces](docs/workspaces.md) | Multi-environment segmentation, workspace policies | [Workspaces overview](https://learn.microsoft.com/azure/api-management/workspaces-overview) |
+| [API Center](docs/api-center.md) | API governance and catalog synchronization | [Azure API Center docs](https://learn.microsoft.com/azure/api-center/) |
+| [AI Gateway](docs/ai-gateway.md) | Azure OpenAI load balancing, token limits, semantic caching | [APIM + Azure OpenAI](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-openai-service) |
+| [Troubleshooting](docs/troubleshooting.md) | Common issues and resolutions | [Diagnose and solve problems](https://learn.microsoft.com/azure/api-management/diagnose-solve-problems) |
 
 ## 🏗️ Infrastructure Templates
 

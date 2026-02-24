@@ -278,8 +278,12 @@ Continue to [Lab 2: Intermediate](../lab-02-intermediate/README.md) to learn abo
 ## 📖 Additional Resources
 
 - [APIM Documentation](https://learn.microsoft.com/azure/api-management/)
+- [Create an APIM instance (quickstart)](https://learn.microsoft.com/azure/api-management/get-started-create-service-instance)
+- [Import and publish your first API](https://learn.microsoft.com/azure/api-management/import-and-publish)
 - [Policy Reference](https://learn.microsoft.com/azure/api-management/api-management-policies)
-- [Pricing](https://azure.microsoft.com/pricing/details/api-management/)
+- [rate-limit policy](https://learn.microsoft.com/azure/api-management/rate-limit-policy)
+- [cache-lookup and cache-store policies](https://learn.microsoft.com/azure/api-management/api-management-caching-policies)
+- [APIM Pricing](https://azure.microsoft.com/pricing/details/api-management/)
 
 ## ❓ Troubleshooting
 

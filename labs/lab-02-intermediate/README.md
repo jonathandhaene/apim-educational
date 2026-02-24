@@ -377,10 +377,13 @@ Continue to [Lab 3: Advanced](../lab-03-advanced/README.md) to learn about:
 
 ## 📖 Additional Resources
 
-- [Application Insights for APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-app-insights)
-- [JWT Validation Policy](https://learn.microsoft.com/azure/api-management/api-management-access-restriction-policies#ValidateJWT)
-- [Rate Limiting Policies](https://learn.microsoft.com/azure/api-management/api-management-access-restriction-policies)
-- [k6 Documentation](https://k6.io/docs/)
+- [Integrate APIM with Application Insights](https://learn.microsoft.com/azure/api-management/api-management-howto-app-insights)
+- [Monitor APIM with Azure Monitor (diagnostic logs)](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-monitor)
+- [validate-jwt policy reference](https://learn.microsoft.com/azure/api-management/validate-jwt-policy)
+- [Protect API with OAuth 2.0 / Microsoft Entra ID](https://learn.microsoft.com/azure/api-management/api-management-howto-protect-backend-with-aad)
+- [rate-limit-by-key policy](https://learn.microsoft.com/azure/api-management/rate-limit-by-key-policy)
+- [quota-by-key policy](https://learn.microsoft.com/azure/api-management/quota-by-key-policy)
+- [k6 load testing tool](https://k6.io/docs/)
 - [KQL Query Reference](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
 
 ## ❓ Troubleshooting

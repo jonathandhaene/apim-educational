@@ -554,9 +554,15 @@ AzureDiagnostics
 
 ## Additional Resources
 
-- [Front Door Documentation](https://learn.microsoft.com/azure/frontdoor/)
+- [Azure Front Door documentation](https://learn.microsoft.com/azure/frontdoor/)
+- [What is Azure Front Door?](https://learn.microsoft.com/azure/frontdoor/front-door-overview)
+- [Integrate Front Door with APIM](https://learn.microsoft.com/azure/api-management/front-door-api-management)
 - [APIM + Front Door Reference Architecture](https://learn.microsoft.com/azure/architecture/reference-architectures/apis/protect-apis)
-- [WAF Best Practices](https://learn.microsoft.com/azure/web-application-firewall/afds/waf-front-door-best-practices)
+- [Deploy APIM with Application Gateway (alternative WAF)](https://learn.microsoft.com/azure/api-management/api-management-howto-integrate-internal-vnet-appgateway)
+- [Azure WAF on Front Door Best Practices](https://learn.microsoft.com/azure/web-application-firewall/afds/waf-front-door-best-practices)
+- [Private Link for Azure Front Door Premium](https://learn.microsoft.com/azure/frontdoor/private-link)
+- [Front Door caching](https://learn.microsoft.com/azure/frontdoor/front-door-caching)
+- [Front Door pricing](https://azure.microsoft.com/pricing/details/frontdoor/)
 
 ## Next Steps
 

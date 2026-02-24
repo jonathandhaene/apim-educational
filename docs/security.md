@@ -76,7 +76,7 @@ Simplest authentication method; each subscription has a primary and secondary ke
 Industry-standard authentication using JWT tokens from identity providers.
 
 **Identity Providers:**
-- **Microsoft Entra ID** (formerly Azure AD) - Recommended for Azure-integrated apps
+- **[Microsoft Entra ID](https://learn.microsoft.com/entra/fundamentals/whatis)** (formerly Azure AD) - Recommended for Azure-integrated apps
 - Auth0
 - Okta
 - Custom identity servers (e.g., IdentityServer, Keycloak)
@@ -88,6 +88,8 @@ Industry-standard authentication using JWT tokens from identity providers.
 - **Client Credentials**: Service-to-service
 - **Implicit**: Single-page apps (legacy)
 - **Resource Owner Password**: Legacy systems (not recommended)
+
+> 📖 [Protect API with OAuth 2.0 using Microsoft Entra ID](https://learn.microsoft.com/azure/api-management/api-management-howto-protect-backend-with-aad)
 
 **JWT Validation Policy:**
 ```xml
@@ -130,6 +132,8 @@ Industry-standard authentication using JWT tokens from identity providers.
 ### 3. Client Certificates (Mutual TLS)
 
 Authenticate clients using X.509 certificates for high-security scenarios.
+
+> 📖 [How to secure APIs using client certificate authentication in APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-mutual-certificates-for-clients)
 
 **Use cases:**
 - B2B partner integrations
@@ -202,6 +206,8 @@ Authenticate clients using X.509 certificates for high-security scenarios.
 ### 4. Managed Identity
 
 Azure Managed Identity for authenticating APIM to backend Azure services without credentials.
+
+> 📖 [Use managed identities in Azure API Management](https://learn.microsoft.com/azure/api-management/api-management-howto-use-managed-service-identity)
 
 **Supported Services:**
 - Azure Key Vault
@@ -365,7 +371,7 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
 
 ### Azure Key Vault Integration
 
-**Best Practice**: Never hardcode secrets in policies; use Named Values backed by Key Vault.
+**Best Practice**: Never hardcode secrets in policies; use [Named Values](https://learn.microsoft.com/azure/api-management/api-management-howto-properties) backed by Key Vault.
 
 **Setup:**
 
@@ -406,6 +412,8 @@ az apim nv create \
 
 ### IP Filtering
 
+> 📖 [`ip-filter` policy reference](https://learn.microsoft.com/azure/api-management/ip-filter-policy)
+
 ```xml
 <policies>
   <inbound>
@@ -419,6 +427,8 @@ az apim nv create \
 ```
 
 ### Rate Limiting and Quotas
+
+> 📖 [`rate-limit` policy](https://learn.microsoft.com/azure/api-management/rate-limit-policy) | [`rate-limit-by-key` policy](https://learn.microsoft.com/azure/api-management/rate-limit-by-key-policy) | [`quota` policy](https://learn.microsoft.com/azure/api-management/quota-policy)
 
 ```xml
 <policies>
@@ -462,6 +472,8 @@ az apim nv create \
 ```
 
 ### CORS Configuration
+
+> 📖 [`cors` policy reference](https://learn.microsoft.com/azure/api-management/cors-policy)
 
 ```xml
 <policies>
@@ -681,9 +693,18 @@ ApiManagementGatewayLogs
 
 - [APIM Security Best Practices](https://learn.microsoft.com/azure/api-management/security-controls-policy)
 - [OAuth 2.0 in APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-protect-backend-with-aad)
-- [Certificate Authentication](https://learn.microsoft.com/azure/api-management/api-management-howto-mutual-certificates)
-- [Key Vault Integration](https://learn.microsoft.com/azure/api-management/api-management-howto-properties)
+- [validate-jwt policy reference](https://learn.microsoft.com/azure/api-management/validate-jwt-policy)
+- [Client Certificate Authentication](https://learn.microsoft.com/azure/api-management/api-management-howto-mutual-certificates-for-clients)
+- [Named Values & Key Vault Integration](https://learn.microsoft.com/azure/api-management/api-management-howto-properties)
+- [Managed Identity in APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-use-managed-service-identity)
 - [Security Baseline for APIM](https://learn.microsoft.com/security/benchmark/azure/baselines/api-management-security-baseline)
+- [ip-filter policy](https://learn.microsoft.com/azure/api-management/ip-filter-policy)
+- [cors policy](https://learn.microsoft.com/azure/api-management/cors-policy)
+- [rate-limit policy](https://learn.microsoft.com/azure/api-management/rate-limit-policy)
+- [rate-limit-by-key policy](https://learn.microsoft.com/azure/api-management/rate-limit-by-key-policy)
+- [quota policy](https://learn.microsoft.com/azure/api-management/quota-policy)
+- [Defender for APIs (Microsoft Defender for Cloud)](https://learn.microsoft.com/azure/defender-for-cloud/defender-for-apis-introduction)
+- [Microsoft Entra ID overview](https://learn.microsoft.com/entra/fundamentals/whatis)
 
 ## Next Steps
 

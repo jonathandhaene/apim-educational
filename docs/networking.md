@@ -562,9 +562,24 @@ az network watcher test-ip-flow \
 5. **Enable diagnostics**: Log network traffic for troubleshooting
 6. **Test connectivity**: Before full deployment
 7. **Document network design**: Maintain architecture diagrams
-8. **Use Application Gateway**: For WAF with Internal VNet mode
+8. **Use Application Gateway or Front Door**: For WAF with Internal VNet mode
 9. **Plan for multi-region**: If availability is critical
 10. **Monitor network health**: Set up alerts on connectivity issues
+
+## Additional Resources
+
+- [Virtual networking options for APIM](https://learn.microsoft.com/azure/api-management/virtual-network-concepts)
+- [Deploy APIM to a VNet (external mode)](https://learn.microsoft.com/azure/api-management/api-management-using-with-vnet)
+- [Deploy APIM to a VNet (internal mode)](https://learn.microsoft.com/azure/api-management/api-management-using-with-internal-vnet)
+- [Inject Premium v2 into a virtual network](https://learn.microsoft.com/azure/api-management/inject-vnet-v2)
+- [Outbound VNet integration for Standard v2 / Premium v2](https://learn.microsoft.com/azure/api-management/integrate-vnet-outbound)
+- [Connect privately to APIM using a private endpoint](https://learn.microsoft.com/azure/api-management/private-endpoint)
+- [NSG resource requirements for VNet injection](https://learn.microsoft.com/azure/api-management/virtual-network-injection-resources)
+- [Configure custom domain for APIM](https://learn.microsoft.com/azure/api-management/configure-custom-domain)
+- [Deploy APIM in an internal VNet with Application Gateway](https://learn.microsoft.com/azure/api-management/api-management-howto-integrate-internal-vnet-appgateway)
+- [Integrate Azure Front Door with APIM](https://learn.microsoft.com/azure/api-management/front-door-api-management)
+- [DNS configuration for private APIM](https://learn.microsoft.com/azure/api-management/api-management-using-with-internal-vnet#set-up-a-custom-domain-name)
+- [APIM v2 tiers overview](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview)
 
 ## Next Steps
 
