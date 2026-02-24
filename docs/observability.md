@@ -34,6 +34,8 @@ Comprehensive monitoring, diagnostics, and analytics for Azure API Management.
 
 ## Application Insights Integration
 
+> 📖 [Integrate Azure API Management with Azure Application Insights](https://learn.microsoft.com/azure/api-management/api-management-howto-app-insights)
+
 ### Setup
 
 **Bicep Configuration:**
@@ -130,6 +132,8 @@ requests
 ```
 
 ## Log Analytics
+
+> 📖 [Monitor APIM with Azure Monitor (diagnostic logs)](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-monitor)
 
 ### Enable Diagnostic Settings
 
@@ -482,6 +486,36 @@ az monitor metrics list \
 4. **Monitor Backend**: APIM is only as fast as backends
 5. **Test at Scale**: Load testing reveals bottlenecks
 
+### High-Throughput Logging: Use Event Hubs
+
+> **⚠️ Important for high-throughput environments**: Logging all events via the built-in Application Insights integration can cause serious performance degradation. According to [official Microsoft documentation](https://learn.microsoft.com/azure/api-management/api-management-howto-app-insights#performance-implications-and-log-sampling), enabling Application Insights logging caused a **40–50% reduction in throughput** in internal load tests when request rate exceeded **1,000 requests per second**. Application Insights is designed for statistical sampling, not audit-level logging of every request at high volume.
+
+**For high-throughput production environments**, consider logging to **Azure Event Hubs** instead of (or in addition to) Application Insights:
+
+```xml
+<!-- Log to Event Hubs for high-throughput environments -->
+<log-to-eventhub logger-id="eventhub-logger">
+  @{
+    return new JObject(
+      new JProperty("timestamp", DateTime.UtcNow),
+      new JProperty("requestId", context.RequestId),
+      new JProperty("apiId", context.Api.Id),
+      new JProperty("operationId", context.Operation.Id),
+      new JProperty("responseCode", context.Response.StatusCode),
+      new JProperty("totalTime", context.Elapsed.TotalMilliseconds)
+    ).ToString();
+  }
+</log-to-eventhub>
+```
+
+From Event Hubs, you can route logs to your analytics platform of choice (Azure Data Explorer, Stream Analytics, custom consumers) without APIM throughput impact.
+
+**Recommended approach by volume**:
+- **< 1,000 req/sec**: Application Insights with sampling is fine
+- **> 1,000 req/sec**: Use Event Hubs for logging; use Application Insights with low sampling (e.g., 10-20%) for tracing and analytics only
+
+See the [official guidance](https://learn.microsoft.com/azure/api-management/api-management-howto-log-event-hubs) for configuring Event Hubs logging in APIM.
+
 ## Dashboards
 
 ### Example Azure Dashboard (JSON)
@@ -497,6 +531,19 @@ Key widgets to include:
 ### Grafana Integration
 
 Use Azure Monitor data source in Grafana for custom dashboards.
+
+## Additional Resources
+
+- [Integrate APIM with Application Insights](https://learn.microsoft.com/azure/api-management/api-management-howto-app-insights)
+- [Monitor APIM with Azure Monitor](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-monitor)
+- [Log to Azure Event Hubs from APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-log-event-hubs)
+- [log-to-eventhub policy reference](https://learn.microsoft.com/azure/api-management/log-to-eventhub-policy)
+- [trace policy reference](https://learn.microsoft.com/azure/api-management/trace-policy)
+- [emit-metric policy reference](https://learn.microsoft.com/azure/api-management/emit-metric-policy)
+- [Azure API Management diagnostic logs reference](https://learn.microsoft.com/azure/api-management/gateway-log-schema-reference)
+- [Visualize APIM data with Azure Managed Grafana](https://learn.microsoft.com/azure/api-management/visualize-using-managed-grafana-dashboard)
+- [Available metrics for APIM](https://learn.microsoft.com/azure/api-management/monitor-api-management-reference)
+- [KQL (Kusto Query Language) reference](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
 
 ## Next Steps
 

@@ -101,17 +101,17 @@ Both guides cover assessment, feature mapping, policy translation, tooling, test
 
 ## 📚 Documentation
 
-| Guide | Topics |
-|-------|--------|
-| [Core Concepts](docs/concepts.md) | Gateway architecture, products, subscriptions, policies |
-| [Tiers and SKUs](docs/tiers-and-skus.md) | Consumption, Developer, Basic/Standard v2, Premium tiers |
-| [Security](docs/security.md) | JWT, OAuth, mTLS, Key Vault, managed identity |
-| [Networking](docs/networking.md) | VNet integration, private endpoints, Front Door |
-| [Observability](docs/observability.md) | Application Insights, Log Analytics, KQL queries |
-| [Workspaces](docs/workspaces.md) | Multi-environment segmentation, workspace policies |
-| [API Center](docs/api-center.md) | API governance and catalog synchronization |
-| [AI Gateway](docs/ai-gateway.md) | Azure OpenAI load balancing, token limits, semantic caching |
-| [Troubleshooting](docs/troubleshooting.md) | Common issues and resolutions |
+| Guide | Topics | Official Docs |
+|-------|--------|--------------|
+| [Core Concepts](docs/concepts.md) | Gateway architecture, products, subscriptions, policies | [learn.microsoft.com/azure/api-management/api-management-key-concepts](https://learn.microsoft.com/azure/api-management/api-management-key-concepts) |
+| [Tiers and SKUs](docs/tiers-and-skus.md) | Consumption, Developer, Basic/Standard v2, Premium tiers | [Feature comparison](https://learn.microsoft.com/azure/api-management/api-management-features) · [v2 tiers](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview) |
+| [Security](docs/security.md) | JWT, OAuth, mTLS, Key Vault, managed identity | [Security overview](https://learn.microsoft.com/azure/api-management/security-controls-policy) |
+| [Networking](docs/networking.md) | VNet integration, private endpoints, Front Door | [Virtual networking options](https://learn.microsoft.com/azure/api-management/virtual-network-concepts) |
+| [Observability](docs/observability.md) | Application Insights, Log Analytics, KQL queries | [Monitor APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-monitor) |
+| [Workspaces](docs/workspaces.md) | Multi-environment segmentation, workspace policies | [Workspaces overview](https://learn.microsoft.com/azure/api-management/workspaces-overview) |
+| [API Center](docs/api-center.md) | API governance and catalog synchronization | [Azure API Center docs](https://learn.microsoft.com/azure/api-center/) |
+| [AI Gateway](docs/ai-gateway.md) | Azure OpenAI load balancing, token limits, semantic caching | [APIM + Azure OpenAI](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-openai-service) |
+| [Troubleshooting](docs/troubleshooting.md) | Common issues and resolutions | [Diagnose and solve problems](https://learn.microsoft.com/azure/api-management/diagnose-solve-problems) |
 
 ## 🏗️ Infrastructure Templates
 
@@ -127,6 +127,19 @@ Example parameter files for workspace deployments:
 ## 🤝 Contributing
 
 We welcome contributions! Please read the [Contribution Guidelines](CONTRIBUTING.md) for details on how to get involved, open an [Issue](https://github.com/jonathandhaene/apim-educational/issues), or submit a [Pull Request](https://github.com/jonathandhaene/apim-educational/pulls).
+
+## 🌍 Related Resources and Ecosystem
+
+These official Microsoft resources complement this lab and are recommended for deeper exploration:
+
+| Resource | Description |
+|----------|-------------|
+| [Azure APIM Hands-on Lab](https://azure.github.io/apim-lab/) | Another comprehensive APIM hands-on lab from Microsoft |
+| [APIM Landing Zone Accelerator](https://github.com/Azure/apim-landing-zone-accelerator) | Bicep-based reference architecture with networking best practices (App Gateway, Hub-Spoke, etc.) |
+| [APIOps for APIM](https://azure.github.io/apiops/) | GitOps-based release management framework for APIM (API-level CI/CD pipelines) |
+| [AI Hub Gateway Solution Accelerator](https://github.com/Azure-Samples/ai-hub-gateway-solution-accelerator) | Reference architecture for AI hub gateway using APIM (load balancing, chargeback, multi-model) |
+| [APIM Policy Toolkit](https://github.com/Azure/azure-api-management-policy-toolkit) | Unit test your APIM policies locally before deployment |
+| [Official APIM Policies](https://github.com/jonathandhaene/apim-educational/tree/main/policies) | Policy snippets in this repository (see `policies/` directory) |
 
 ---
 

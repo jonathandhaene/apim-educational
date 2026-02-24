@@ -91,6 +91,8 @@ AI APIs charge by token consumption:
 
 ## Azure OpenAI Integration
 
+> 📖 [Use Azure API Management with Azure OpenAI Service](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-openai-service)
+
 ### Backend Configuration
 
 **Multiple Azure OpenAI Instances:**
@@ -296,6 +298,8 @@ AIUsageLogs
 ```
 
 ## Rate Limiting and Quotas
+
+> 📖 [`azure-openai-token-limit` policy](https://learn.microsoft.com/azure/api-management/azure-openai-token-limit-policy) — built-in policy to limit Azure OpenAI token consumption per key
 
 ### Protect Against TPM (Tokens Per Minute) Limits
 
@@ -578,10 +582,16 @@ Cache based on semantic similarity (requires external service):
 
 ## Additional Resources
 
-- [Azure OpenAI Service](https://learn.microsoft.com/azure/ai-services/openai/)
-- [APIM + Azure OpenAI Reference](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-openai-service)
-- [Token Pricing](https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/)
+- [Azure OpenAI Service documentation](https://learn.microsoft.com/azure/ai-services/openai/)
+- [Use APIM with Azure OpenAI Service](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-openai-service)
+- [Import Azure OpenAI API to APIM](https://learn.microsoft.com/azure/api-management/azure-openai-api-from-specification)
+- [`azure-openai-token-limit` policy](https://learn.microsoft.com/azure/api-management/azure-openai-token-limit-policy) — limit token consumption per key/subscription
+- [`azure-openai-emit-token-metric` policy](https://learn.microsoft.com/azure/api-management/azure-openai-emit-token-metric-policy) — emit token usage metrics to Application Insights
+- [Backends (backend pool & circuit breaker)](https://learn.microsoft.com/azure/api-management/backends)
+- [Load-balance backends with APIM](https://learn.microsoft.com/azure/api-management/backends#load-balanced-pool)
+- [Token Pricing for Azure OpenAI](https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/)
 - [Prompt Engineering Guide](https://learn.microsoft.com/azure/ai-services/openai/concepts/prompt-engineering)
+- [AI Hub Gateway Landing Zone Accelerator](https://github.com/Azure-Samples/ai-hub-gateway-solution-accelerator) — reference architecture for building an AI hub gateway with APIM
 
 ## Next Steps
 

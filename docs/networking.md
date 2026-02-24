@@ -43,7 +43,7 @@ APIM is injected into a VNet but endpoints remain publicly accessible with inter
 - Gateway: Public IP, routed via VNet
 - Backends: Can be private (within VNet)
 - Management: Public
-- Available: Developer, Premium tiers only
+- Available: **Developer, Premium** classic tiers only
 
 **Use cases:**
 - Public APIs with private backends
@@ -67,14 +67,14 @@ APIM is injected into a VNet with private endpoints only; no public access by de
 - Gateway: Private IP only
 - Management: Accessible via VNet or public (configurable)
 - Developer portal: Private IP
-- Available: Developer, Standard, Premium, Standard v2 tiers
+- Available: **Developer, Premium** classic tiers; **Premium v2**
 
 **Use cases:**
 - Internal corporate APIs
 - Private APIs for VNet-connected clients
 - ExpressRoute or VPN-connected on-premises clients
 
-> **Note on v2 Tiers**: Standard v2 tier introduced in 2024-2025 supports VNet injection with faster provisioning (5-15 minutes vs 30-45 minutes for classic tiers) and consumption-based pricing. Basic v2 does not support VNet injection but can use Private Endpoints.
+> **v2 Tiers and Networking**: The v2 tiers use a different networking model from classic tiers. **Standard v2** and **Premium v2** support **outbound VNet integration** — the API Management gateway can reach backends in a private VNet, but the gateway itself remains publicly accessible from the internet. **Premium v2** additionally supports full **VNet injection** (both inbound and outbound isolation), equivalent to the internal VNet mode in classic tiers. Neither Standard v2 nor Basic v2 support the classic-style VNet injection with a fully private gateway.
 
 **Diagram:**
 ```
@@ -86,32 +86,48 @@ Corporate Network (VPN/ExpressRoute)
    [Backend Services]
 ```
 
-### 4. Private Endpoint (Newer Option)
+### 4. Outbound VNet Integration (v2 Tiers)
 
-Use Azure Private Link to connect to APIM without VNet injection (available for Consumption, Developer, Basic, Standard, Premium tiers).
+Available in **Standard v2** and **Premium v2**. The gateway remains publicly accessible, but outbound requests to backends can reach services isolated in a connected VNet.
 
 **Characteristics:**
-- APIM remains in Microsoft-managed VNet
-- Private endpoint created in your VNet
-- Works with all tiers (including Consumption)
-- Simpler than VNet injection
+- Gateway: Public IP (still internet accessible)
+- Backends: Can be private (within VNet via outbound integration)
+- Available: Standard v2, Premium v2
 
 **Use cases:**
-- Private access without tier upgrade
+- Public APIs backed by private backends (v2 tiers)
+- Simplified private backend connectivity without full VNet injection
+
+### 5. Private Endpoint (Inbound)
+
+Use Azure Private Link to allow clients to connect to the APIM gateway via a private IP in their VNet.
+
+**Characteristics:**
+- APIM remains in Microsoft-managed VNet (or injected VNet)
+- Private endpoint created in your VNet
+- Works with: **Developer, Basic, Standard, Standard v2, Premium, Premium v2**
+- Does **NOT** work with: Consumption, Basic v2
+- Simpler than VNet injection for securing inbound access
+
+**Use cases:**
+- Private client access without requiring full VNet injection
 - Multi-VNet connectivity
-- Simplified networking
+- Securing the gateway endpoint from public internet
 
 ## VNet Integration
 
 ### Prerequisites
 
-- **Tier**: Developer, Standard, Premium for classic VNet injection; Standard v2 for v2 VNet injection
+- **Tier for classic VNet injection**: Developer or Premium (classic tiers only)
+- **Tier for Premium v2 VNet injection**: Premium v2
+- **Tier for outbound VNet integration**: Standard v2 or Premium v2
 - **VNet**: Existing Azure VNet
 - **Subnet**: Dedicated subnet for APIM (minimum /29, recommended /27 or larger)
-- **NSG**: Network Security Group with required rules
-- **Service Endpoints**: Microsoft.Storage, Microsoft.Sql (if using)
+- **NSG**: Network Security Group with required rules (classic VNet injection only)
+- **Service Endpoints**: Microsoft.Storage, Microsoft.Sql (if using, for classic VNet injection)
 
-> **v2 Tier Note**: Standard v2 supports VNet injection with the same subnet requirements but provisions 5-10x faster than classic tiers.
+> **v2 VNet Note**: Premium v2 VNet injection automatically manages network connectivity to most service dependencies — it does not require route tables or service endpoints, unlike classic VNet injection.
 
 ### External VNet Deployment
 
@@ -180,14 +196,31 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
 
 ## Private Endpoints
 
-Private Endpoint provides private connectivity without VNet injection.
+Private Endpoint provides **inbound-only** private connectivity to the APIM gateway — it places a private IP address in your VNet that clients use to reach APIM, but it does **not** isolate outbound traffic from the gateway to backends. For full network isolation (both inbound client traffic *and* outbound backend traffic), you need VNet injection (Developer/Premium classic or Premium v2) or outbound VNet integration (Standard v2/Premium v2).
+
+> 💡 **Practical guidance**: If your backends are in a private VNet, inbound-only Private Endpoints are not enough on their own. You also need outbound connectivity — either via VNet injection (Developer, Premium classic, Premium v2) or outbound VNet integration (Standard v2, Premium v2). Tiers that support *only* inbound Private Endpoints (Basic, Standard classic) offer limited value in fully private architectures.
+
+### Tier Support
+
+| Tier | Private Endpoints |
+|------|------------------|
+| Consumption | ❌ |
+| Developer | ✅ |
+| Basic | ✅ |
+| Standard | ✅ |
+| Premium | ✅ |
+| Basic v2 | ❌ |
+| Standard v2 | ✅ |
+| Premium v2 | ✅ |
 
 ### Benefits
 
-- **Any Tier**: Works with Consumption, Developer, Basic, Standard, Premium
-- **Simplified**: No NSG rules or subnet delegation required
+- **Secure inbound access**: Clients connect via private IP, traffic stays within your VNet
+- **No VNet injection required**: Can use with any supported tier without injecting APIM into a VNet
 - **Multi-VNet**: Connect from multiple VNets via peering
 - **Hub-Spoke**: Centralized APIM, spoke VNets connect via private endpoints
+
+> **Limitation**: Private Endpoints are inbound-only. They do not route outbound traffic from the APIM gateway to private backends. For outbound private connectivity to backends, also configure VNet injection (Developer/Premium classic, Premium v2) or outbound VNet integration (Standard v2, Premium v2).
 
 ### Setup
 
@@ -433,12 +466,16 @@ Corporate Network (VPN) → APIM (Internal VNet) → Private Backends
 ### Pattern 4: Internal APIs with Public Facade
 
 ```
-Internet → Application Gateway/Front Door → APIM (Internal VNet) → Private Backends
+Internet → Application Gateway (WAF) → APIM (Internal VNet) → Private Backends
+                  or
+Internet → Azure Front Door (WAF) → APIM (Internal VNet / Private Endpoint) → Private Backends
 ```
 
-- APIM: Internal VNet mode
-- Public access: Via App Gateway WAF or Front Door
+- APIM: Internal VNet mode (classic Developer/Premium/Premium v2), or Private Endpoint (any supported tier)
+- Public access: Via Application Gateway WAF or Azure Front Door Premium (with Private Link to APIM)
 - Security: DDoS protection, WAF, geo-filtering
+
+> **Front Door vs Application Gateway**: Azure Front Door Premium supports Private Link connections to APIM, enabling fully private APIM deployments without requiring VNet injection. This is an alternative to Application Gateway for scenarios requiring a WAF in front of a private APIM. See [Front Door Integration](front-door.md) for configuration details.
 
 ### Pattern 5: Multi-Region with Traffic Manager
 
@@ -529,9 +566,24 @@ az network watcher test-ip-flow \
 5. **Enable diagnostics**: Log network traffic for troubleshooting
 6. **Test connectivity**: Before full deployment
 7. **Document network design**: Maintain architecture diagrams
-8. **Use Application Gateway**: For WAF with Internal VNet mode
+8. **Use Application Gateway or Front Door**: For WAF with Internal VNet mode
 9. **Plan for multi-region**: If availability is critical
 10. **Monitor network health**: Set up alerts on connectivity issues
+
+## Additional Resources
+
+- [Virtual networking options for APIM](https://learn.microsoft.com/azure/api-management/virtual-network-concepts)
+- [Deploy APIM to a VNet (external mode)](https://learn.microsoft.com/azure/api-management/api-management-using-with-vnet)
+- [Deploy APIM to a VNet (internal mode)](https://learn.microsoft.com/azure/api-management/api-management-using-with-internal-vnet)
+- [Inject Premium v2 into a virtual network](https://learn.microsoft.com/azure/api-management/inject-vnet-v2)
+- [Outbound VNet integration for Standard v2 / Premium v2](https://learn.microsoft.com/azure/api-management/integrate-vnet-outbound)
+- [Connect privately to APIM using a private endpoint](https://learn.microsoft.com/azure/api-management/private-endpoint)
+- [NSG resource requirements for VNet injection](https://learn.microsoft.com/azure/api-management/virtual-network-injection-resources)
+- [Configure custom domain for APIM](https://learn.microsoft.com/azure/api-management/configure-custom-domain)
+- [Deploy APIM in an internal VNet with Application Gateway](https://learn.microsoft.com/azure/api-management/api-management-howto-integrate-internal-vnet-appgateway)
+- [Integrate Azure Front Door with APIM](https://learn.microsoft.com/azure/api-management/front-door-api-management)
+- [DNS configuration for private APIM](https://learn.microsoft.com/azure/api-management/api-management-using-with-internal-vnet#set-up-a-custom-domain-name)
+- [APIM v2 tiers overview](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview)
 
 ## Next Steps
 

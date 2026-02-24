@@ -649,11 +649,17 @@ You've completed all five APIM labs! You now have comprehensive knowledge of:
 
 ## 📚 Additional Resources
 
-- [API Center Documentation](../../docs/api-center.md)
-- [AI Gateway Patterns](../../docs/ai-gateway.md)
-- [Observability Guide](../../docs/observability.md)
-- [Production Best Practices](../../docs/concepts.md)
-- [Cost Optimization](../../docs/tiers-and-skus.md)
+- [Azure API Center documentation](https://learn.microsoft.com/azure/api-center/)
+- [Synchronize APIs from APIM to API Center](https://learn.microsoft.com/azure/api-center/synchronize-api-management-apis)
+- [Use APIM with Azure OpenAI Service](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-openai-service)
+- [`azure-openai-token-limit` policy](https://learn.microsoft.com/azure/api-management/azure-openai-token-limit-policy)
+- [`azure-openai-emit-token-metric` policy](https://learn.microsoft.com/azure/api-management/azure-openai-emit-token-metric-policy)
+- [Backup and restore APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-disaster-recovery-backup-restore)
+- [Multi-region deployment](https://learn.microsoft.com/azure/api-management/api-management-howto-deploy-multi-region)
+- [Autoscale APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-autoscale)
+- [Azure Cost Management](https://learn.microsoft.com/azure/cost-management-billing/)
+- [KQL Query Reference](https://learn.microsoft.com/azure/data-explorer/kusto/query/)
+- [APIOps for APIM](https://azure.github.io/apiops/) — GitOps-based release management framework
 
 ## 🚀 Next Steps
 

@@ -335,7 +335,7 @@ ApiManagementGatewayLogs
 - Unexpected behavior
 
 **Solutions:**
-1. **Check Scope**: Policy might be overridden at a different scope (operation > API > product > global)
+1. **Check Scope**: Policy might be overridden at a different scope (operation > API > product > global). See [policy scopes overview](https://learn.microsoft.com/azure/api-management/api-management-howto-policies#policy-configuration-scopes).
 2. **Check Base Policy**: Ensure `<base />` is included where needed
 3. **Clear Cache**: Browser/client caching might show old behavior
 4. **Check Revisions**: Policy might be in different revision
@@ -532,10 +532,19 @@ az support tickets create \
 
 ### Community Resources
 
-- [Microsoft Q&A](https://learn.microsoft.com/answers/topics/azure-api-management.html)
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/azure-api-management)
-- [GitHub Issues](https://github.com/Azure/api-management-samples)
-- [Azure Feedback](https://feedback.azure.com/d365community/forum/1f1d9b2c-0425-ec11-b6e6-000d3a4f0858)
+- [Microsoft Q&A for Azure API Management](https://learn.microsoft.com/answers/topics/azure-api-management.html)
+- [Stack Overflow – azure-api-management tag](https://stackoverflow.com/questions/tagged/azure-api-management)
+- [GitHub Issues – Azure API Management samples](https://github.com/Azure/api-management-samples)
+- [Azure Feedback (APIM ideas)](https://feedback.azure.com/d365community/forum/1f1d9b2c-0425-ec11-b6e6-000d3a4f0858)
+
+### Official Documentation
+
+- [APIM troubleshooting guide](https://learn.microsoft.com/azure/api-management/api-management-troubleshoot-cannot-add-custom-domain)
+- [Diagnose and solve problems in the Azure portal](https://learn.microsoft.com/azure/api-management/diagnose-solve-problems)
+- [Debug API policies in the Azure portal](https://learn.microsoft.com/azure/api-management/api-management-debug-policies)
+- [API inspector / request tracing](https://learn.microsoft.com/azure/api-management/api-management-howto-api-inspector)
+- [NSG requirements for VNet injection](https://learn.microsoft.com/azure/api-management/virtual-network-injection-resources)
+- [APIM REST API reference](https://learn.microsoft.com/rest/api/apimanagement/)
 
 ## Next Steps
 

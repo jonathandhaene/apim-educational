@@ -14,9 +14,11 @@ This guide helps you choose the right Azure API Management tier for your needs, 
 
 ## Tier Overview
 
-Azure API Management offers multiple pricing tiers designed for different scenarios. Classic tiers (Consumption, Developer, Basic, Standard, Premium) provide fixed-capacity or serverless models, while v2 tiers (Basic v2, Standard v2) introduced in 2024-2025 offer consumption-based pricing with enhanced scalability.
+Azure API Management offers multiple pricing tiers designed for different scenarios. Classic tiers (also called **v1** tiers: Consumption, Developer, Basic, Standard, Premium) provide fixed-capacity or serverless models, while v2 tiers (Basic v2, Standard v2, Premium v2) introduced in 2024-2025 run on a newer, faster underlying platform with enhanced scalability and faster provisioning.
 
-### Classic Tiers
+> **v1 vs v2 Platform**: The v1 (classic) and v2 tiers run on fundamentally different underlying platforms. The v2 platform is significantly faster and provisions in 5-15 minutes vs 30-45 minutes for classic tiers. Microsoft is actively working toward feature parity between v1 and v2, with v2 gaining networking and enterprise features over time. Notably, **there is no Developer tier in v2** and one is not planned—use the Developer classic tier for non-production environments.
+
+### Classic Tiers (v1)
 
 | Tier | Best For | Pricing Model | Starting Price* |
 |------|----------|---------------|----------------|
@@ -30,8 +32,11 @@ Azure API Management offers multiple pricing tiers designed for different scenar
 
 | Tier | Best For | Pricing Model | Key Features |
 |------|----------|---------------|--------------|
-| **Basic v2** | Cost-optimized production | Consumption-based | Auto-scaling, 99.95% SLA, cost-effective |
-| **Standard v2** | Enterprise production | Consumption-based | VNet injection, zone redundancy, 99.95% SLA |
+| **Basic v2** | Dev/test and cost-optimized production | Fixed base fee + request tiers | Auto-scaling, 99.95% SLA |
+| **Standard v2** | Production with private backend access | Fixed base fee + request tiers | Outbound VNet integration, private endpoints, zone redundancy, 99.95% SLA |
+| **Premium v2** | Enterprise with full VNet isolation | See pricing calculator | Full VNet injection, workspaces, zone redundancy, 99.99% SLA |
+
+> **v2 Pricing Model**: Basic v2 and Standard v2 use a **fixed base monthly fee plus tiered request pricing**—unlike pure consumption, there is a predictable base cost regardless of usage. Premium v2 follows a different pricing structure; always check the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for up-to-date pricing details.
 
 *Prices are indicative and based on US East region (2026). Regional pricing varies significantly. Check the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for accurate cost estimates specific to your region and usage patterns.
 
@@ -234,74 +239,129 @@ Azure API Management offers multiple pricing tiers designed for different scenar
 
 ### Standard v2 Tier
 
-**Enterprise-grade consumption-based production tier** with advanced networking.
+**Enterprise-grade production tier** with backend VNet integration on the v2 platform.
 
 **Key Characteristics:**
 - **Capacity**: Auto-scaling based on demand
 - **SLA**: 99.95%
-- **Pricing**: Consumption-based (pay for actual usage)
-- **VNet injection**: Supported
+- **Pricing**: Fixed base fee + tiered request pricing
+- **VNet integration (outbound)**: Supported — the gateway remains publicly accessible; backends can be privately connected
+- **Private endpoints (inbound)**: Supported
 - **Zone redundancy**: Supported
 - **Provisioning**: Fast deployment (5-15 minutes)
 
+> **VNet integration vs. VNet injection**: Standard v2 supports **outbound VNet integration** — API Management can reach backends in a private VNet, but the gateway endpoint itself remains publicly accessible from the internet. This is different from VNet injection (available in Developer, Premium, and Premium v2) where the entire instance is deployed inside a VNet with full traffic isolation.
+
 **Use Cases:**
-- Enterprise production workloads requiring VNet integration
-- Applications with variable traffic needing cost optimization
-- Workloads requiring zone redundancy for high availability
-- Private APIs with backend connectivity requirements
-- Production workloads prioritizing consumption-based pricing over fixed costs
+- Enterprise production workloads requiring private backend connectivity
+- Applications needing zone redundancy for high availability
+- Workloads where the gateway is public but backends are network-isolated
 
 **Limitations:**
-- No multi-region deployment (use Premium for multi-region)
-- Higher per-request costs compared to v2 Basic at high volumes
+- No VNet injection (gateway endpoint is always public)
+- No multi-region deployment (use classic Premium for multi-region)
 
 **Pros:**
-- ✅ Consumption-based pricing with enterprise features
-- ✅ VNet injection for private connectivity
+- ✅ Outbound VNet integration for private backend connectivity
+- ✅ Inbound private endpoints for secure client access
 - ✅ Zone redundancy for high availability
 - ✅ Auto-scaling without capacity unit management
 - ✅ SLA included (99.95%)
 - ✅ Fast provisioning
-- ✅ Cost-effective for variable enterprise workloads
+
+**Cons:**
+- ❌ No full VNet injection (gateway remains publicly accessible)
+- ❌ No multi-region deployment
+- ❌ Higher base cost than Basic v2
+
+### Premium v2 Tier
+
+**Enterprise-grade tier with full VNet isolation** on the v2 platform. Generally Available (GA).
+
+**Key Characteristics:**
+- **Capacity**: Auto-scaling up to 30 units
+- **SLA**: 99.99%
+- **Pricing**: Check [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) (different structure from Basic v2/Standard v2)
+- **VNet injection**: Supported — full inbound+outbound isolation inside a VNet
+- **VNet integration (outbound)**: Supported
+- **Private Endpoints (inbound)**: Supported (when not using VNet injection)
+- **Workspaces**: Supported
+- **Zone redundancy**: Supported
+- **Provisioning**: Fast deployment (5-15 minutes)
+
+> **Note**: Unlike classic Premium, Premium v2 does **not** yet support multi-region deployment. Self-hosted gateway support for Premium v2 is **planned** — check the [official docs](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview) for current availability.
+
+**Use Cases:**
+- Enterprise production requiring full network isolation (VNet injection)
+- High-availability workloads needing zone redundancy
+- Organizations using workspaces for federated API management
+
+**Limitations:**
+- No multi-region deployment (use classic Premium for multi-region)
+- Self-hosted gateway not yet available (planned for Premium v2)
+
+**Pros:**
+- ✅ Full VNet injection for complete network isolation
+- ✅ Highest SLA in the v2 tier family (99.99%)
+- ✅ Workspaces support
+- ✅ Zone redundancy
+- ✅ Auto-scaling without capacity unit management
+- ✅ Fast provisioning
 
 **Cons:**
 - ❌ No multi-region deployment
-- ❌ Higher base cost than Basic v2
+- ⏳ Self-hosted gateway not yet available (planned)
+- ❌ Highest cost in v2 family
 
 ## Feature Comparison
 
 ### Classic Tiers vs v2 Tiers
 
-| Feature | Consumption | Developer | Basic | Standard | Premium | Basic v2 | Standard v2 |
-|---------|-------------|-----------|-------|----------|---------|----------|-------------|
-| **SLA** | None | None | 99.95% | 99.95% | 99.99%* | 99.95% | 99.95% |
-| **Pricing Model** | Pay-per-call | Fixed | Fixed | Fixed | Fixed | Consumption | Consumption |
-| **Auto-scaling** | Yes | No | No | No | Manual | Yes | Yes |
-| **Max Scale** | Auto | 1 unit | 2 units | 4 units | 12+ units/region | Auto | Auto |
-| **Max Requests/sec** | 1,000 | 500 | 1,000 | 2,500 | 4,000+/unit | Auto | Auto |
-| **Custom Domains** | Limited | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **VNet Injection** | ❌ | ✅ | ❌ | ✅ | ✅ | ❌ | ✅ |
-| **Private Endpoints** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Multi-region** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| **Availability Zones** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
-| **Self-hosted Gateway** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Built-in Cache** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **External Cache (Redis)** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Developer Portal** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **OAuth 2.0 / JWT** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Client Certificates** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Managed Identity** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Backup/Restore** | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Git Configuration** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Provisioning Time** | 5 min | 30-45 min | 30-45 min | 30-45 min | 30-45 min | 5-15 min | 5-15 min |
+| Feature | Consumption | Developer | Basic | Standard | Premium | Basic v2 | Standard v2 | Premium v2 |
+|---------|-------------|-----------|-------|----------|---------|----------|-------------|------------|
+| **SLA** | None | None | 99.95% | 99.95% | 99.99%* | 99.95% | 99.95% | 99.99% |
+| **Pricing Model** | Pay-per-call | Fixed | Fixed | Fixed | Fixed | Base + request tiers | Base + request tiers | Base + request tiers |
+| **Auto-scaling** | Yes | No | No | No | Manual | Yes | Yes | Yes |
+| **Max Scale** | Auto | 1 unit | 2 units | 4 units | 12+ units/region | Auto | Auto | Auto |
+| **Max Requests/sec** | 1,000 | 500 | 1,000 | 2,500 | 4,000+/unit | Auto | Auto | Auto |
+| **Custom Domains** | Limited | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **VNet Injection** | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ |
+| **VNet Integration (outbound)** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| **Private Endpoints** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ |
+| **Multi-region** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Availability Zones** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ | ✅ |
+| **Self-hosted Gateway** | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ⏳ |
+| **Workspaces** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ |
+| **Built-in Cache** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **External Cache (Redis)** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Developer Portal** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **OAuth 2.0 / JWT** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Client Certificates** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Managed Identity** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Backup/Restore** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌† | ❌† |
+| **Git Configuration** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌† | ❌† |
+| **Provisioning Time** | 5 min | 30-45 min | 30-45 min | 30-45 min | 30-45 min | 5-15 min | 5-15 min | 5-15 min |
 
-*99.99% SLA with multi-region deployment
+*99.99% SLA with multi-region deployment  
+†v2 tiers do not have a portal backup/restore button, but API configuration can be exported via ARM/Bicep templates or Git-based automation — which is the recommended approach anyway (GitOps). ⏳ in a cell means "not yet available, planned".
+
+> **Networking in v1 vs v2**: VNet injection (full inbound+outbound isolation) is available only on **Developer** and **Premium** classic tiers, and **Premium v2**. **Standard v2** and **Premium v2** also support **outbound VNet integration** (backend connectivity only, gateway remains public). Inbound **Private Endpoints** are available on Developer, Basic, Standard, Standard v2, Premium, and Premium v2 — but NOT on Consumption or Basic v2.
+>
+> ⚠️ **Important**: Private Endpoints provide **inbound-only** private connectivity to the APIM gateway. They do not isolate outbound traffic to backends. For full network isolation (inbound *and* outbound), you need **VNet injection** (Developer/Premium classic or Premium v2) or **outbound VNet integration** (Standard v2/Premium v2). Tiers that support only inbound Private Endpoints but no outbound isolation are limited in truly private architectures. See the [official feature comparison](https://learn.microsoft.com/azure/api-management/api-management-features) for details.
+
+> **Self-hosted gateway** is currently only available on **Developer** and **Premium** classic tiers — not on Basic/Standard classic, and not on v2 tiers yet. Self-hosted gateway support for **Premium v2 is planned** — check the [official docs](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview) for the latest status.
+
+> **Workspaces** are only available on **Premium** and **Premium v2** tiers.
 
 **Key Differences:**
-- **v2 tiers** use consumption-based pricing instead of fixed monthly costs
-- **v2 tiers** provision significantly faster (5-15 minutes vs 30-45 minutes)
+- **v2 tiers** run on a newer, faster underlying platform (not the same as the stv2 compute platform for classic tiers)
+- **v2 tiers** provision significantly faster (5-15 minutes vs 30-45 minutes for classic)
 - **v2 tiers** auto-scale without manual capacity unit management
-- **Standard v2** includes zone redundancy; classic Standard does not
+- **Standard v2** supports outbound VNet integration (backend private connectivity) but the gateway remains publicly accessible; **Premium v2** adds full VNet injection
+- **Standard v2** and **Premium v2** include availability zones; classic Standard does not
+- **No Developer tier in v2** — use the classic Developer tier for non-production environments
+- **Backup/Restore and Git configuration** are not available as a portal button in any v2 tier, but API configuration can be exported via ARM/Bicep or Git-based automation (recommended GitOps approach)
+- **Multi-region deployment** is only available on classic **Premium** tier
 
 ## Capacity and Scale
 
@@ -343,7 +403,7 @@ Each APIM unit provides approximate capacity:
 
 ## Pricing Comparison
 
-> **Important**: Pricing shown is indicative based on US East region as of 2026. Actual costs vary significantly by region, usage patterns, and Azure subscription type. v2 tier pricing is consumption-based and depends on request volume, compute usage, and feature utilization. Always use the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for accurate estimates.
+> **Important**: Pricing shown is indicative based on US East region as of 2026. Actual costs vary significantly by region, usage patterns, and Azure subscription type. Always use the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) for accurate estimates.
 
 ### Classic Tiers - Cost Breakdown (Approximate - USD, East US 2026)
 
@@ -355,35 +415,31 @@ Each APIM unit provides approximate capacity:
 | **Standard** | ~$750 | ~$750 | None |
 | **Premium** | ~$3,000 | ~$3,000 | Multi-region: +~$3,000 per additional region |
 
-### v2 Tiers - Consumption-Based Pricing (2026)
+### v2 Tiers - Pricing Model (2026)
 
-v2 tiers use consumption-based pricing that scales with actual usage:
+v2 tiers (Basic v2 and Standard v2) use a **fixed base monthly fee plus tiered request pricing**. This differs from the classic Consumption tier (pure pay-per-call) and from classic fixed-unit tiers. Premium v2 has a different pricing structure.
 
-| Tier | Pricing Model | Indicative Cost Range* | SLA |
-|------|---------------|----------------------|-----|
-| **Basic v2** | Consumption-based | Varies by usage; typically lower than fixed Basic for variable workloads | 99.95% |
-| **Standard v2** | Consumption-based | Varies by usage; cost-effective for enterprise features with variable traffic | 99.95% |
+| Tier | Pricing Model | SLA |
+|------|---------------|-----|
+| **Basic v2** | Fixed base fee + tiered request pricing | 99.95% |
+| **Standard v2** | Fixed base fee + tiered request pricing | 99.95% |
+| **Premium v2** | Check Azure Pricing Calculator (different structure) | 99.99% |
 
-*v2 pricing is based on:
-- Number of API requests
-- Compute usage (processing time)
-- Data transfer
-- Feature utilization (VNet injection, zone redundancy, etc.)
+> **Note**: v2 pricing details evolve. Always consult the [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) and the [official pricing page](https://azure.microsoft.com/pricing/details/api-management/) for current rates.
 
 **Cost Optimization Considerations:**
-- v2 tiers are generally more cost-effective than classic fixed-price tiers for workloads with variable traffic
-- For predictable, high-volume workloads, compare v2 consumption costs with classic tier fixed pricing
 - v2 tiers eliminate the need to pre-provision capacity units
 - Faster provisioning (5-15 min) reduces deployment and testing costs
+- Compare v2 fixed base + request tiers vs classic fixed-unit pricing for your specific request volume
 
 ### Cost Examples
 
 > **Note**: These are illustrative examples. Actual costs depend on region, usage patterns, and specific features used. Always calculate costs for your specific scenario.
 
 **Scenario 1: Development/Testing**
-- **Best Tier**: Developer
+- **Best Tier**: Developer (classic)
 - **Monthly Cost**: ~$50 (fixed)
-- **Rationale**: Full features, no SLA needed for dev
+- **Rationale**: Full features, no SLA needed for dev; no Developer equivalent in v2
 
 **Scenario 2: Startup with 10M requests/month (variable traffic)**
 - **Consumption**: ~$35-50/month (10 × $3.50 + gateway hours)
@@ -430,44 +486,45 @@ v2 tiers use consumption-based pricing that scales with actual usage:
 ```
 START
 ├─ Production workload?
-│  ├─ NO → Developer Tier (~$50/mo)
+│  ├─ NO → Developer Tier (~$50/mo) [no v2 Developer equivalent]
 │  └─ YES → Need SLA?
 │     ├─ NO → Developer Tier (use at own risk)
-│     └─ YES → Continue
-│        ├─ Prefer consumption-based pricing?
-│        │  ├─ YES → Need VNet injection?
-│        │  │  ├─ NO → Basic v2 (consumption-based, 99.95% SLA)
-│        │  │  └─ YES → Standard v2 (consumption-based, VNet, zones)
-│        │  └─ NO (prefer fixed pricing) → Continue
-│        │     ├─ Need VNet injection?
-│        │     │  ├─ NO → Traffic level?
-│        │     │  │  ├─ Low/Intermittent → Consumption (pay-per-use, no SLA)
-│        │     │  │  ├─ Low-Medium → Basic (~$150/mo)
-│        │     │  │  └─ Medium-High → Standard (~$750+/mo)
-│        │     │  └─ YES → Standard or Premium
-│        │     │     ├─ Single region, <4 units → Standard (~$750+/mo)
-│        │     │     └─ Multi-region or >4 units → Premium (~$3,000+/mo)
-│        │     └─ Need multi-region?
-│        │        ├─ YES → Premium (~$3,000+/mo)
-│        │        └─ NO → See above
+│     └─ YES → Prefer v2 platform (faster, auto-scaling)?
+│        ├─ YES → Need VNet injection?
+│        │  ├─ NO → Need Private Endpoint?
+│        │  │  ├─ NO → Basic v2 (base fee + request tiers, 99.95% SLA)
+│        │  │  └─ YES → Standard v2 or Premium v2
+│        │  └─ YES → Standard v2 (VNet, zones, 99.95% SLA)
+│        └─ NO (prefer classic fixed pricing) → Continue
+│           ├─ Need VNet injection?
+│           │  ├─ NO → Traffic level?
+│           │  │  ├─ Low/Intermittent → Consumption (pay-per-use, no SLA)
+│           │  │  ├─ Low-Medium → Basic (~$150/mo)
+│           │  │  └─ Medium-High → Standard (~$750+/mo)
+│           │  └─ YES → Standard or Premium
+│           │     ├─ Single region, <4 units → Standard (~$750+/mo)
+│           │     └─ Multi-region or >4 units → Premium (~$3,000+/mo)
+│           └─ Need multi-region?
+│              ├─ YES → Premium (~$3,000+/mo) [only classic Premium supports multi-region]
+│              └─ NO → See above
 ```
 
 ### Use Case Matrix
 
 | Use Case | Recommended Tier | Reasoning |
 |----------|------------------|-----------|
-| Development and Testing | Developer | Full features, low cost, no SLA needed |
+| Development and Testing | Developer (classic) | Full features, low cost, no SLA needed; no v2 Developer tier exists |
 | Prototype/POC | Consumption | Lowest cost, fast provisioning, no SLA |
 | Internal APIs (low traffic) | Basic or Basic v2 | SLA, reasonable cost; v2 for auto-scaling |
-| Public APIs (moderate traffic) | Standard, Standard v2 | Scalability, SLA; v2 for consumption pricing + VNet |
+| Public APIs (moderate traffic) | Standard, Standard v2 | Scalability, SLA; v2 for auto-scaling + VNet |
 | Mission-critical APIs | Premium or Standard v2 | Premium for multi-region; Standard v2 for single region with zones |
-| Global APIs | Premium | Multi-region for low latency worldwide |
+| Global APIs | Premium (classic) | Only classic Premium supports multi-region deployment |
 | Microservices Gateway | Standard/Premium/Standard v2 | Scalability, VNet for private backends |
-| Partner APIs (B2B) | Standard/Premium/Standard v2 | SLA, security, monitoring; v2 for cost optimization |
+| Partner APIs (B2B) | Standard/Premium/Standard v2 | SLA, security, monitoring |
 | IoT/Event-driven | Consumption or Basic v2 | Spiky traffic, auto-scale; v2 adds SLA |
-| Legacy Modernization | Standard or Standard v2 | VNet for on-prem connectivity; v2 for consumption pricing |
-| Variable Enterprise Workload | Basic v2 or Standard v2 | Consumption-based pricing, auto-scaling, SLA |
-| Cost-sensitive Production | Basic v2 | Production SLA with consumption-based cost optimization |
+| Legacy Modernization | Standard or Standard v2 | VNet for on-prem connectivity |
+| Variable Enterprise Workload | Basic v2 or Standard v2 | Auto-scaling, SLA, v2 platform speed |
+| Cost-sensitive Production | Basic v2 | Production SLA with v2 auto-scaling |
 
 ### Key Decision Factors
 
@@ -478,8 +535,10 @@ START
 
 2. **Network Requirements**
    - Public only → Any tier
-   - Private Endpoints → Any tier
-   - VNet Injection → Developer, Standard, Premium
+   - Private Endpoints only (inbound-only; outbound remains public) → Developer, Basic, Standard, Standard v2, Premium, Premium v2
+   - Outbound VNet integration (reach private backends, gateway stays public) → Standard v2, Premium v2
+   - Full VNet injection (complete inbound+outbound isolation) → Developer, Premium (classic); Premium v2
+   - > Note: Basic and Standard classic support only inbound Private Endpoints with no outbound private networking — if you need backends in a private VNet you must use one of the tiers with VNet injection or outbound integration.
 
 3. **Traffic Patterns**
    - Intermittent/Spiky → Consumption
@@ -517,12 +576,12 @@ START
 | Premium | Standard | ✅ | Downgrade (lose multi-region) |
 | Consumption | Any classic | ❌ | Requires re-creation |
 | Any classic | Consumption | ❌ | Requires re-creation |
-| Any classic | v2 tiers | ⚠️ | May require re-creation; check Azure docs |
-| v2 tiers | classic | ⚠️ | May require re-creation; check Azure docs |
+| Any classic | v2 tiers | ❌ | No automated migration path today; must create a new v2 instance. A migration path is expected once feature parity is reached — check [official Azure updates](https://learn.microsoft.com/azure/api-management/) for timeline announcements. |
+| v2 tiers | classic | ❌ | No automated migration path today; must create a new classic instance. |
 | Basic v2 | Standard v2 | ✅ | Typically supported |
 | Standard v2 | Basic v2 | ⚠️ | Check compatibility (may lose features) |
 
-**Note**: Migration paths between classic and v2 tiers may evolve. Always consult the [official Azure documentation](https://learn.microsoft.com/azure/api-management/) for current migration support and procedures.
+**Note**: There is currently no automated migration path between classic and v2 tiers. Microsoft is working toward feature parity between v1 and v2, and a migration path is expected to become available once that parity is reached — watch the [official Azure updates](https://learn.microsoft.com/azure/api-management/) for announcements.
 
 **Migration Feasibility Factors:**
 - **Architecture differences**: v2 tiers use a different underlying architecture than classic tiers
@@ -595,8 +654,12 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
 
 - [Official Pricing Page](https://azure.microsoft.com/pricing/details/api-management/)
 - [Pricing Calculator](https://azure.microsoft.com/pricing/calculator/)
-- [Capacity Metrics](https://learn.microsoft.com/azure/api-management/api-management-capacity)
-- [Feature Comparison](https://learn.microsoft.com/azure/api-management/api-management-features)
+- [Feature-based comparison of Azure API Management tiers](https://learn.microsoft.com/azure/api-management/api-management-features)
+- [Azure API Management v2 tiers overview](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview)
+- [Capacity metrics and scaling](https://learn.microsoft.com/azure/api-management/api-management-capacity)
+- [Upgrade and scale an Azure API Management instance](https://learn.microsoft.com/azure/api-management/upgrade-and-scale)
+- [Azure API Management service limits](https://learn.microsoft.com/azure/api-management/service-limits)
+- [Autoscale an Azure API Management instance](https://learn.microsoft.com/azure/api-management/api-management-howto-autoscale)
 
 ## Next Steps
 

@@ -23,25 +23,25 @@ policies/
 ## 🎯 Policy Categories
 
 ### Authentication & Authorization
-- **jwt-validate.xml**: Validate JWT tokens from Microsoft Entra ID (Azure AD)
-- **mtls.xml**: Client certificate authentication (mutual TLS)
+- **[jwt-validate.xml](jwt-validate.xml)**: Validate JWT tokens from Microsoft Entra ID — [`validate-jwt` policy docs](https://learn.microsoft.com/azure/api-management/validate-jwt-policy)
+- **[mtls.xml](mtls.xml)**: Client certificate authentication (mutual TLS) — [how-to guide](https://learn.microsoft.com/azure/api-management/api-management-howto-mutual-certificates-for-clients)
 
 ### Traffic Management
-- **rate-limit.xml**: Rate limiting, quotas, throttling
-- **ip-filter.xml**: IP whitelist/blacklist
+- **[rate-limit.xml](rate-limit.xml)**: Rate limiting, quotas, throttling — [`rate-limit`](https://learn.microsoft.com/azure/api-management/rate-limit-policy) | [`rate-limit-by-key`](https://learn.microsoft.com/azure/api-management/rate-limit-by-key-policy) | [`quota`](https://learn.microsoft.com/azure/api-management/quota-policy)
+- **[ip-filter.xml](ip-filter.xml)**: IP whitelist/blacklist — [`ip-filter` policy docs](https://learn.microsoft.com/azure/api-management/ip-filter-policy)
 
 ### Performance
-- **cache.xml**: Response caching strategies
-- **retry.xml**: Retry logic with exponential backoff
+- **[cache.xml](cache.xml)**: Response caching strategies — [caching policies docs](https://learn.microsoft.com/azure/api-management/api-management-caching-policies)
+- **[retry.xml](retry.xml)**: Retry logic with exponential backoff — [`retry` policy docs](https://learn.microsoft.com/azure/api-management/retry-policy)
 
 ### Transformation
-- **transform.xml**: Request/response transformation, format conversion
+- **[transform.xml](transform.xml)**: Request/response transformation, format conversion — [transformation policies docs](https://learn.microsoft.com/azure/api-management/api-management-transformation-policies)
 
 ### AI/ML
-- **ai-gateway.xml**: AI Gateway for Azure OpenAI and LLM APIs
+- **[ai-gateway.xml](ai-gateway.xml)**: AI Gateway for Azure OpenAI and LLM APIs — [`azure-openai-token-limit`](https://learn.microsoft.com/azure/api-management/azure-openai-token-limit-policy) | [`azure-openai-emit-token-metric`](https://learn.microsoft.com/azure/api-management/azure-openai-emit-token-metric-policy)
 
 ### Reusable Components
-- **fragments/**: Policy fragments for reusability
+- **[fragments/](fragments/)**: Policy fragments for reusability — [policy fragments docs](https://learn.microsoft.com/azure/api-management/policy-fragments)
 
 ## 🚀 Quick Start
 
@@ -93,6 +93,8 @@ Policies can be applied at different scopes (in order of precedence):
 2. **Product**: Applies to all APIs in a product
 3. **API**: Applies to all operations in an API
 4. **Operation**: Applies to a specific operation
+
+> 📖 [Policy scopes overview](https://learn.microsoft.com/azure/api-management/api-management-howto-policies#policy-configuration-scopes)
 
 **Scope Hierarchy:**
 ```
@@ -234,6 +236,8 @@ Then add `Ocp-Apim-Trace: true` header to requests and check `Ocp-Apim-Trace-Loc
 
 ## 📝 Policy Expressions
 
+> 📖 [Policy expressions reference](https://learn.microsoft.com/azure/api-management/api-management-policy-expressions)
+
 Policies support C# expressions using `@()` or `@{}` syntax:
 
 ```xml
@@ -298,8 +302,15 @@ Policies support C# expressions using `@()` or `@{}` syntax:
 
 - [Official Policy Reference](https://learn.microsoft.com/azure/api-management/api-management-policies)
 - [Policy Expressions](https://learn.microsoft.com/azure/api-management/api-management-policy-expressions)
-- [Error Handling](https://learn.microsoft.com/azure/api-management/api-management-error-handling-policies)
+- [Error Handling in Policies](https://learn.microsoft.com/azure/api-management/api-management-error-handling-policies)
 - [Transformation Policies](https://learn.microsoft.com/azure/api-management/api-management-transformation-policies)
+- [Access Restriction Policies](https://learn.microsoft.com/azure/api-management/api-management-access-restriction-policies)
+- [Caching Policies](https://learn.microsoft.com/azure/api-management/api-management-caching-policies)
+- [Advanced Policies (retry, send-request, log-to-eventhub)](https://learn.microsoft.com/azure/api-management/api-management-advanced-policies)
+- [Debug Policies in the Azure Portal](https://learn.microsoft.com/azure/api-management/api-management-debug-policies)
+- [Policy Fragments](https://learn.microsoft.com/azure/api-management/policy-fragments)
+- [Named Values (secrets in policies)](https://learn.microsoft.com/azure/api-management/api-management-howto-properties)
+- [Azure APIM Policy Toolkit](https://github.com/Azure/azure-api-management-policy-toolkit) — unit test your APIM policies locally before deployment using this official Microsoft tool
 
 ## 🤝 Contributing
 

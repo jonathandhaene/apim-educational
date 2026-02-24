@@ -67,11 +67,10 @@ You need either:
 
 ### Supported SKUs
 APIM Workspaces are available in:
-- **Developer tier**: For development and testing
-- **Basic, Standard, Premium tiers**: For production workloads
-- **Basic v2, Standard v2 tiers**: Modern consumption-based tiers
+- **Premium** (classic): For enterprise production workloads
+- **Premium v2**: Modern v2 platform with fast provisioning
 
-> **Note**: Consumption tier does **not** support workspaces.
+> **Note**: Workspaces require the **Premium** or **Premium v2** tier. They are **not** available in Developer, Basic, Standard, Basic v2, Standard v2, or Consumption tiers. Each workspace requires a dedicated **workspace gateway** resource. See the [workspaces overview](https://learn.microsoft.com/azure/api-management/workspaces-overview) for current limitations.
 
 ## Step 1: Deploy APIM Instance (Optional)
 
@@ -625,9 +624,13 @@ az rest \
 
 ## Additional Resources
 
-- [Azure APIM Workspaces Documentation](https://learn.microsoft.com/azure/api-management/workspaces-overview)
+- [Federated API management with workspaces](https://learn.microsoft.com/azure/api-management/workspaces-overview)
+- [Create and manage workspaces (how-to)](https://learn.microsoft.com/azure/api-management/how-to-create-workspace)
+- [Workspace gateways overview](https://learn.microsoft.com/azure/api-management/api-management-gateways-overview#workspace-gateways)
+- [Network resource requirements for workspace gateways](https://learn.microsoft.com/azure/api-management/virtual-network-workspaces-resources)
+- [RBAC roles for APIM workspaces](https://learn.microsoft.com/azure/api-management/api-management-role-based-access-control)
 - [APIM REST API Reference](https://learn.microsoft.com/rest/api/apimanagement/)
-- [Workspace RBAC Roles](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#api-management)
+- [Workspaces Best Practices](../../docs/workspaces.md)
 
 ## Troubleshooting
 

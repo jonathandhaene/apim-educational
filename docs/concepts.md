@@ -40,7 +40,7 @@ The gateway is the runtime component that:
 
 **Deployment Options:**
 - **Managed Gateway**: Hosted in Azure (all tiers)
-- **Self-hosted Gateway**: Container-based, runs on-premises or other clouds
+- **[Self-hosted Gateway](https://learn.microsoft.com/azure/api-management/self-hosted-gateway-overview)**: Container-based, runs on-premises or other clouds
 - **Consumption Gateway**: Serverless, auto-scales to zero
 
 ### 2. Management API
@@ -63,14 +63,16 @@ Access via:
 Customizable website for developers to:
 - Browse API catalog and documentation
 - Try APIs interactively
-- Subscribe to products and obtain keys
+- Subscribe to [products](https://learn.microsoft.com/azure/api-management/api-management-howto-add-products) and obtain keys
 - View usage analytics
 - Read tutorials and guides
 
 **Customization:**
 - Built-in visual editor
 - Custom HTML/CSS/JavaScript
-- Self-hosted option available
+- [Self-hosted option available](https://learn.microsoft.com/azure/api-management/developer-portal-self-host)
+
+> 📖 [Developer Portal overview](https://learn.microsoft.com/azure/api-management/api-management-howto-developer-portal)
 
 ### 4. Azure Portal
 
@@ -137,31 +139,31 @@ Adapt protocols and formats:
 ### Security
 
 - **Subscription Keys**: Simple API key authentication
-- **JWT Validation**: OAuth 2.0 / OpenID Connect token validation
-- **Client Certificates**: Mutual TLS authentication
-- **IP Filtering**: Whitelist/blacklist IP ranges
+- **[JWT Validation](https://learn.microsoft.com/azure/api-management/validate-jwt-policy)**: OAuth 2.0 / OpenID Connect token validation
+- **[Client Certificates](https://learn.microsoft.com/azure/api-management/api-management-howto-mutual-certificates-for-clients)**: Mutual TLS authentication
+- **[IP Filtering](https://learn.microsoft.com/azure/api-management/ip-filter-policy)**: Whitelist/blacklist IP ranges
 - **OAuth 2.0 Authorization**: Built-in authorization server
-- **Managed Identity**: Connect to Azure services without credentials
+- **[Managed Identity](https://learn.microsoft.com/azure/api-management/api-management-howto-use-managed-service-identity)**: Connect to Azure services without credentials
 
 ### Traffic Management
 
-- **Rate Limiting**: Calls per time period per subscription/key/IP
-- **Quota**: Long-term usage caps
+- **[Rate Limiting](https://learn.microsoft.com/azure/api-management/rate-limit-policy)**: Calls per time period per subscription/key/IP
+- **[Quota](https://learn.microsoft.com/azure/api-management/quota-policy)**: Long-term usage caps
 - **Throttling**: Concurrent request limits
-- **Caching**: Response caching with TTL
+- **[Caching](https://learn.microsoft.com/azure/api-management/api-management-caching-policies)**: Response caching with TTL
 
 ### Monitoring & Analytics
 
-- **Application Insights**: Detailed telemetry and traces
-- **Log Analytics**: Centralized logging and queries
+- **[Application Insights](https://learn.microsoft.com/azure/api-management/api-management-howto-app-insights)**: Detailed telemetry and traces
+- **[Log Analytics](https://learn.microsoft.com/azure/api-management/api-management-howto-use-azure-monitor)**: Centralized logging and queries
 - **Metrics**: Request count, latency, error rates
 - **Alerts**: Proactive notifications on thresholds
 
 ### Developer Experience
 
-- **OpenAPI (Swagger)**: Import/export API definitions
-- **GraphQL**: Query and mutation support
-- **WebSocket**: Bidirectional communication
+- **[OpenAPI (Swagger)](https://learn.microsoft.com/azure/api-management/import-and-publish)**: Import/export API definitions
+- **[GraphQL](https://learn.microsoft.com/azure/api-management/graphql-api)**: Query and mutation support
+- **[WebSocket](https://learn.microsoft.com/azure/api-management/websocket-api)**: Bidirectional communication
 - **Interactive Console**: Test APIs from portal
 
 ### Transformation
@@ -169,7 +171,7 @@ Adapt protocols and formats:
 - **Content Negotiation**: Accept/Content-Type handling
 - **JSON/XML Conversion**: Automatic format transformation
 - **XSLT**: Advanced XML transformations
-- **Liquid Templates**: Flexible content transformation
+- **[Liquid Templates](https://learn.microsoft.com/azure/api-management/api-management-liquid-templates)**: Flexible content transformation
 
 ## Architecture Overview
 
@@ -333,10 +335,15 @@ Provide APIs to partners:
 ## Learning Resources
 
 - [Official APIM Documentation](https://learn.microsoft.com/azure/api-management/)
+- [Azure API Management Overview & Key Concepts](https://learn.microsoft.com/azure/api-management/api-management-key-concepts)
 - [Policy Reference](https://learn.microsoft.com/azure/api-management/api-management-policies)
 - [Policy Expressions](https://learn.microsoft.com/azure/api-management/api-management-policy-expressions)
 - [REST API Reference](https://learn.microsoft.com/rest/api/apimanagement/)
 - [Architecture Patterns](https://learn.microsoft.com/azure/architecture/reference-architectures/apis/)
+- [Feature-based Tier Comparison](https://learn.microsoft.com/azure/api-management/api-management-features)
+- [Import and Publish an API](https://learn.microsoft.com/azure/api-management/import-and-publish)
+- [API Management Limits](https://learn.microsoft.com/azure/api-management/service-limits)
+- [API Management gateways overview](https://learn.microsoft.com/azure/api-management/api-management-gateways-overview)
 
 ## Next Steps
 

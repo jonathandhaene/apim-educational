@@ -461,12 +461,16 @@ Continue to [Lab 4: Expert](../lab-04-expert/README.md) to learn about:
 
 ## 📖 Additional Resources
 
-- [VNet Integration](https://learn.microsoft.com/azure/api-management/api-management-using-with-vnet)
-- [Private Endpoints](https://learn.microsoft.com/azure/api-management/private-endpoint)
-- [Key Vault Integration](https://learn.microsoft.com/azure/api-management/api-management-howto-properties)
-- [API Versioning](https://learn.microsoft.com/azure/api-management/api-management-versions)
-- [Revisions](https://learn.microsoft.com/azure/api-management/api-management-revisions)
-- [Custom Domains](https://learn.microsoft.com/azure/api-management/configure-custom-domain)
+- [Deploy APIM to a VNet (internal mode)](https://learn.microsoft.com/azure/api-management/api-management-using-with-internal-vnet)
+- [Deploy APIM to a VNet (external mode)](https://learn.microsoft.com/azure/api-management/api-management-using-with-vnet)
+- [Connect privately to APIM using a private endpoint](https://learn.microsoft.com/azure/api-management/private-endpoint)
+- [NSG requirements for VNet injection](https://learn.microsoft.com/azure/api-management/virtual-network-injection-resources)
+- [Named Values and Key Vault integration](https://learn.microsoft.com/azure/api-management/api-management-howto-properties)
+- [Use managed identities in APIM](https://learn.microsoft.com/azure/api-management/api-management-howto-use-managed-service-identity)
+- [API versioning](https://learn.microsoft.com/azure/api-management/api-management-versions)
+- [API revisions](https://learn.microsoft.com/azure/api-management/api-management-revisions)
+- [Configure a custom domain for APIM](https://learn.microsoft.com/azure/api-management/configure-custom-domain)
+- [Azure Key Vault documentation](https://learn.microsoft.com/azure/key-vault/)
 
 ## ❓ Troubleshooting
 
