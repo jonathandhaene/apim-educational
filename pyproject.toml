@@ -1,0 +1,22 @@
+[project]
+name = "apim-educational"
+version = "0.0.0"
+description = "Azure API Management Educational Repository: labs, migration tools, and policy examples"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "APIM Educational Contributors" }]
+license = { file = "LICENSE" }
+
+# Core runtime dependencies
+dependencies = [
+  "pyyaml>=6.0.2",
+]
+
+[dependency-groups]
+# Developer tooling (installed automatically by default with `uv sync`)
+dev = [
+  "pylint>=4.0.0",
+  "pytest>=9.0.0",
+  "pytest-cov>=7.0.0",
+  "coverage>=7.6.4",
+]

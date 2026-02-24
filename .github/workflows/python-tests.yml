@@ -1,0 +1,113 @@
+name: Python Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/migration/**'
+      - 'pyproject.toml'
+      - '.pylintrc'
+      - '.github/workflows/python-tests.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/migration/**'
+      - 'pyproject.toml'
+      - '.pylintrc'
+      - '.github/workflows/python-tests.yml'
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}/tools/migration
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+
+      - name: Install dependencies
+        run: |
+          uv venv
+          uv sync
+
+      - name: Run pylint
+        id: pylint
+        run: |
+          mkdir -p reports/pylint
+          uv run python -m pylint --rcfile .pylintrc tools/migration/openapi_utils.py 2>&1 | tee reports/pylint/latest.txt
+
+      - name: Upload pylint reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: pylint-reports-${{ matrix.python-version }}
+          path: reports/pylint/
+
+      - name: Run pytest with coverage
+        id: pytest
+        run: |
+          uv run pytest \
+            --cov=tools/migration \
+            --cov-report=html:reports/htmlcov-${{ matrix.python-version }} \
+            --cov-report=term-missing \
+            --junitxml=reports/junit-${{ matrix.python-version }}.xml \
+            tools/migration/tests/
+
+      - name: Upload coverage HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-${{ matrix.python-version }}
+          path: reports/htmlcov-${{ matrix.python-version }}/
+
+      - name: Upload JUnit test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-results-${{ matrix.python-version }}
+          path: reports/junit-${{ matrix.python-version }}.xml
+
+      - name: Extract metrics
+        id: metrics
+        run: |
+          TEXT_REPORT="reports/pylint/latest.txt"
+          if [ -s "$TEXT_REPORT" ]; then
+            PYLINT_SCORE=$(grep -Eo 'Your code has been rated at [0-9.]+/10' "$TEXT_REPORT" | grep -Eo '[0-9.]+/10' | head -n 1)
+            echo "pylint_score=${PYLINT_SCORE:-N/A}" >> "$GITHUB_OUTPUT"
+          else
+            echo "pylint_score=N/A" >> "$GITHUB_OUTPUT"
+          fi
+          TOTAL_COV=$(uv run python -m coverage report 2>/dev/null | grep TOTAL | awk '{print $NF}' || echo "N/A")
+          echo "coverage=${TOTAL_COV}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish results to PR
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: python-results-${{ matrix.python-version }}
+          message: |
+            ## 🐍 Python ${{ matrix.python-version }} Results
+
+            | Metric | Status | Value |
+            | :--- | :---: | :--- |
+            | **Pylint Score** | ${{ steps.pylint.outcome == 'success' && '✅' || '⚠️' }} | `${{ steps.metrics.outputs.pylint_score }}` |
+            | **Unit Tests** | ${{ steps.pytest.outcome == 'success' && '✅' || '❌' }} | `${{ steps.pytest.outcome }}` |
+            | **Code Coverage** | 📊 | `${{ steps.metrics.outputs.coverage }}` |
+
+            [Full Workflow Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

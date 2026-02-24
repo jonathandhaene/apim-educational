@@ -1,5 +1,7 @@
 # APIM Educational Repository
 
+[![Python Tests](https://github.com/jonathandhaene/apim-educational/actions/workflows/python-tests.yml/badge.svg?branch=main)](https://github.com/jonathandhaene/apim-educational/actions/workflows/python-tests.yml)
+
 Welcome to the APIM Educational Repository! This repository is designed to help developers and learners understand Azure API Management (APIM) through comprehensive documentation, practical examples, hands-on labs, and migration tooling.
 
 > **⚠️ Educational Disclaimer**: This repository is provided for educational and learning purposes only. All content, including pricing estimates, tier recommendations, and infrastructure templates, should be validated and adapted for your specific production requirements. Azure API Management features, pricing, and best practices evolve frequently—always consult the <a href="https://learn.microsoft.com/azure/api-management/">official Azure documentation</a> and <a href="https://azure.microsoft.com/pricing/calculator/">Azure Pricing Calculator</a> for the most current information before making production decisions.
@@ -49,6 +51,28 @@ See the [Labs README](labs/README.md) for full prerequisites and cost management
 | [Lab 4: Expert](labs/lab-04-expert/README.md) | Expert | 120–150 min | Self-hosted gateway, Front Door, blue/green deployment, caching |
 | [Lab 5: Operations & Architecture](labs/lab-05-ops-architecture/README.md) | Architecture | 90–120 min | API Center, AI Gateway, observability, DR, best practices |
 | [Lab 6: Workspaces](labs/lab-06-workspaces/README.md) | Intermediate | 60–90 min | Multi-environment management, workspace segmentation, collaboration |
+
+## 🧰 Developer CLI
+
+Use the interactive Developer CLI to run tests, linting, and infra validation without remembering individual commands:
+
+**Windows:**
+
+```powershell
+.\start.ps1
+```
+
+**macOS / Linux:**
+
+```bash
+./start.sh
+```
+
+This menu-driven interface provides quick access to:
+
+- **Setup**: Install/update Python dependencies and Azure CLI login
+- **Tests**: Run pylint, pytest, and full Python checks with coverage
+- **Infra**: Validate Bicep templates and Terraform configuration
 
 ## 🔧 Associated Tools
 
