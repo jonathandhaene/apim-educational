@@ -196,7 +196,9 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
 
 ## Private Endpoints
 
-Private Endpoint provides private inbound connectivity to the APIM gateway.
+Private Endpoint provides **inbound-only** private connectivity to the APIM gateway — it places a private IP address in your VNet that clients use to reach APIM, but it does **not** isolate outbound traffic from the gateway to backends. For full network isolation (both inbound client traffic *and* outbound backend traffic), you need VNet injection (Developer/Premium classic or Premium v2) or outbound VNet integration (Standard v2/Premium v2).
+
+> 💡 **Practical guidance**: If your backends are in a private VNet, inbound-only Private Endpoints are not enough on their own. You also need outbound connectivity — either via VNet injection (Developer, Premium classic, Premium v2) or outbound VNet integration (Standard v2, Premium v2). Tiers that support *only* inbound Private Endpoints (Basic, Standard classic) offer limited value in fully private architectures.
 
 ### Tier Support
 
@@ -217,6 +219,8 @@ Private Endpoint provides private inbound connectivity to the APIM gateway.
 - **No VNet injection required**: Can use with any supported tier without injecting APIM into a VNet
 - **Multi-VNet**: Connect from multiple VNets via peering
 - **Hub-Spoke**: Centralized APIM, spoke VNets connect via private endpoints
+
+> **Limitation**: Private Endpoints are inbound-only. They do not route outbound traffic from the APIM gateway to private backends. For outbound private connectivity to backends, also configure VNet injection (Developer/Premium classic, Premium v2) or outbound VNet integration (Standard v2, Premium v2).
 
 ### Setup
 

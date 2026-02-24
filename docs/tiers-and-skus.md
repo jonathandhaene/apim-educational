@@ -289,7 +289,7 @@ Azure API Management offers multiple pricing tiers designed for different scenar
 - **Zone redundancy**: Supported
 - **Provisioning**: Fast deployment (5-15 minutes)
 
-> **Note**: Unlike classic Premium, Premium v2 does **not** support multi-region deployment or self-hosted gateways (as of 2025). Check the [official docs](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview) for current availability.
+> **Note**: Unlike classic Premium, Premium v2 does **not** yet support multi-region deployment. Self-hosted gateway support for Premium v2 is **planned** — check the [official docs](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview) for current availability.
 
 **Use Cases:**
 - Enterprise production requiring full network isolation (VNet injection)
@@ -298,7 +298,7 @@ Azure API Management offers multiple pricing tiers designed for different scenar
 
 **Limitations:**
 - No multi-region deployment (use classic Premium for multi-region)
-- No self-hosted gateway support
+- Self-hosted gateway not yet available (planned for Premium v2)
 
 **Pros:**
 - ✅ Full VNet injection for complete network isolation
@@ -310,7 +310,7 @@ Azure API Management offers multiple pricing tiers designed for different scenar
 
 **Cons:**
 - ❌ No multi-region deployment
-- ❌ No self-hosted gateway
+- ⏳ Self-hosted gateway not yet available (planned)
 - ❌ Highest cost in v2 family
 
 ## Feature Comparison
@@ -330,7 +330,7 @@ Azure API Management offers multiple pricing tiers designed for different scenar
 | **Private Endpoints** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ |
 | **Multi-region** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
 | **Availability Zones** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ | ✅ |
-| **Self-hosted Gateway** | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Self-hosted Gateway** | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ⏳ |
 | **Workspaces** | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ |
 | **Built-in Cache** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **External Cache (Redis)** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -338,15 +338,18 @@ Azure API Management offers multiple pricing tiers designed for different scenar
 | **OAuth 2.0 / JWT** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Client Certificates** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Managed Identity** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Backup/Restore** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **Git Configuration** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **Backup/Restore** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌† | ❌† |
+| **Git Configuration** | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌† | ❌† |
 | **Provisioning Time** | 5 min | 30-45 min | 30-45 min | 30-45 min | 30-45 min | 5-15 min | 5-15 min | 5-15 min |
 
-*99.99% SLA with multi-region deployment
+*99.99% SLA with multi-region deployment  
+†v2 tiers do not have a portal backup/restore button, but API configuration can be exported via ARM/Bicep templates or Git-based automation — which is the recommended approach anyway (GitOps). ⏳ in a cell means "not yet available, planned".
 
-> **Networking in v1 vs v2**: VNet injection (full inbound+outbound isolation) is available only on **Developer** and **Premium** classic tiers, and **Premium v2**. **Standard v2** and **Premium v2** also support **outbound VNet integration** (backend connectivity only, gateway remains public). Inbound **Private Endpoints** are available on Developer, Basic, Standard, Standard v2, Premium, and Premium v2 — but NOT on Consumption or Basic v2. See the [official feature comparison](https://learn.microsoft.com/azure/api-management/api-management-features) for details.
+> **Networking in v1 vs v2**: VNet injection (full inbound+outbound isolation) is available only on **Developer** and **Premium** classic tiers, and **Premium v2**. **Standard v2** and **Premium v2** also support **outbound VNet integration** (backend connectivity only, gateway remains public). Inbound **Private Endpoints** are available on Developer, Basic, Standard, Standard v2, Premium, and Premium v2 — but NOT on Consumption or Basic v2.
+>
+> ⚠️ **Important**: Private Endpoints provide **inbound-only** private connectivity to the APIM gateway. They do not isolate outbound traffic to backends. For full network isolation (inbound *and* outbound), you need **VNet injection** (Developer/Premium classic or Premium v2) or **outbound VNet integration** (Standard v2/Premium v2). Tiers that support only inbound Private Endpoints but no outbound isolation are limited in truly private architectures. See the [official feature comparison](https://learn.microsoft.com/azure/api-management/api-management-features) for details.
 
-> **Self-hosted gateway** is only available on **Developer** and **Premium** classic tiers — not on Basic/Standard classic, and not on any v2 tier.
+> **Self-hosted gateway** is currently only available on **Developer** and **Premium** classic tiers — not on Basic/Standard classic, and not on v2 tiers yet. Self-hosted gateway support for **Premium v2 is planned** — check the [official docs](https://learn.microsoft.com/azure/api-management/v2-service-tiers-overview) for the latest status.
 
 > **Workspaces** are only available on **Premium** and **Premium v2** tiers.
 
@@ -357,7 +360,7 @@ Azure API Management offers multiple pricing tiers designed for different scenar
 - **Standard v2** supports outbound VNet integration (backend private connectivity) but the gateway remains publicly accessible; **Premium v2** adds full VNet injection
 - **Standard v2** and **Premium v2** include availability zones; classic Standard does not
 - **No Developer tier in v2** — use the classic Developer tier for non-production environments
-- **Backup/Restore and Git configuration** are not available in any v2 tier
+- **Backup/Restore and Git configuration** are not available as a portal button in any v2 tier, but API configuration can be exported via ARM/Bicep or Git-based automation (recommended GitOps approach)
 - **Multi-region deployment** is only available on classic **Premium** tier
 
 ## Capacity and Scale
@@ -532,9 +535,10 @@ START
 
 2. **Network Requirements**
    - Public only → Any tier
-   - Private Endpoints (inbound) → Developer, Basic, Standard, Standard v2, Premium, Premium v2
+   - Private Endpoints only (inbound-only; outbound remains public) → Developer, Basic, Standard, Standard v2, Premium, Premium v2
    - Outbound VNet integration (reach private backends, gateway stays public) → Standard v2, Premium v2
-   - Full VNet injection (complete isolation) → Developer, Premium (classic); Premium v2
+   - Full VNet injection (complete inbound+outbound isolation) → Developer, Premium (classic); Premium v2
+   - > Note: Basic and Standard classic support only inbound Private Endpoints with no outbound private networking — if you need backends in a private VNet you must use one of the tiers with VNet injection or outbound integration.
 
 3. **Traffic Patterns**
    - Intermittent/Spiky → Consumption
@@ -572,12 +576,12 @@ START
 | Premium | Standard | ✅ | Downgrade (lose multi-region) |
 | Consumption | Any classic | ❌ | Requires re-creation |
 | Any classic | Consumption | ❌ | Requires re-creation |
-| Any classic | v2 tiers | ❌ | Cannot migrate; must create a new v2 instance |
-| v2 tiers | classic | ❌ | Cannot migrate; must create a new classic instance |
+| Any classic | v2 tiers | ❌ | No automated migration path today; must create a new v2 instance. A migration path is expected once feature parity is reached — check [official Azure updates](https://learn.microsoft.com/azure/api-management/) for timeline announcements. |
+| v2 tiers | classic | ❌ | No automated migration path today; must create a new classic instance. |
 | Basic v2 | Standard v2 | ✅ | Typically supported |
 | Standard v2 | Basic v2 | ⚠️ | Check compatibility (may lose features) |
 
-**Note**: Migration paths between classic and v2 tiers may evolve. Always consult the [official Azure documentation](https://learn.microsoft.com/azure/api-management/) for current migration support and procedures.
+**Note**: There is currently no automated migration path between classic and v2 tiers. Microsoft is working toward feature parity between v1 and v2, and a migration path is expected to become available once that parity is reached — watch the [official Azure updates](https://learn.microsoft.com/azure/api-management/) for announcements.
 
 **Migration Feasibility Factors:**
 - **Architecture differences**: v2 tiers use a different underlying architecture than classic tiers
