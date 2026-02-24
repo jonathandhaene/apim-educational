@@ -30,10 +30,8 @@ APIM is deployed with public endpoints accessible from the internet.
 - Consumption and Developer tiers
 
 **Diagram:**
-```
-Internet → [APIM Gateway] → Backend Services
-            (Public IP)
-```
+
+<img src="diagrams/Simple API Management Architecture.svg" alt="Simple Azure API Management architecture: API consumers connect to API Management, which forwards traffic to backend services and sends telemetry to Azure Monitor." width="800" />
 
 ### 2. External VNet
 
@@ -444,6 +442,10 @@ Internet → APIM (Public) → Azure PaaS Services
 
 ### Pattern 2: Public APIs with Private Backends
 
+<img src="diagrams/API Management and Container Apps Architecture.svg" alt="Azure API Management and Container Apps architecture: API Management routes traffic to Container Apps backends and sends telemetry to Azure Monitor." width="800" />
+
+*APIM with Container Apps backends: traffic flows through APIM into containerised backends.*
+
 ```
 Internet → APIM (External VNet) → Private VNet
                                    (VMs, AKS, Private Endpoints)
@@ -464,6 +466,14 @@ Corporate Network (VPN) → APIM (Internal VNet) → Private Backends
 - Access: VPN or ExpressRoute
 
 ### Pattern 4: Internal APIs with Public Facade
+
+<img src="diagrams/Azure Application Gateway API Management and Container Apps Architecture.svg" alt="Azure Application Gateway (with Private Endpoint) and API Management architecture: Application Gateway routes traffic via private endpoint to APIM, which routes to Container Apps backends. Telemetry to Azure Monitor." width="1000" />
+
+*Application Gateway with a Private Endpoint to APIM (Standard V2): traffic stays private after the gateway.*
+
+<img src="diagrams/Azure Application Gateway API Management and Container Apps Architecture VNet.svg" alt="Azure Application Gateway and VNet-injected API Management architecture: Application Gateway routes traffic to APIM deployed in Internal VNet mode, which routes to Container Apps backends. Telemetry to Azure Monitor." width="1000" />
+
+*Application Gateway with VNet-injected APIM (Developer/Premium): full VNet isolation for maximum security.*
 
 ```
 Internet → Application Gateway (WAF) → APIM (Internal VNet) → Private Backends

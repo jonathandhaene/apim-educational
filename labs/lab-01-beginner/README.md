@@ -17,11 +17,9 @@ By the end of this lab, you will:
 
 ## Architecture
 
-```
-Client → APIM Gateway → Azure Function (Sample API)
-         ↓
-    Application Insights (Logging)
-```
+<img src="../../docs/diagrams/Simple API Management Architecture.svg" alt="Simple Azure API Management architecture: API consumers connect to API Management, which forwards traffic to backend services and sends telemetry to Azure Monitor." width="800" />
+
+*API consumers connect through APIM, which applies policies and forwards traffic to backend services. Telemetry is sent to Azure Monitor.*
 
 ## Step 1: Deploy API Management
 

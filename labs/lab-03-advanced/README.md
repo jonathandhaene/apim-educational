@@ -17,6 +17,12 @@ By the end of this lab, you will:
 
 ## Architecture
 
+<img src="../../docs/diagrams/API Management and Container Apps Architecture.svg" alt="Azure API Management and Container Apps architecture: API Management routes traffic to Container Apps backends and sends telemetry to Azure Monitor." width="800" />
+
+*In this pattern, APIM routes traffic to backends (such as Azure Container Apps), applying policies along the way. Telemetry flows to Azure Monitor.*
+
+The advanced lab adds VNet integration, private endpoints, and Key Vault secrets:
+
 ```
 Private VNet
   ├── APIM (Internal Mode)

@@ -45,6 +45,10 @@ Guide for integrating Azure Front Door with Azure API Management for global dist
 
 ## Architecture Patterns
 
+<img src="diagrams/Azure Front Door API Management and Container Apps Architecture.svg" alt="Azure Front Door, API Management, and Container Apps architecture: Azure Front Door routes traffic via private link to API Management, which routes to Container Apps backends. Telemetry goes to Azure Monitor." width="1000" />
+
+*Front Door provides global edge delivery, WAF, and private link connectivity to APIM. Traffic behind the Front Door stays off the public internet.*
+
 ### Pattern 1: Global Distribution (Multi-Region APIM)
 
 ```
